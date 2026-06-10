@@ -13,9 +13,20 @@ return new class extends Migration
     {
         Schema::create('instructors', function (Blueprint $table) {
             $table->string('instructor_id');
-            $table->string('user_id')
-                ->constrained()
+            $table->string('user_id');
+            $table->foreign('user_id')
+                ->references('user_id')
+                ->on('users')
                 ->cascadeOnDelete();
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')
+                ->references('department_id')
+                ->on('departments')
+                ->cascadeOnDelete();
+            $table->enum('status', [
+                'Active',
+                'Inactive'
+            ]);
             $table->timestamps();
         });
     }

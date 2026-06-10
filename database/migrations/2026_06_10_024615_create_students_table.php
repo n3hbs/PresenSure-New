@@ -12,14 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('students', function (Blueprint $table) {
-            $table->string('student_id');
-            $table->string('user_id')
-                ->constrained()
+            $table->id('student_id');
+            $table->string('user_id');
+            $table->foreign('user_id')
+                ->references('user_id')
+                ->on('users')
                 ->cascadeOnDelete();
-            $table->string('program');
+            $table->unsignedBigInteger('program_id');
+            $table->foreign('program_id')
+                ->references('program_id')
+                ->on('programs')
+                ->cascadeOnDelete();
             $table->string('year');
             $table->string('block');
-            $table->boolean('status')->default(true);
+            $table->enum('status', [
+                'Active,',
+                'Inactive'
+            ])->default('Active');
             $table->timestamps();
         });
     }
