@@ -16,6 +16,11 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_initial', 2);
             $table->string('last_name');
+            $table->string('suffix', 20)->nullable();
+            $table->enum(
+                'sex',
+                ['male', 'female']
+            );
             $table->string('password', 255);
             $table->timestamps();
         });

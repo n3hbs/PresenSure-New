@@ -18,6 +18,18 @@ class User extends Authenticatable
         'first_name',
         'middle_initial',
         'last_name',
+        'suffix',
+        'sex',
         'password'
     ];
+
+    public function userProfile() 
+    {
+        return $this->hasOne(UserProfile::class, 'user_id', 'user_id');
+    }
+
+    public function student()
+    {
+        return $this->hasMany(Student::class, 'user_id', 'user_id');
+    }
 }

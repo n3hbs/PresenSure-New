@@ -11,13 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_profiles', function (Blueprint $table) {
+        Schema::create('user_roles', function (Blueprint $table) {
             $table->string('user_id');
             $table->foreign('user_id')
                 ->references('user_id')
                 ->on('users')
                 ->cascadeOnDelete();
-            $table->string('imagelink');
+            $table->unsignedBigInteger('role_id');
+            $table->foreign('role_id')
+                ->references('role_id')
+                ->on('roles')
+                ->cascadeOnDelete();
+            $table->timestamp('assigned_at');
             $table->timestamps();
         });
     }
@@ -27,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_profiles');
+        Schema::dropIfExists('user_roles');
     }
 };
