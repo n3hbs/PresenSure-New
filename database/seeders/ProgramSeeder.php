@@ -13,7 +13,7 @@ class ProgramSeeder extends Seeder
     public function run(): void
     {
         Program::create([
-            'department_id' => 2,
+            'department_id' => 1,
             'program_code' => 'BSIT',
             'program_name' => 'Bachelor of Science in Information Technology'
         ]);

@@ -18,6 +18,11 @@ return new class extends Migration
                 ->references('user_id')
                 ->on('users')
                 ->cascadeOnDelete();
+            $table->unsignedBigInteger('semester_id');
+            $table->foreign('semester_id')
+                ->references('semester_id')
+                ->on('semesters')
+                ->cascadeOnDelete();
             $table->unsignedBigInteger('program_id');
             $table->foreign('program_id')
                 ->references('program_id')
@@ -26,7 +31,7 @@ return new class extends Migration
             $table->string('year');
             $table->string('block');
             $table->enum('status', [
-                'Active,',
+                'Active',
                 'Inactive'
             ])->default('Active');
             $table->timestamps();
