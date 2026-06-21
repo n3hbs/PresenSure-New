@@ -20,4 +20,8 @@ class Semester extends Model
     {
         return $this->belongsTo(SchoolYear::class, 'school_year_id', 'school_year_id');
     }
+
+    public function student(){
+        return $this->hasMany(Student::class. 'semester_id', 'semester_id');
+    }
 }

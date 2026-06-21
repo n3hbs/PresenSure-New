@@ -8,13 +8,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class UserProfile extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'user_id';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
     protected $fillable = [
         'user_id',
-        'image_link'
+        'imagelink'
     ];
 
 
-    public function user() 
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }

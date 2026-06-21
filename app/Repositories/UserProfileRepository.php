@@ -11,8 +11,6 @@ class UserProfileRepository implements UserProfileRepositoryInterface
     public function updateOrCreateByUserId(string $userId, array $data)
     {
         return UserProfile::updateOrCreate(
-            ['user_id' => $userId],
-            $data
-        );
+            ['user_id' => $userId], $data);
     }
 }

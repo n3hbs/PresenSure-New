@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
+use App\Http\Resources\AuthResource;
 use App\Services\AuthService;
 
 class AuthController extends Controller
@@ -15,11 +16,15 @@ class AuthController extends Controller
 
     public function signIn(AuthRequest $request)
     {
-        $user = $this->authService->signIn($request->validated());
-
+        $result = $this->authService->signIn($request->validated());
+        if (!$result) {
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
         return response()->json([
-            'message' => "successfully login",
-            'data' => $user,
+            'message' => 'Successfully login',
+            'data' => new AuthResource($result)
         ]);
     }
 }

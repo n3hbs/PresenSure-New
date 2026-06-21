@@ -23,11 +23,15 @@ class Student extends Model
 
     public function user() 
     {
-        return $this->hasOne(User::class, 'user_id', 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
     public function program()
     {
-        return $this->hasOne(Program::class, 'program_id', 'program_id');
+        return $this->belongsTo(Program::class, 'program_id', 'program_id');
+    }
+
+    public function semester(){
+        return $this->belongsTo(Semester::class, 'semester_id', 'semester_id');
     }
 }

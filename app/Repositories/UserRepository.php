@@ -14,9 +14,6 @@ class UserRepository implements UserRepositoryInterface
     }
     public function findByUserId(string $userId)
     {
-        return User::where(
-            'user_id',
-            $userId
-        )->first();
+        return User::where('user_id',$userId)->first();
     }
 }

@@ -23,13 +23,21 @@ class User extends Authenticatable
         'password'
     ];
 
+    protected $hidden = [
+        'password'
+    ];
+
     public function userProfile() 
     {
         return $this->hasOne(UserProfile::class, 'user_id', 'user_id');
     }
 
     public function student()
-    {
+    {   
         return $this->hasMany(Student::class, 'user_id', 'user_id');
+    }
+    
+    public function roleAssignment(){
+        return $this->hasOne(UserRole::class, 'user_id', 'user_id');
     }
 }

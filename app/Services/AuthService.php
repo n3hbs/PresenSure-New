@@ -14,13 +14,11 @@ class AuthService {
         $user = $this->authRepository->findCredentials($data);
 
         if (!$user || !Hash::check($data['password'], $user->password)){
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return null;
         }
-        $token = $user->createToken('auth_token')->plainTextToken;
 
         return ([
-            'message' => 'Signed in successfully',
-            'token' => $token,
+            'token' => $user->createToken('auth_token')->plainTextToken,
             'user' => $user
         ]);
     }
