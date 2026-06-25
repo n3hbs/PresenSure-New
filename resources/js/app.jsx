@@ -1,20 +1,18 @@
-import '../css/app.css';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import "../css/app.css";
 
+import { createInertiaApp } from "@inertiajs/react";
+import { createRoot } from "react-dom/client";
 
-export default function App() {
-    return (
-        <div className="min-h-screen flex items-center justify-center border-y-gray-100">
-            <h1 className="text-4xl font-bold text-blue-400">
-                Laravel
-            </h1>
-        </div>
-    )
-}
+createInertiaApp({
+    resolve: (name) => {
+        const pages = import.meta.glob("./Pages/**/*.jsx", {
+            eager: true,
+        });
 
-ReactDOM.createRoot(document.getElementById('app')).render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>
-)
+        return pages[`./Pages/${name}.jsx`];
+    },
+
+    setup({ el, App, props }) {
+        createRoot(el).render(<App {...props} />);
+    },
+});

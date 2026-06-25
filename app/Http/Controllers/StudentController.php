@@ -12,7 +12,7 @@ class StudentController extends Controller
         protected StudentService $studentService
     ) {}
 
-    public function singleStudentRegistration(StoreStudentRequest $request)
+    public function create(StoreStudentRequest $request)
     {
         return response()->json(
             $this->studentService->registerStudent(

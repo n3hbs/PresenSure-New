@@ -7,6 +7,6 @@ use App\Http\Controllers\StudentController;
 Route::post('signin', [AuthController::class, 'signIn']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('registerStudent', [StudentController::class, 'singleStudentRegistration']);
-    Route::get('getStudentBySemester', [StudentController::class, 'getStudentByActiveSemester']);
+    Route::post('student/registerStudent', [StudentController::class, 'create']);
+    Route::get('student/getByActiveSemester', [StudentController::class, 'getStudentByActiveSemester']);
 });
