@@ -7,24 +7,27 @@ export default function FeatureCard({
     return (
         <div
             className={`
-                 flex flex-col items-center justify-center text-center
-                px-6 py-8 rounded-2xl
-                bg-white/10 dark:bg-white/5
-                backdrop-blur-sm
-                border border-white/20 dark:border-white/10
-                ${className}
-            `}
+            group relative
+            flex flex-col items-center text-center
+            px-6 py-8 rounded-2xl
+            bg-white dark:bg-gray-900/70
+            shadow-lg
+            border border-gray-200 dark:border-gray-800
+            transition-all duration-300 hover:-translate-y-1 hover:shadow-xl
+            ${className}
+        `}
         >
             {/* Icon container */}
-            <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white dark:group-hover:bg-blue-500 transition-colors duration-300">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                 <Icon size={22} />
             </div>
 
             <div>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
+                <h3 className="mt-5 text-lg font-semibold text-gray-900 dark:text-white">
                     {title}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+
+                <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                     {description}
                 </p>
             </div>

@@ -1,30 +1,60 @@
 import { Fingerprint } from "lucide-react";
+import Logo from "@/assets/images/whiteLogo.webp";
 
 const LINKS = {
-    Product: ["Features", "How It Works", "Pricing", "Changelog"],
-    Company: ["About", "Blog", "Careers", "Contact"],
-    Legal: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
+    Navigation: [
+        { name: "Home", href: "#home" },
+        { name: "Features", href: "#features" },
+        { name: "How It Works", href: "#how-it-works" },
+    ],
+    Resources: [
+        {
+            name: "GitHub",
+            href: "https://github.com/n3hbs/PresenSure-New.git",
+        },
+        // Remove this if you don't have documentation yet
+        // { name: "Documentation", href: "#" },
+    ],
+    Contact: [
+        {
+            label: "Email",
+            value: "bhnsgrl20@gmail.com",
+        },
+        {
+            label: "Facebook",
+            value: "Bhencyris John Sagaral",
+        },
+    ],
 };
 
 export default function Footer() {
     return (
         <footer className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
                     {/* Brand */}
-                    <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
+                    <div className="col-span-2 md:col-span-2 flex flex-col gap-4">
                         <a
                             href="/"
                             className="flex items-center gap-2 font-bold text-gray-900 dark:text-white"
                         >
-                            <span className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
-                                <Fingerprint size={18} />
+                            <span className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center overflow-hidden">
+                                <img
+                                    src={Logo}
+                                    alt="PresenSure Logo"
+                                    className="w-8 h-8 object-contain"
+                                />
                             </span>
-                            Presen<span className="text-blue-600">Sure</span>
+
+                            <span>
+                                Presen
+                                <span className="text-blue-600">Sure</span>
+                            </span>
                         </a>
+
                         <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                            Hands-free attendance powered by BLE and face
-                            recognition.
+                            A classroom attendance system powered by Bluetooth
+                            Low Energy (BLE) and facial recognition.
                         </p>
                     </div>
 
@@ -34,30 +64,30 @@ export default function Footer() {
                             <p className="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
                                 {group}
                             </p>
-                            <ul className="space-y-2.5">
+
+                            <ul className="space-y-2">
                                 {items.map((item) => (
-                                    <li key={item}>
-                                        <a
-                                            href="#"
-                                            className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                        >
-                                            {item}
-                                        </a>
+                                    <li key={item.name ?? item.label}>
+                                        {"href" in item ? (
+                                            <a
+                                                href={item.href}
+                                                className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                            >
+                                                {item.name}
+                                            </a>
+                                        ) : (
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                <span className="font-medium text-gray-700 dark:text-gray-300">
+                                                    {item.label}:
+                                                </span>{" "}
+                                                {item.value}
+                                            </p>
+                                        )}
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     ))}
-                </div>
-
-                <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <p className="text-xs text-gray-400 dark:text-gray-600">
-                        © {new Date().getFullYear()} AttendIQ. All rights
-                        reserved.
-                    </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-600">
-                        Built with BLE · Face Recognition · Laravel + React
-                    </p>
                 </div>
             </div>
         </footer>

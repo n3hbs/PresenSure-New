@@ -23,11 +23,6 @@ export default function HeroSection() {
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     {/* Copy */}
                     <div className="flex flex-col gap-6">
-                        <Badge variant="blue">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                            BLE + Face Recognition
-                        </Badge>
-
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-[1.1]">
                             Attendance that{" "}
                             <span className="text-blue-600 dark:text-blue-400">

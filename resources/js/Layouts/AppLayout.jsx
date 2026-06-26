@@ -1,13 +1,9 @@
-import { Link } from '@inertiajs/react';
+import { Link } from "@inertiajs/react";
 
 export default function AppLayout({ children }) {
     return (
         <>
-
-
-            <main>
-                {children}
-            </main>
+            <main>{children}</main>
         </>
     );
 }

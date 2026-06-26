@@ -1,12 +1,11 @@
-import AppLayout from '@/Layouts/AppLayout';
-import { ThemeProvider } from '@/Context/ThemeContext';
-import Navbar from '@/Components/Landing/Navbar';
-import HeroSection from '@/Components/Landing/HeroSection';
-import FeaturesSection from '@/Components/Landing/FeaturesSection';
-import HowItWorksSection from '@/Components/Landing/HowItWorksSection';
-import StatsSection from '@/Components/Landing/StatsSection';
-import CtaSection from '@/Components/Landing/CtaSection';
-import Footer from '@/Components/Landing/Footer';
+import AppLayout from "@/Layouts/AppLayout";
+import { ThemeProvider } from "@/Context/ThemeContext";
+import Navbar from "@/Components/Landing/Navbar";
+import HeroSection from "@/Components/Landing/HeroSection";
+import FeaturesSection from "@/Components/Landing/FeaturesSection";
+import HowItWorksSection from "@/Components/Landing/HowItWorksSection";
+import AboutSection from "@/Components/Landing/AboutSection";
+import Footer from "@/Components/Landing/Footer";
 
 export default function Index() {
     return (
@@ -18,6 +17,7 @@ export default function Index() {
                         <HeroSection />
                         <FeaturesSection />
                         <HowItWorksSection />
+                        <AboutSection />
                     </main>
                     <Footer />
                 </div>

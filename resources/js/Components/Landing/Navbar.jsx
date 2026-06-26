@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, X, Fingerprint } from "lucide-react";
 import DarkModeToggle from "@/Components/UI/DarkModeToggle";
+import Logo from "@/assets/images/whiteLogo.webp";
 import Button from "@/Components/UI/Button";
 
 const NAV_LINKS = [
@@ -20,14 +21,18 @@ export default function Navbar() {
                     href="/"
                     className="flex items-center gap-2 font-bold text-gray-900 dark:text-white"
                 >
-                    <span className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
-                        <Fingerprint size={18} />
+                    <span className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center overflow-hidden">
+                        <img
+                            src={Logo}
+                            alt="PresenSure Logo"
+                            className="w-8 h-8 object-contain"
+                        />
                     </span>
+
                     <span>
                         Presen<span className="text-blue-600">Sure</span>
                     </span>
                 </a>
-
                 {/* Actions */}
                 <div className="flex items-center gap-3">
                     <ul className="hidden md:flex items-center gap-6">
@@ -44,7 +49,7 @@ export default function Navbar() {
                     </ul>
 
                     <a href="/register" className="hidden md:block">
-                        <Button size="sm">Get Started</Button>
+                        <Button size="sm">Sign In</Button>
                     </a>
 
                     {/* Mobile menu button */}

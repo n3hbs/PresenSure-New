@@ -1,60 +1,75 @@
-import { Bluetooth, ScanFace, ShieldCheck, BarChart3, Clock, Wifi } from 'lucide-react';
-import FeatureCard from '@/Components/Landing/FeatureCard';
+import {
+    Bluetooth,
+    ScanFace,
+    ShieldCheck,
+    BarChart3,
+    Clock,
+    Wifi,
+} from "lucide-react";
+import FeatureCard from "@/Components/Landing/FeatureCard";
 
 const FEATURES = [
     {
         icon: Bluetooth,
-        title: 'BLE Proximity Detection',
+        title: "BLE Proximity Detection",
         description:
-            'Bluetooth Low Energy beacons automatically detect when a person enters the room — no manual check-in needed.',
+            "The student's registered device detects nearby Bluetooth Low Energy (BLE) beacons to automatically start the attendance process upon entering the classroom.",
     },
     {
         icon: ScanFace,
-        title: 'Face Recognition',
+        title: "Face Recognition",
         description:
-            'On-device facial recognition confirms identity in real time, preventing proxy attendance and buddy punching.',
+            "Real-time facial recognition verifies each student's identity, preventing proxy attendance and ensuring accurate records.",
     },
     {
         icon: ShieldCheck,
-        title: 'Privacy First',
+        title: "Automatic Attendance Grading",
         description:
-            'Biometric data stays on-device and is never uploaded raw. Full GDPR and PDPA compliance out of the box.',
+            "Attendance grades are calculated automatically based on customizable rules such as attendance percentage, lateness, absences, and class requirements.",
     },
     {
         icon: BarChart3,
-        title: 'Live Dashboard',
+        title: "Live Dashboard",
         description:
-            'See who s present right now. Filter by class, department, or date and export reports in one click.',
+            "Monitor attendance in real time, filter records by class or date, and generate detailed reports with just a few clicks.",
     },
     {
         icon: Clock,
-        title: 'Automatic Timestamps',
+        title: "Automatic Timestamps",
         description:
-            'Time-in and time-out are captured the moment you walk in and when you leave — accurate to the second.',
+            "Time-in and time-out are recorded automatically the moment a student enters or leaves the classroom.",
     },
     {
         icon: Wifi,
-        title: 'Works Offline',
+        title: "Works Offline",
         description:
-            'Logs are cached locally when the connection drops and synced automatically when you re back online.',
+            "Attendance records are stored locally when the network is unavailable and automatically synchronized once the connection is restored.",
     },
 ];
 
 export default function FeaturesSection() {
     return (
-        <section id="features" className="py-24 bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-800 dark:to-gray-900">
+        <section
+            id="features"
+            className="py-24 bg-linear-to-br from-blue-500 via-blue-600 to-blue-700 dark:from-blue-900 dark:to-gray-950"
+        >
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
+                {/* Header */}
                 <div className="text-center mb-14">
-                    <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3">
-                        What It Does
+                    <p className="text-sm font-semibold text-blue-200 uppercase tracking-wider mb-3">
+                        Classroom Attendance System
                     </p>
-                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-                        Everything you need, nothing you don't.
+
+                    <h2 className="text-3xl sm:text-4xl font-bold text-white">
+                        Built for Modern Classroom Attendance
                     </h2>
-                    <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
-                        Purpose-built for schools, offices, and events where accurate,
-                        hands-free attendance matters.
+
+                    <p className="mt-4 text-blue-100 max-w-2xl mx-auto">
+                        Designed specifically for schools, PresenSure automates
+                        classroom attendance using Bluetooth Low Energy (BLE)
+                        technology and facial recognition to provide fast,
+                        secure, and accurate attendance tracking.
                     </p>
                 </div>
 
