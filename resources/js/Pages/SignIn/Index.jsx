@@ -1,23 +1,60 @@
 import { useState } from "react";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import { IdCard, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 import Logo from "@/assets/images/MainLogo.webp";
 import Button from "@/Components/UI/Button";
+
+import api from "@/services/api";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [userId, setUserId] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSubmit = (e) => {
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // TODO:
-        // router.post(route("login"), {
-        //     id: userId,
-        //     password,
-        // });
+        setErrors({});
+        setLoading(true);
+
+        try {
+            const response = await api.post("/user/signin", {
+                user_id: userId.trim(),
+                password,
+            });
+
+            const { token, user } = response.data.data;
+
+            sessionStorage.setItem("token", token);
+            sessionStorage.setItem("user", JSON.stringify(user));
+
+            router.visit("/dashboard");
+        } catch (error) {
+            console.error(error);
+
+            if (error.response) {
+                switch (error.response.status) {
+                    case 422:
+                        setErrors(error.response.data.errors || {});
+                        break;
+
+                    case 401:
+                        alert(error.response.data.message);
+                        break;
+
+                    default:
+                        alert(error.response.data.message ?? "Server error.");
+                }
+            } else {
+                alert("Unable to connect to the server.");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -81,6 +118,12 @@ export default function Login() {
                                         placeholder="C-2024-0001"
                                         className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/60 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition"
                                     />
+
+                                    {errors.id && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {errors.id[0]}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -108,6 +151,12 @@ export default function Login() {
                                         className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 bg-gray-50/60 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition"
                                     />
 
+                                    {errors.password && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {errors.password[0]}
+                                        </p>
+                                    )}
+
                                     <button
                                         type="button"
                                         onClick={() =>
@@ -125,8 +174,12 @@ export default function Login() {
                             </div>
 
                             {/* Button */}
-                            <Button className="w-full py-3 rounded-xl">
-                                Sign In
+                            <Button
+                                type="submit"
+                                className="w-full py-3 rounded-xl"
+                                disabled={loading}
+                            >
+                                {loading ? "Signing In..." : "Sign In"}
                             </Button>
                         </form>
                     </div>
