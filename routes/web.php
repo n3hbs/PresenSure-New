@@ -10,3 +10,8 @@ Route::get('/', function () {
 Route::get('/students', function () {
     return Inertia::render('Students/Index');
 })->name('students.index');
+
+
+Route::get('/signIn', function () {
+    return Inertia::render('SignIn/Index');
+})->name('SignIn.index');

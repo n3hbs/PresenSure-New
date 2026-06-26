@@ -3,6 +3,7 @@ import { Menu, X, Fingerprint } from "lucide-react";
 import DarkModeToggle from "@/Components/UI/DarkModeToggle";
 import Logo from "@/assets/images/whiteLogo.webp";
 import Button from "@/Components/UI/Button";
+import { Link } from "@inertiajs/react";
 
 const NAV_LINKS = [
     { label: "Features", href: "#features" },
@@ -48,9 +49,9 @@ export default function Navbar() {
                         ))}
                     </ul>
 
-                    <a href="/register" className="hidden md:block">
+                    <Link href="/signIn">
                         <Button size="sm">Sign In</Button>
-                    </a>
+                    </Link>
 
                     {/* Mobile menu button */}
                     <button
