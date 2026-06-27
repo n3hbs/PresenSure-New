@@ -15,3 +15,7 @@ Route::get('/students', function () {
 Route::get('/signIn', function () {
     return Inertia::render('SignIn/Index');
 })->name('SignIn.index');
+
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard/Index');
+})->name('Dashboard.index');

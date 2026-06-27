@@ -1,9 +1,6 @@
-import AppLayout from '@/Layouts/AppLayout';
+import MainLayout from "@/Components/Layout/MainLayout";
 
 export default function Students() {
-    return (
-        <AppLayout>
-            <h1>Student List</h1>
-        </AppLayout>
-    );
+    return <h1>Student List</h1>;
 }
+Students.layout = (page) => <MainLayout>{page}</MainLayout>;

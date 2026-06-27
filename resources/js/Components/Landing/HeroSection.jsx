@@ -7,11 +7,26 @@ export default function HeroSection() {
     return (
         <section className="relative min-h-screen flex items-center pt-16 overflow-hidden bg-white dark:bg-gray-950">
             {/* Background grid */}
+            {/* Background grid - Light */}
             <div
-                className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+                className="absolute inset-0 dark:hidden"
                 style={{
-                    backgroundImage:
-                        "linear-gradient(to right, #2563EB 1px, transparent 1px), linear-gradient(to bottom, #2563EB 1px, transparent 1px)",
+                    backgroundImage: `
+            linear-gradient(to right, rgba(229,231,235,0.35) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(229,231,235,0.35) 1px, transparent 1px)
+        `,
+                    backgroundSize: "48px 48px",
+                }}
+            />
+
+            {/* Background grid - Dark */}
+            <div
+                className="absolute inset-0 hidden dark:block"
+                style={{
+                    backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)
+        `,
                     backgroundSize: "48px 48px",
                 }}
             />
