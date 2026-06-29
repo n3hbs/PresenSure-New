@@ -11,6 +11,10 @@ Route::get('/students', function () {
     return Inertia::render('Students/Index');
 })->name('students.index');
 
+Route::get('/students/manual-registration', function () {
+    return Inertia::render('Students/ManualRegistration');
+})->name('students.manual-registration');
+
 
 Route::get('/signIn', function () {
     return Inertia::render('SignIn/Index');

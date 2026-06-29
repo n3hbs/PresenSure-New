@@ -14,8 +14,8 @@ class UserRoleSeeder extends Seeder
     public function run(): void
     {
         UserRole::create([
-            'user_id' => 'C-2022-0001',
-            'role_id' => 1,
+            'user_id' => '2000-0001',
+            'role_id' => 2,
             'assigned_at' => now(),
         ]);
     }

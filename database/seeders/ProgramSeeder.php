@@ -15,7 +15,8 @@ class ProgramSeeder extends Seeder
         Program::create([
             'department_id' => 1,
             'program_code' => 'BSIT',
-            'program_name' => 'Bachelor of Science in Information Technology'
+            'program_name' => 'Bachelor of Science in Information Technology',
+            'program_years' => 4
         ]);
     }
 }

@@ -14,8 +14,13 @@ class DepartmentSeeder extends Seeder
     public function run(): void
     {
         Department::create([
-            'department_code' => 'CCS',
-            'department_name' => 'College of Computer Studies',
+            'department_code' => 'CTE',
+            'department_name' => 'College of Teacher Education',
+        ]);
+
+        Department::create([
+            'department_code' => 'CBE',
+            'department_name' => 'College of Business Education',
         ]);
     }
 }

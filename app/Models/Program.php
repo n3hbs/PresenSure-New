@@ -12,7 +12,8 @@ class Program extends Model
     protected $fillable = [
         'department_id',
         'program_code',
-        'program_name'
+        'program_name',
+        'program_years'
     ];
 
     public function student()

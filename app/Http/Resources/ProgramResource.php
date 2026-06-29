@@ -18,6 +18,7 @@ class ProgramResource extends JsonResource
             'program_id' => $this->program_id,
             'program_code' => $this->program_code,
             'program_name' => $this->program_name,
+            'program_years' => $this->program_years,
 
             'department' => new DepartmentResource(
                 $this->whenLoaded('department')
