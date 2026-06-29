@@ -120,7 +120,7 @@ const Toast = ({ toast, onClose }) => {
                 role="status"
             >
                 <Icon
-                    className={`mt-0.5 h-5 w-5 flex-shrink-0 ${style.iconClass}`}
+                    className={`mt-0.5 h-5 w-5 shrink-0 ${style.iconClass}`}
                 />
                 <div className="min-w-0 flex-1">
                     <p className="text-sm font-bold">{toast.title}</p>
@@ -155,7 +155,7 @@ const DiscardModal = ({ open, onKeepEditing, onDiscard }) => {
                 aria-labelledby="discard-title"
             >
                 <div className="flex items-start gap-3">
-                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
                         <ExclamationTriangleIcon className="h-6 w-6" />
                     </div>
                     <div>

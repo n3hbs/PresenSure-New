@@ -172,7 +172,7 @@ export default function Sidebar({ collapsed = false, mobile = false, onClose }) 
                             onClick={handleLinkClick}
                             title={!showText ? label : undefined}
                         >
-                            <Icon className="h-5 w-5 flex-shrink-0" />
+                            <Icon className="h-5 w-5 shrink-0" />
                             {showText && <span>{label}</span>}
                         </Link>
                     ))}

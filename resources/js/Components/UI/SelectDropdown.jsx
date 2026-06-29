@@ -47,7 +47,7 @@ export default function SelectDropdown({
                     {selectedOption?.label || placeholder || "Select"}
                 </span>
                 <ChevronDownIcon
-                    className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform ${
+                    className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${
                         open ? "rotate-180" : ""
                     }`}
                 />

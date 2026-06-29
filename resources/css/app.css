@@ -5,3 +5,15 @@
 html {
     scroll-behavior: smooth;
 }
+
+.hide-password-reveal::-ms-reveal,
+.hide-password-reveal::-ms-clear {
+    display: none;
+}
+
+.hide-password-reveal::-webkit-credentials-auto-fill-button,
+.hide-password-reveal::-webkit-password-reveal-button {
+    display: none;
+    visibility: hidden;
+    pointer-events: none;
+}

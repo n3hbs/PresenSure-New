@@ -12,8 +12,8 @@ class SemesterRepository implements SemesterRepositoryInterface
 {
     public function getActiveSemester()
     {
-        return Semester::where('semester_start', '<=', now())
-            ->where('semester_end', '>=', now())
+        return Semester::whereDate('semester_start', '<=', now()->toDateString())
+            ->whereDate('semester_end', '>=', now()->toDateString())
             ->first();
     }
 }

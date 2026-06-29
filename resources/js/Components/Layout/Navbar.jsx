@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { router, usePage } from "@inertiajs/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     Bars3Icon,
     ChevronDownIcon,
@@ -7,6 +8,9 @@ import {
     LockClosedIcon,
     PowerIcon,
 } from "@heroicons/react/24/outline";
+
+import api from "@/Services/api";
+import { activeSemesterQueryKey } from "@/Services/queryKeys";
 
 const pageTitles = [
     { path: "/dashboard", title: "Dashboard" },
@@ -65,8 +69,33 @@ const getRole = (user) => {
     return "Member";
 };
 
+const getAuthHeaders = () => {
+    const token = sessionStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+const getSchoolYearLabel = (schoolYear) => {
+    if (!schoolYear) return "";
+
+    const start = new Date(schoolYear.school_year_start).getFullYear();
+    const end = new Date(schoolYear.school_year_end).getFullYear();
+
+    if (!start || !end) return "";
+
+    return `S.Y. ${start}-${end}`;
+};
+
+const getTermLabel = (semester) => {
+    if (!semester) return "No active semester";
+
+    return [semester.term, getSchoolYearLabel(semester.school_year)]
+        .filter(Boolean)
+        .join(" - ");
+};
+
 export default function TopNavbar({ onMenu }) {
     const { url, props } = usePage();
+    const queryClient = useQueryClient();
     const dropdownRef = useRef(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -80,6 +109,20 @@ export default function TopNavbar({ onMenu }) {
     const pageTitle =
         pageTitles.find((item) => url?.startsWith(item.path))?.title ||
         "PresenSure";
+
+    const { data: activeSemester, isLoading: semesterLoading } = useQuery({
+        queryKey: activeSemesterQueryKey,
+        queryFn: async () => {
+            const response = await api.get("/semester/active", {
+                headers: getAuthHeaders(),
+            });
+
+            return response.data?.data || null;
+        },
+        staleTime: Infinity,
+        gcTime: Infinity,
+        retry: 1,
+    });
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -99,6 +142,7 @@ export default function TopNavbar({ onMenu }) {
     const handleLogout = () => {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("user");
+        queryClient.clear();
         setDropdownOpen(false);
         router.visit("/signIn");
     };
@@ -128,7 +172,9 @@ export default function TopNavbar({ onMenu }) {
                         Current Term
                     </p>
                     <p className="text-sm font-medium text-gray-700">
-                        Semester status pending
+                        {semesterLoading
+                            ? "Loading semester..."
+                            : getTermLabel(activeSemester)}
                     </p>
                 </div>
 

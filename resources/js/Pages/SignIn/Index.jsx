@@ -148,7 +148,7 @@ export default function Login() {
                                             setPassword(e.target.value)
                                         }
                                         placeholder="••••••••"
-                                        className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 bg-gray-50/60 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition"
+                                        className="hide-password-reveal w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 bg-gray-50/60 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition"
                                     />
 
                                     {errors.password && (
