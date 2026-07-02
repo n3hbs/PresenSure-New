@@ -9,6 +9,21 @@ use Override;
 
 class StudentRepository implements StudentRepositoryInterface
 {
+    private function activeSemesterStudentQuery(int $semesterId)
+    {
+        return User::with([
+            'student.program.department',
+            'roleAssignment.role',
+            'userProfile',
+        ])
+            ->whereHas('student', function ($query) use ($semesterId) {
+                $query->where('semester_id', $semesterId);
+            })
+            ->whereHas('roleAssignment.role', function ($query) {
+                $query->where('role_name', 'student');
+            });
+    }
+    
     public function create(array $data)
     {
         return Student::create($data);
@@ -23,15 +38,14 @@ class StudentRepository implements StudentRepositoryInterface
 
     public function getStudentByActiveSemester(int $semesterId)
     {
-        $student = User::with('student.program.department','roleAssignment.role', 'userProfile')
-            ->whereHas('student', function ($query) use ($semesterId) {
-                $query->where('semester_id', $semesterId);
-            })
-            ->whereHas('roleAssignment.role', function ($query) {
-                $query->where('role_name', 'student');
-            })
+        return $this->activeSemesterStudentQuery($semesterId)
             ->get();
+    }
 
-        return $student;
+    public function getStudentDetails(string $user_id, int $semesterId)
+    {
+        return $this->activeSemesterStudentQuery($semesterId)
+            ->where('user_id', $user_id)
+            ->first();
     }
 }

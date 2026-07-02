@@ -13,14 +13,21 @@ use App\Services\SemesterService;
 Route::post('user/signin', [AuthController::class, 'signIn']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('student/registerStudent', [StudentController::class, 'create']);
+
+    Route::post('student/single-registration', [StudentController::class, 'create']);
     Route::get('student/getByActiveSemester', [StudentController::class, 'getStudentByActiveSemester']);
-    Route::get('departments', fn () => DepartmentResource::collection(
+    Route::get('student/{user_id}', [StudentController::class, 'getstudentDetails']);
+
+    Route::get('departments', fn() => DepartmentResource::collection(
         Department::orderBy('department_name')->get()
     ));
-    Route::get('programs', fn () => ProgramResource::collection(
+
+
+    Route::get('programs', fn() => ProgramResource::collection(
         Program::with('department')->orderBy('program_code')->get()
     ));
+
+
     Route::get('semester/active', function (SemesterService $semesterService) {
         $semester = $semesterService->getActiveSemester();
 

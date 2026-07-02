@@ -18,6 +18,7 @@ import DataTable from "@/Components/UI/DataTable";
 import SelectDropdown from "@/Components/UI/SelectDropdown";
 import api from "@/Services/api";
 import { activeStudentsQueryKey } from "@/Services/queryKeys";
+import NoImage from "@/assets/images/noImage.webp";
 
 const allOption = { label: "All", value: "" };
 const yearOrder = ["First Year", "Second Year", "Third Year", "Fourth Year"];
@@ -35,7 +36,7 @@ const actionLinks = [
     },
     {
         label: "Single Registration",
-        href: "/students/manual-registration",
+        href: "/students/single-registration",
         icon: UserPlusIcon,
     },
     {
@@ -272,13 +273,11 @@ export default function Students() {
                             className="h-full w-full object-cover"
                         />
                     ) : (
-                        student.fullName
-                            .split(" ")
-                            .filter(Boolean)
-                            .slice(0, 2)
-                            .map((part) => part[0])
-                            .join("")
-                            .toUpperCase() || "S"
+                        <img
+                            src={NoImage}
+                            alt={NoImage}
+                            className="h-full w-full object-cover"
+                        />
                     )}
                 </div>
             ),
@@ -332,7 +331,7 @@ export default function Students() {
                     type="button"
                     onClick={() =>
                         router.visit(
-                            `/students/student-details?id=${student.userId}`,
+                            `/students/student-details?user_id=${student.userId}`,
                         )
                     }
                     className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700"

@@ -78,4 +78,10 @@ class StudentService
         $semesterId = $this->semesterService->getActiveSemester();
         return $this->studentRepository->getStudentByActiveSemester($semesterId->semester_id);
     }
+
+    public function getStudentDetails(string $user_id)
+    {
+        $semesterId = $this->semesterService->getActiveSemester();
+        return $this->studentRepository->getStudentDetails($user_id,$semesterId->semester_id);
+    }
 }

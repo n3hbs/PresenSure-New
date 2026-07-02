@@ -9,28 +9,22 @@ use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ActiveSemesterStudentList extends JsonResource
+class StudentDetailsResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
             'user' => new UserResource($this),
-
             'student' => StudentResource::collection(
                 $this->whenLoaded('student')
             ),
-
             'role' => new RoleResource(
                 $this->whenLoaded('roleAssignment')?->role
             ),
             'profile' => new UserProfileResource(
                 $this->whenLoaded('userProfile')
             ),
+
         ];
     }
 }

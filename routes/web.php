@@ -7,14 +7,18 @@ Route::get('/', function () {
     return Inertia::render('LandingPage/Index');
 })->name('index');
 
+//students
 Route::get('/students', function () {
     return Inertia::render('Students/Index');
 })->name('students.index');
 
-Route::get('/students/manual-registration', function () {
-    return Inertia::render('Students/ManualRegistration');
-})->name('students.manual-registration');
+Route::get('/students/single-registration', function () {
+    return Inertia::render('Students/SingleRegistration');
+})->name('students.single-registration');
 
+Route::get('/students/student-details', function () {
+    return Inertia::render('Students/StudentDetails');
+})->name('student.student-details');
 
 Route::get('/signIn', function () {
     return Inertia::render('SignIn/Index');
