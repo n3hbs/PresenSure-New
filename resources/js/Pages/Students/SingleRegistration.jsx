@@ -4,8 +4,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 import MainLayout from "@/Components/Layout/MainLayout";
-import SingleRegistrationForm from "@/Components/Students/SingleRegistrationForm";
-import StudentRegistrationToast from "@/Components/Students/StudentRegistrationToast";
+import SingleRegistrationForm from "@/Components/Students/Register/SingleRegistrationForm";
+import StudentRegistrationReview from "@/Components/Students/Register/StudentRegistrationReview";
+import StudentRegistrationStepper from "@/Components/Students/Register/StudentRegistrationStepper";
+import StudentRegistrationToast from "@/Components/Students/Register/StudentRegistrationToast";
+import StudentTypeStep from "@/Components/Students/Register/StudentTypeStep";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import DiscardRegistrationModal from "@/Components/UI/DiscardRegistrationModal";
 import api from "@/Services/api";
@@ -58,6 +61,10 @@ const makeStudentId = (value) => {
 export default function SingleRegistration() {
     const queryClient = useQueryClient();
     const allowNavigationRef = useRef(false);
+    const [currentStep, setCurrentStep] = useState(1);
+    const [registrationType, setRegistrationType] = useState("");
+    const [existingUserId, setExistingUserId] = useState("");
+    const [checkingStudent, setCheckingStudent] = useState(false);
     const [form, setForm] = useState(emptyForm);
     const [image, setImage] = useState(null);
     const [imagePreview, setImagePreview] = useState("");
@@ -73,9 +80,11 @@ export default function SingleRegistration() {
 
     const isDirty = useMemo(
         () =>
+            currentStep > 1 ||
+            Boolean(registrationType) ||
             Object.values(form).some((value) => String(value || "").trim()) ||
             Boolean(image),
-        [form, image],
+        [currentStep, form, image, registrationType],
     );
 
     const getAuthHeaders = () => {
@@ -219,6 +228,14 @@ export default function SingleRegistration() {
         [departments],
     );
 
+    const selectedDepartment = useMemo(
+        () =>
+            departmentOptions.find(
+                (department) => department.value === String(form.department_id),
+            ),
+        [departmentOptions, form.department_id],
+    );
+
     const filteredPrograms = useMemo(
         () =>
             programs.filter(
@@ -247,6 +264,14 @@ export default function SingleRegistration() {
         [form.program_id, programs],
     );
 
+    const selectedProgramOption = useMemo(
+        () =>
+            programOptions.find(
+                (program) => program.value === String(form.program_id),
+            ),
+        [form.program_id, programOptions],
+    );
+
     const yearOptions = useMemo(() => {
         const totalYears = Math.min(
             Number(selectedProgram?.program_years) || 4,
@@ -259,8 +284,94 @@ export default function SingleRegistration() {
         }));
     }, [selectedProgram]);
 
+    const resetRegistration = () => {
+        setCurrentStep(1);
+        setRegistrationType("");
+        setExistingUserId("");
+        setForm(emptyForm);
+        setImage(null);
+        setFieldErrors({});
+    };
+
+    const handleExistingUserIdChange = (event) => {
+        setExistingUserId(makeStudentId(event.target.value));
+    };
+
+    const selectNewStudent = () => {
+        setRegistrationType("new");
+        setForm(emptyForm);
+        setImage(null);
+        setFieldErrors({});
+        setCurrentStep(2);
+    };
+
+    const checkExistingStudent = async () => {
+        if (!existingUserId) {
+            showToast(
+                "warning",
+                "Student number required",
+                "Enter a student number before checking.",
+            );
+            return;
+        }
+
+        setCheckingStudent(true);
+
+        try {
+            const response = await api.get(`/student/check-user/${existingUserId}`, {
+                headers: getAuthHeaders(),
+            });
+            const result = response.data;
+
+            if (!result.exists) {
+                showToast(
+                    "error",
+                    "Student not found",
+                    result.message || "No account found for that student number.",
+                );
+                return;
+            }
+
+            if (result.already_enrolled) {
+                showToast(
+                    "warning",
+                    "Already enrolled",
+                    result.message ||
+                        "This student is already enrolled in the active semester.",
+                );
+                return;
+            }
+
+            setRegistrationType("existing");
+            setImage(null);
+            setFieldErrors({});
+            setForm({
+                ...emptyForm,
+                user_id: result.data?.user_id || existingUserId,
+                first_name: result.data?.first_name || "",
+                middle_initial: result.data?.middle_initial || "",
+                last_name: result.data?.last_name || "",
+                suffix: result.data?.suffix || "",
+                sex: result.data?.sex || "",
+            });
+            setCurrentStep(2);
+            showToast("success", "Student found", result.message);
+        } catch (requestError) {
+            showToast(
+                "error",
+                "Unable to check student",
+                requestError.response?.data?.message ||
+                    "Please try checking the student number again.",
+            );
+        } finally {
+            setCheckingStudent(false);
+        }
+    };
+
     const handleChange = (event) => {
         const { name, value } = event.target;
+
+        if (registrationType === "existing") return;
 
         setFieldErrors((current) => ({ ...current, [name]: null }));
 
@@ -316,16 +427,19 @@ export default function SingleRegistration() {
     };
 
     const validate = () => {
-        const requiredFields = [
-            "user_id",
-            "first_name",
-            "last_name",
-            "sex",
-            "department_id",
-            "program_id",
-            "year",
-            "block",
-        ];
+        const requiredFields =
+            registrationType === "existing"
+                ? ["user_id", "department_id", "program_id", "year", "block"]
+                : [
+                      "user_id",
+                      "first_name",
+                      "last_name",
+                      "sex",
+                      "department_id",
+                      "program_id",
+                      "year",
+                      "block",
+                  ];
         const nextErrors = {};
 
         requiredFields.forEach((field) => {
@@ -338,10 +452,24 @@ export default function SingleRegistration() {
         return Object.keys(nextErrors).length === 0;
     };
 
-    const handleSubmit = async (event) => {
+    const continueToReview = (event) => {
         event.preventDefault();
 
         if (!validate()) {
+            showToast(
+                "warning",
+                "Missing required fields",
+                "Please fill in the highlighted fields before reviewing.",
+            );
+            return;
+        }
+
+        setCurrentStep(3);
+    };
+
+    const submitRegistration = async () => {
+        if (!validate()) {
+            setCurrentStep(2);
             showToast(
                 "warning",
                 "Missing required fields",
@@ -353,24 +481,28 @@ export default function SingleRegistration() {
         setSubmitting(true);
 
         const payload = new FormData();
-        Object.entries(form).forEach(([key, value]) => {
-            if (key !== "department_id") {
-                payload.append(key, value);
-            }
+        payload.append("registration_type", registrationType);
+
+        const payloadFields =
+            registrationType === "existing"
+                ? ["user_id", "program_id", "year", "block"]
+                : Object.keys(form).filter((key) => key !== "department_id");
+
+        payloadFields.forEach((key) => {
+            payload.append(key, form[key] || "");
         });
 
-        if (image) {
+        if (registrationType === "new" && image) {
             payload.append("image", image);
         }
 
         try {
-            const token = sessionStorage.getItem("token");
             const response = await api.post(
                 "/student/single-registration",
                 payload,
                 {
                     headers: {
-                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                        ...getAuthHeaders(),
                         "Content-Type": "multipart/form-data",
                     },
                 },
@@ -381,15 +513,14 @@ export default function SingleRegistration() {
                 "Registration complete",
                 response.data?.message || "Student registered successfully.",
             );
-            setForm(emptyForm);
-            setImage(null);
-            setFieldErrors({});
+            resetRegistration();
             queryClient.invalidateQueries({
                 queryKey: activeStudentsQueryKey,
             });
         } catch (requestError) {
             if (requestError.response?.status === 422) {
                 setFieldErrors(requestError.response.data.errors || {});
+                setCurrentStep(2);
                 showToast(
                     "warning",
                     "Please check the form",
@@ -465,25 +596,53 @@ export default function SingleRegistration() {
                     </button>
                 </div>
 
-                <SingleRegistrationForm
-                    form={form}
-                    image={image}
-                    imagePreview={imagePreview}
-                    fieldErrors={fieldErrors}
-                    sexOptions={sexOptions}
-                    departmentOptions={departmentOptions}
-                    programOptions={programOptions}
-                    yearOptions={yearOptions}
-                    blockOptions={blockOptions}
-                    loadingOptions={loadingOptions}
-                    submitting={submitting}
-                    onSubmit={handleSubmit}
-                    onTextChange={handleChange}
-                    onSelectChange={updateSelect}
-                    onImageChange={handleImageChange}
-                    onRemoveImage={() => setImage(null)}
-                    onCancel={() => requestPage("/students")}
-                />
+                <StudentRegistrationStepper currentStep={currentStep} />
+
+                {currentStep === 1 && (
+                    <StudentTypeStep
+                        existingUserId={existingUserId}
+                        checkingStudent={checkingStudent}
+                        onExistingUserIdChange={handleExistingUserIdChange}
+                        onSelectNew={selectNewStudent}
+                        onCheckExisting={checkExistingStudent}
+                    />
+                )}
+
+                {currentStep === 2 && (
+                    <SingleRegistrationForm
+                        form={form}
+                        image={image}
+                        imagePreview={imagePreview}
+                        fieldErrors={fieldErrors}
+                        sexOptions={sexOptions}
+                        departmentOptions={departmentOptions}
+                        programOptions={programOptions}
+                        yearOptions={yearOptions}
+                        blockOptions={blockOptions}
+                        loadingOptions={loadingOptions}
+                        registrationType={registrationType}
+                        onSubmit={continueToReview}
+                        onTextChange={handleChange}
+                        onSelectChange={updateSelect}
+                        onImageChange={handleImageChange}
+                        onRemoveImage={() => setImage(null)}
+                        onBack={() => setCurrentStep(1)}
+                        onCancel={() => requestPage("/students")}
+                    />
+                )}
+
+                {currentStep === 3 && (
+                    <StudentRegistrationReview
+                        form={form}
+                        imagePreview={imagePreview}
+                        registrationType={registrationType}
+                        selectedDepartment={selectedDepartment}
+                        selectedProgram={selectedProgramOption}
+                        submitting={submitting}
+                        onBack={() => setCurrentStep(2)}
+                        onSubmit={submitRegistration}
+                    />
+                )}
             </div>
         </>
     );

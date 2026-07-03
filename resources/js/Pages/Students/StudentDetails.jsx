@@ -1,15 +1,12 @@
 import { Link } from "@inertiajs/react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 
 import MainLayout from "@/Components/Layout/MainLayout";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import Button from "@/Components/UI/Button";
-import StudentDetailsEmptyState from "@/Components/Students/Details/StudentDetailsEmptyState";
-import StudentDetailsHeader from "@/Components/Students/Details/StudentDetailsHeader";
+import StudentDetailsContent from "@/Components/Students/Details/StudentDetailsContent";
 import StudentDetailsSkeleton from "@/Components/Students/Details/StudentDetailsSkeleton";
-import StudentEnrolledCourses from "@/Components/Students/Details/StudentEnrolledCourses";
-import StudentInformation from "@/Components/Students/Details/StudentInformation";
 import api from "@/Services/api";
 
 export default function StudentDetails() {
@@ -81,18 +78,20 @@ export default function StudentDetails() {
             {isLoading ? (
                 <StudentDetailsSkeleton />
             ) : !data ? (
-                <StudentDetailsEmptyState />
+                <section className="rounded-xl bg-white p-8 text-center shadow-sm shadow-blue-950/5">
+                    <UserCircleIcon className="mx-auto h-12 w-12 text-gray-300" />
+                    <p className="mt-3 text-sm font-semibold text-gray-700">
+                        Student not found.
+                    </p>
+                </section>
             ) : (
-                <>
-                    <StudentDetailsHeader
-                        user={user}
-                        student={student}
-                        role={role}
-                        profile={profile}
-                    />
-                    <StudentInformation user={user} student={student} />
-                    <StudentEnrolledCourses courses={courses} />
-                </>
+                <StudentDetailsContent
+                    user={user}
+                    student={student}
+                    role={role}
+                    profile={profile}
+                    courses={courses}
+                />
             )}
         </div>
     );

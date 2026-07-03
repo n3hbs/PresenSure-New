@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('student/single-registration', [StudentController::class, 'create']);
     Route::get('student/getByActiveSemester', [StudentController::class, 'getStudentByActiveSemester']);
     Route::get('student/{user_id}', [StudentController::class, 'getstudentDetails']);
+    Route::get('student/check-user/{user_id}', [StudentController::class, 'checkStudent']);
 
     Route::get('departments', fn() => DepartmentResource::collection(
         Department::orderBy('department_name')->get()

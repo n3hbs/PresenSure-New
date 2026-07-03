@@ -25,7 +25,7 @@ class StoreStudentRequest extends FormRequest
     {
         return [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'user_id' => 'required|string',
+            'user_id' => 'required|string|unique:users,user_id',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:5',

@@ -2,8 +2,8 @@ import { UserPlusIcon } from "@heroicons/react/24/outline";
 
 import Button from "@/Components/UI/Button";
 import SelectDropdown from "@/Components/UI/SelectDropdown";
-import StudentProfileImageUpload from "@/Components/Students/StudentProfileImageUpload";
-import StudentRegistrationField from "@/Components/Students/StudentRegistrationField";
+import StudentProfileImageUpload from "@/Components/Students/Register/StudentProfileImageUpload";
+import StudentRegistrationField from "@/Components/Students/Register/StudentRegistrationField";
 
 export default function SingleRegistrationForm({
     form,
@@ -16,14 +16,16 @@ export default function SingleRegistrationForm({
     yearOptions,
     blockOptions,
     loadingOptions,
-    submitting,
+    registrationType = "new",
     onSubmit,
     onTextChange,
     onSelectChange,
     onImageChange,
     onRemoveImage,
     onCancel,
+    onBack,
 }) {
+    const existingStudent = registrationType === "existing";
     const renderError = (name) =>
         fieldErrors[name]?.[0] ? (
             <p className="mt-1 text-xs font-medium text-red-500">
@@ -34,7 +36,11 @@ export default function SingleRegistrationForm({
     return (
         <form
             onSubmit={onSubmit}
-            className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]"
+            className={
+                existingStudent
+                    ? "grid gap-6"
+                    : "grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]"
+            }
         >
             <section className="space-y-4 rounded-xl bg-white p-5 shadow-sm shadow-blue-950/5">
                 <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
@@ -43,10 +49,12 @@ export default function SingleRegistrationForm({
                     </div>
                     <div>
                         <h1 className="text-lg font-bold text-gray-900">
-                            Single Student Registration
+                            Student Registration
                         </h1>
                         <p className="text-sm text-gray-400">
-                            Register one student for the active semester.
+                            {existingStudent
+                                ? "Confirm the existing account and add academic details."
+                                : "Register one student for the active semester."}
                         </p>
                     </div>
                 </div>
@@ -65,20 +73,31 @@ export default function SingleRegistrationForm({
                                 required
                                 maxLength={11}
                                 placeholder="C-0000-0000"
+                                disabled={existingStudent}
                             />
                             {renderError("user_id")}
                         </div>
                         <div>
-                            <SelectDropdown
-                                label="Sex"
-                                options={sexOptions}
-                                value={form.sex}
-                                onChange={(value) =>
-                                    onSelectChange("sex", value)
-                                }
-                                placeholder="Select sex"
-                                buttonClassName="bg-white"
-                            />
+                            {existingStudent ? (
+                                <StudentRegistrationField
+                                    label="Sex"
+                                    name="sex"
+                                    value={form.sex}
+                                    onChange={onTextChange}
+                                    disabled
+                                />
+                            ) : (
+                                <SelectDropdown
+                                    label="Sex"
+                                    options={sexOptions}
+                                    value={form.sex}
+                                    onChange={(value) =>
+                                        onSelectChange("sex", value)
+                                    }
+                                    placeholder="Select sex"
+                                    buttonClassName="bg-white"
+                                />
+                            )}
                             {renderError("sex")}
                         </div>
                         <div>
@@ -87,7 +106,8 @@ export default function SingleRegistrationForm({
                                 name="first_name"
                                 value={form.first_name}
                                 onChange={onTextChange}
-                                required
+                                required={!existingStudent}
+                                disabled={existingStudent}
                             />
                             {renderError("first_name")}
                         </div>
@@ -97,7 +117,8 @@ export default function SingleRegistrationForm({
                                 name="last_name"
                                 value={form.last_name}
                                 onChange={onTextChange}
-                                required
+                                required={!existingStudent}
+                                disabled={existingStudent}
                             />
                             {renderError("last_name")}
                         </div>
@@ -108,6 +129,7 @@ export default function SingleRegistrationForm({
                                 value={form.middle_initial}
                                 onChange={onTextChange}
                                 maxLength={5}
+                                disabled={existingStudent}
                             />
                             {renderError("middle_initial")}
                         </div>
@@ -118,6 +140,7 @@ export default function SingleRegistrationForm({
                                 value={form.suffix}
                                 onChange={onTextChange}
                                 maxLength={10}
+                                disabled={existingStudent}
                             />
                             {renderError("suffix")}
                         </div>
@@ -189,22 +212,25 @@ export default function SingleRegistrationForm({
                 </div>
 
                 <div className="flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
+                    <Button type="button" variant="outline" onClick={onBack}>
+                        Back
+                    </Button>
                     <Button type="button" variant="outline" onClick={onCancel}>
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={submitting}>
-                        {submitting ? "Registering..." : "Register Student"}
-                    </Button>
+                    <Button type="submit">Review</Button>
                 </div>
             </section>
 
-            <StudentProfileImageUpload
-                image={image}
-                imagePreview={imagePreview}
-                error={renderError("image")}
-                onImageChange={onImageChange}
-                onRemoveImage={onRemoveImage}
-            />
+            {!existingStudent && (
+                <StudentProfileImageUpload
+                    image={image}
+                    imagePreview={imagePreview}
+                    error={renderError("image")}
+                    onImageChange={onImageChange}
+                    onRemoveImage={onRemoveImage}
+                />
+            )}
         </form>
     );
 }

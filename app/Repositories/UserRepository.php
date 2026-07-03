@@ -12,8 +12,10 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::create($data);
     }
-    public function findByUserId(string $userId)
+    public function findByUserId(string $user_id)
     {
-        return User::where('user_id',$userId)->first();
+        return User::with('userProfile')
+            ->where('user_id', $user_id)
+            ->first();
     }
 }

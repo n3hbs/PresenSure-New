@@ -6,6 +6,7 @@ export default function StudentRegistrationField({
     required = false,
     maxLength,
     placeholder,
+    disabled = false,
 }) {
     return (
         <div>
@@ -20,7 +21,12 @@ export default function StudentRegistrationField({
                 onChange={onChange}
                 maxLength={maxLength}
                 placeholder={placeholder}
-                className="h-11 w-full rounded-xl bg-white px-4 text-sm font-medium text-gray-700 shadow-sm shadow-blue-950/5 outline-none transition placeholder:text-gray-400 focus:ring-2 focus:ring-blue-100"
+                disabled={disabled}
+                className={`h-11 w-full rounded-xl px-4 text-sm font-medium shadow-sm shadow-blue-950/5 outline-none transition placeholder:text-gray-400 focus:ring-2 focus:ring-blue-100 ${
+                    disabled
+                        ? "bg-gray-100 text-gray-500"
+                        : "bg-white text-gray-700"
+                }`}
                 autoComplete="off"
             />
         </div>

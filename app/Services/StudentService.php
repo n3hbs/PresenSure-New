@@ -2,11 +2,9 @@
 
 namespace App\Services;
 
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\RoleRepository;
-use App\Repositories\SemesterRepository;
 use App\Repositories\StudentRepository;
-use App\Repositories\UserProfileRepository;
-use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +16,8 @@ class StudentService
         private SemesterService $semesterService,
         private StudentRepository $studentRepository,
         private RoleRepository $roleRepository,
-        private RoleService $roleService
+        private RoleService $roleService,
+        private UserRepositoryInterface $userRepository
     ) {}
 
     public function registerStudent(array $data)
@@ -82,6 +81,41 @@ class StudentService
     public function getStudentDetails(string $user_id)
     {
         $semesterId = $this->semesterService->getActiveSemester();
-        return $this->studentRepository->getStudentDetails($user_id,$semesterId->semester_id);
+        return $this->studentRepository->getStudentDetails($user_id, $semesterId->semester_id);
+    }
+
+    public function checkStudent(string $user_id)
+    {
+        $semester = $this->semesterService->getActiveSemester();
+        if (!$semester) {
+            throw new Exception('No active semester found.');
+        }
+
+        $user = $this->userRepository->findByUserId($user_id);
+
+        if (!$user) {
+            return [
+                'exists' => false,
+                'already_enrolled' => false,
+                'message' => 'Student account not found.',
+                'user' => null,
+            ];
+        }
+
+        $alreadyEnrolled = $this->studentRepository->isEnrolled(
+            $user_id,
+            $semester->semester_id
+        );
+
+        return [
+            'exists' => true,
+            'already_enrolled' => $alreadyEnrolled,
+            'message' => $alreadyEnrolled
+                ? 'Student is already enrolled in the active semester.'
+                : 'Student account found.',
+            'user' => $user,
+        ];
     }
 }
+
+
