@@ -26,6 +26,7 @@ const mainLinks = [
     { label: "Department", href: "/departments", icon: BuildingOffice2Icon },
     { label: "Programs", href: "/programs", icon: AcademicCapIcon },
     { label: "Courses", href: "/courses", icon: BookOpenIcon },
+    { label: "Facilities", href: "/facilities", icon: ClipboardDocumentListIcon },
     { label: "Schedules", href: "/schedules", icon: ClipboardDocumentListIcon },
     { label: "My Schedules", href: "/my-schedules", icon: ClockIcon },
     { label: "Records", href: "/records", icon: DocumentTextIcon },

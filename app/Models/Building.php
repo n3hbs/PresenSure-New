@@ -6,20 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Course extends Model
+class Building extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $primaryKey = 'course_id';
-    public $incrementing = true;
-    protected $keyType = 'int';
+    protected $primaryKey = 'building_id';
+
     protected $fillable = [
-        'subject_code',
+        'code',
         'name',
     ];
 
-    public function courseBlocks()
+    public function rooms()
     {
-        return $this->hasMany(CourseBlock::class, 'course_id', 'course_id');
+        return $this->hasMany(Room::class, 'building_id', 'building_id');
     }
 }
