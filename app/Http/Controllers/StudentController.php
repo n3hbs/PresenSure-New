@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Student\StoreStudentRequest;
+use App\Http\Requests\Student\CreateStudentRequest;
 use App\Services\StudentService;
 use App\Http\Resources\Student\ActiveSemesterStudentListResource;
 use App\Http\Resources\Student\CheckStudentResource;
@@ -14,13 +14,12 @@ class StudentController extends Controller
         protected StudentService $studentService,
     ) {}
 
-    public function create(StoreStudentRequest $request)
+    public function create(CreateStudentRequest $request)
     {
-        return response()->json(
-            $this->studentService->registerStudent(
-                $request->validated()
-            )
-        );
+        $this->studentService->registerStudent($request->validated());
+        return response()->json([
+            'message' => 'Student successfully registered.',
+        ], 201);
     }
 
     public function getStudentByActiveSemester()

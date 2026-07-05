@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\Student;
 use App\Models\User;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
-use Override;
 
 class StudentRepository implements StudentRepositoryInterface
 {

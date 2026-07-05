@@ -9,6 +9,8 @@ class Instructor extends Model
 {
     use HasFactory;
     protected $primaryKey = 'instructor_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
     protected $fillable = [
         'user_id',
         'department_id',

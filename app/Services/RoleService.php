@@ -15,6 +15,6 @@ class RoleService
     }
 
     public function assignUserRole(string $user_id, int $role_id){
-        return $this->assignUserRole($user_id, $role_id);
+        return $this->roleRepository->assignUserRole($user_id, $role_id);
     }
 }

@@ -10,7 +10,10 @@ import {
 } from "@heroicons/react/24/outline";
 
 import api from "@/Services/api";
-import { activeSemesterQueryKey } from "@/Services/queryKeys";
+import {
+    activeSemesterQueryKey,
+    activeSemesterStorageKey,
+} from "@/Services/queryKeys";
 
 const pageTitles = [
     { path: "/dashboard", title: "Dashboard" },
@@ -74,6 +77,20 @@ const getAuthHeaders = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+const getStoredActiveSemester = () => {
+    try {
+        const semester = sessionStorage.getItem(activeSemesterStorageKey);
+        return semester ? JSON.parse(semester) : undefined;
+    } catch {
+        sessionStorage.removeItem(activeSemesterStorageKey);
+        return undefined;
+    }
+};
+
+const storeActiveSemester = (semester) => {
+    sessionStorage.setItem(activeSemesterStorageKey, JSON.stringify(semester));
+};
+
 const getSchoolYearLabel = (schoolYear) => {
     if (!schoolYear) return "";
 
@@ -113,12 +130,22 @@ export default function TopNavbar({ onMenu }) {
     const { data: activeSemester, isLoading: semesterLoading } = useQuery({
         queryKey: activeSemesterQueryKey,
         queryFn: async () => {
+            const storedSemester = getStoredActiveSemester();
+
+            if (storedSemester !== undefined) {
+                return storedSemester;
+            }
+
             const response = await api.get("/semester/active", {
                 headers: getAuthHeaders(),
             });
 
-            return response.data?.data || null;
+            const semester = response.data?.data || null;
+            storeActiveSemester(semester);
+
+            return semester;
         },
+        initialData: getStoredActiveSemester,
         staleTime: Infinity,
         gcTime: Infinity,
         retry: 1,
@@ -142,6 +169,7 @@ export default function TopNavbar({ onMenu }) {
     const handleLogout = () => {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("user");
+        sessionStorage.removeItem(activeSemesterStorageKey);
         queryClient.clear();
         setDropdownOpen(false);
         router.visit("/signIn");

@@ -65,10 +65,6 @@ class StudentService
 
             //assign user role
             $this->roleRepository->assignUserRole($data['user_id'], $role_id);
-
-            return [
-                'message' => "Student Successfully Registered"
-            ];
         });
     }
 
@@ -117,5 +113,3 @@ class StudentService
         ];
     }
 }
-
-

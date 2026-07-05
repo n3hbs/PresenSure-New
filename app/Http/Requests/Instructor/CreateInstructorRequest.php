@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Student;
+namespace App\Http\Requests\Instructor;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
-class StoreStudentRequest extends FormRequest
+class CreateInstructorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,9 +30,7 @@ class StoreStudentRequest extends FormRequest
             'middle_initial' => 'nullable|string|max:5',
             'suffix' => 'nullable|string|max:10',
             'sex' => 'required|in:male,female',
-            'program_id' => 'required',
-            'year' => 'required|string|max:50',
-            'block' => 'required|string|max:50',
+            'department_id' => 'required',
         ];
     }
 }

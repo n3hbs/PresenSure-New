@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\StudentController;
 use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\ProgramResource;
@@ -18,6 +19,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/getByActiveSemester', [StudentController::class, 'getStudentByActiveSemester']);
     Route::get('student/{user_id}', [StudentController::class, 'getstudentDetails']);
     Route::get('student/check-user/{user_id}', [StudentController::class, 'checkStudent']);
+
+    Route::post('instructor/single-registration', [InstructorController::class, 'create']);
 
     Route::get('departments', fn() => DepartmentResource::collection(
         Department::orderBy('department_name')->get()
