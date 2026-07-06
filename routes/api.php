@@ -6,6 +6,7 @@ use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\ProgramResource;
@@ -30,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //course
     Route::post('course', [CourseController::class, 'create']);
+
+    //schedule
+    Route::post('schedule', [ScheduleController::class, 'create']);
 
 
     //building

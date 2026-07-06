@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories\Interfaces;
 
-interface CourseRepositoryInterface
+interface ScheduleRepositoryInterface
 {
     public function create(array $data);
-
-    public function createCourseBlock(array $data);
 }

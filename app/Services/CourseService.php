@@ -16,4 +16,13 @@ class CourseService
             'name' => $data['name']
         ]);
     }
+
+    public function createCourseBlock(array $data)
+    {
+        return $this->courseRepository->createCourseBlock([
+            'course_id' => $data['course_id'],
+            'semester_id' => $data['semester_id'],
+            'block_code' => $data['block_code'],
+        ]);
+    }
 }

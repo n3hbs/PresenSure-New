@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const appUrl = import.meta.env.VITE_APP_URL?.replace(/\/$/, "") || "";
+
 const api = axios.create({
-    baseURL: "http://192.168.1.12:8000/api",
+    baseURL: `${appUrl}/api`,
     headers: {
         Accept: "application/json",
     },
