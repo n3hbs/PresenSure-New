@@ -172,7 +172,7 @@ export default function TopNavbar({ onMenu }) {
         sessionStorage.removeItem(activeSemesterStorageKey);
         queryClient.clear();
         setDropdownOpen(false);
-        router.visit("/signIn");
+        router.visit("/signin");
     };
 
     return (

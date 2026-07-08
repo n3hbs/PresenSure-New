@@ -49,7 +49,7 @@ export default function Navbar() {
                         ))}
                     </ul>
 
-                    <Link href="/signIn">
+                    <Link href="/signin">
                         <Button size="sm">Sign In</Button>
                     </Link>
 
@@ -79,7 +79,7 @@ export default function Navbar() {
                         </a>
                     ))}
                     <div className="flex gap-3 pt-2">
-                        <a href="/login" className="flex-1">
+                        <a href="/signin" className="flex-1">
                             <Button
                                 variant="outline"
                                 size="sm"

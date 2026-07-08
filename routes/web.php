@@ -8,9 +8,12 @@ Route::get('/', function () {
 })->name('index');
 
 
-Route::get('/signIn', function () {
+Route::redirect('/signIn', '/signin');
+Route::redirect('/login', '/signin');
+
+Route::get('/signin', function () {
     return Inertia::render('SignIn/Index');
-})->name('SignIn.index');
+})->name('signin.index');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard/Index');
