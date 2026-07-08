@@ -5,7 +5,7 @@ import { IdCard, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Logo from "@/assets/images/MainLogo.webp";
 import Button from "@/Components/UI/Button";
 
-import api from "@/services/api";
+import api from "@/Services/api";
 import { activeSemesterStorageKey } from "@/Services/queryKeys";
 
 export default function Login() {
