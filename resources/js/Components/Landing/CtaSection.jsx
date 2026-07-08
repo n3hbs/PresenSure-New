@@ -13,12 +13,12 @@ export default function CtaSection() {
                     free.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
-                    <a href="/register">
+                    <a href="/signin">
                         <Button size="lg">
                             Start for Free <ArrowRight size={18} />
                         </Button>
                     </a>
-                    <a href="/demo">
+                    <a href="#how-it-works">
                         <Button size="lg" variant="outline">
                             Book a Demo
                         </Button>

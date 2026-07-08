@@ -88,7 +88,7 @@ export default function Navbar() {
                                 Log in
                             </Button>
                         </a>
-                        <a href="/register" className="flex-1">
+                        <a href="/signin" className="flex-1">
                             <Button size="sm" className="w-full">
                                 Get Started
                             </Button>
