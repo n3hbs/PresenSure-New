@@ -4,10 +4,10 @@ WORKDIR /var/www/html
 
 COPY . .
 
-# Install Node.js and npm
-RUN apt-get update && apt-get install -y nodejs npm
+# Install Node.js and npm for Vite build
+RUN apk add --no-cache nodejs npm
 
-# Install PHP dependencies
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
 # Build React/Inertia/Vite assets
