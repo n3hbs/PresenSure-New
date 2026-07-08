@@ -1,15 +1,23 @@
+FROM node:22-alpine AS assets
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm ci
+RUN npm run build
+
 FROM richarvey/nginx-php-fpm:latest
 
 WORKDIR /var/www/html
 
-COPY . .
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV WEBROOT=/var/www/html/public
 
-RUN apk add --no-cache nodejs npm
+COPY . .
+COPY --from=assets /app/public/build ./public/build
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-RUN npm ci
-RUN npm run build
-RUN rm -rf node_modules
 
 RUN php artisan view:cache
 
