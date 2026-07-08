@@ -14,13 +14,15 @@ WORKDIR /var/www/html
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV WEBROOT=/var/www/html/public
 
+RUN set -eux; \
+    for file in /etc/nginx/conf.d/*.conf /etc/nginx/sites-available/* /etc/nginx/sites-enabled/*; do \
+        [ -f "$file" ] || continue; \
+        sed -i 's#try_files $uri $uri/ =404;#try_files $uri $uri/ /index.php?$query_string;#g' "$file"; \
+        sed -i 's#try_files $uri =404;#try_files $uri /index.php?$query_string;#g' "$file"; \
+    done
+
 COPY . .
 COPY --from=assets /app/public/build ./public/build
-COPY docker/nginx/default.conf /tmp/nginx-default.conf
-
-RUN if [ -d /etc/nginx/sites-available ]; then cp /tmp/nginx-default.conf /etc/nginx/sites-available/default.conf; fi && \
-    if [ -d /etc/nginx/sites-enabled ]; then cp /tmp/nginx-default.conf /etc/nginx/sites-enabled/default.conf; fi && \
-    if [ -d /etc/nginx/conf.d ]; then cp /tmp/nginx-default.conf /etc/nginx/conf.d/default.conf; fi
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
