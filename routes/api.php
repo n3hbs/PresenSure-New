@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StudentController;
@@ -34,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //schedule
     Route::post('schedule', [ScheduleController::class, 'create']);
+
+    //period
+    Route::post('period', [PeriodController::class, 'create']);
 
 
     //building
