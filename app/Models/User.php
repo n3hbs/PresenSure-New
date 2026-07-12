@@ -40,4 +40,14 @@ class User extends Authenticatable
     public function roleAssignment(){
         return $this->hasOne(UserRole::class, 'user_id', 'user_id');
     }
+
+    public function userCourseBlocks()
+    {
+        return $this->hasMany(UserCourseBlock::class, 'user_id', 'user_id');
+    }
+
+    public function bleDetections()
+    {
+        return $this->hasMany(BleDetection::class, 'user_id', 'user_id');
+    }
 }

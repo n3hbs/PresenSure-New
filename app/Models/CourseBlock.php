@@ -32,4 +32,9 @@ class CourseBlock extends Model
     {
         return $this->hasMany(Schedule::class, 'course_block_id', 'course_block_id');
     }
+
+    public function userCourseBlocks()
+    {
+        return $this->hasMany(UserCourseBlock::class, 'course_block_id', 'course_block_id');
+    }
 }

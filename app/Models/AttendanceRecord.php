@@ -41,4 +41,9 @@ class AttendanceRecord extends Model
     {
         return $this->belongsTo(User::class, 'student_id', 'user_id');
     }
+
+    public function bleDetections()
+    {
+        return $this->hasMany(BleDetection::class, 'attendance_record_id', 'attendance_record_id');
+    }
 }
