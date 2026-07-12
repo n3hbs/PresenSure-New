@@ -31,6 +31,11 @@ class Schedule extends Model
         return $this->belongsTo(Semester::class, 'semester_id', 'semester_id');
     }
 
+    public function room()
+    {
+        return $this->belongsTo(Room::class, 'room_id', 'room_id');
+    }
+
     public function scheduleDays()
     {
         return $this->hasMany(ScheduleDay::class, 'schedule_id', 'schedule_id');

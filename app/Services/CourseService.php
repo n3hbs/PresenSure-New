@@ -25,4 +25,29 @@ class CourseService
             'block_code' => $data['block_code'],
         ]);
     }
+
+    public function assignUserToCourseBlock(array $data)
+    {
+        return $this->courseRepository->assignUserToCourseBlock([
+            'user_id' => $data['user_id'],
+            'course_block_id' => $data['course_block_id'],
+            'assigned_at' => $data['assigned_at'] ?? now(),
+        ]);
+    }
+
+    public function assignUsersToCourseBlock(array $data): void
+    {
+        foreach (array_unique($data['user_ids']) as $userId) {
+            $this->assignUserToCourseBlock([
+                'user_id' => $userId,
+                'course_block_id' => $data['course_block_id'],
+                'assigned_at' => $data['assigned_at'] ?? now(),
+            ]);
+        }
+    }
+
+    public function getUserCourseSchedule(string $userId)
+    {
+        return $this->courseRepository->getUserCourseSchedule($userId);
+    }
 }
