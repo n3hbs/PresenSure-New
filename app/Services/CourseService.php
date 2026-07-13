@@ -7,7 +7,8 @@ use App\Repositories\CourseRepository;
 class CourseService
 {
     public function __construct(
-        protected CourseRepository $courseRepository
+        protected CourseRepository $courseRepository,
+        protected SemesterService $semesterService
     ) {}
 
     public function createCourse(array $data){
@@ -48,6 +49,15 @@ class CourseService
 
     public function getUserCourseSchedule(string $userId)
     {
-        return $this->courseRepository->getUserCourseSchedule($userId);
+        $activeSemester = $this->semesterService->getActiveSemester();
+
+        if (!$activeSemester) {
+            return collect();
+        }
+
+        return $this->courseRepository->getUserCourseSchedule(
+            $userId,
+            $activeSemester->semester_id
+        );
     }
 }

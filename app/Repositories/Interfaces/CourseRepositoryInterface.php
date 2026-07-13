@@ -10,5 +10,5 @@ interface CourseRepositoryInterface
 
     public function assignUserToCourseBlock(array $data);
 
-    public function getUserCourseSchedule(string $userId);
+    public function getUserCourseSchedule(string $userId, int $semesterId);
 }

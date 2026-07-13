@@ -32,7 +32,7 @@ class CourseRepository implements CourseRepositoryInterface
         );
     }
 
-    public function getUserCourseSchedule(string $userId)
+    public function getUserCourseSchedule(string $userId, int $semesterId)
     {
         return UserCourseBlock::with([
             'courseBlock.course',
@@ -41,6 +41,9 @@ class CourseRepository implements CourseRepositoryInterface
             'courseBlock.schedules.room.building',
         ])
             ->where('user_id', $userId)
+            ->whereHas('courseBlock', function ($query) use ($semesterId) {
+                $query->where('semester_id', $semesterId);
+            })
             ->get();
     }
 }
