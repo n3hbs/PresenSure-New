@@ -16,7 +16,13 @@ class CourseRepository implements CourseRepositoryInterface
 
     public function createCourseBlock(array $data)
     {
-        return CourseBlock::create($data);
+        return CourseBlock::firstOrCreate(
+            [
+                'course_id' => $data['course_id'],
+                'semester_id' => $data['semester_id'],
+                'block_code' => $data['block_code'],
+            ]
+        );
     }
 
     public function assignUserToCourseBlock(array $data)

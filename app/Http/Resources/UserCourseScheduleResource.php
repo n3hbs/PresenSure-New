@@ -17,8 +17,6 @@ class UserCourseScheduleResource extends JsonResource
         $courseBlock = $this->courseBlock;
 
         return [
-            'user_course_block_id' => $this->user_course_block_id,
-            'assigned_at' => $this->assigned_at,
             'course_block' => [
                 'course_block_id' => $courseBlock->course_block_id,
                 'block_code' => $courseBlock->block_code,
@@ -27,16 +25,11 @@ class UserCourseScheduleResource extends JsonResource
                     'subject_code' => $courseBlock->course?->subject_code,
                     'name' => $courseBlock->course?->name,
                 ],
-                'semester' => [
-                    'semester_id' => $courseBlock->semester?->semester_id,
-                    'term' => $courseBlock->semester?->term,
-                    'semester_start' => $courseBlock->semester?->semester_start,
-                    'semester_end' => $courseBlock->semester?->semester_end,
-                ],
                 'schedules' => $courseBlock->schedules->map(function ($schedule) {
                     return [
                         'schedule_id' => $schedule->schedule_id,
                         'block_code' => $schedule->block_code,
+                        'schedule_type' => $schedule->schedule_type,
                         'start_time' => $schedule->start_time,
                         'end_time' => $schedule->end_time,
                         'days' => $schedule->scheduleDays

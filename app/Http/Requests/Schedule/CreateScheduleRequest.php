@@ -28,6 +28,7 @@ class CreateScheduleRequest extends FormRequest
             'room_id' => 'required|integer|exists:rooms,room_id',
             'semester_id' => 'required|integer|exists:semesters,semester_id',
             'block_code' => 'required|string|max:255',
+            'schedule_type' => ['required', 'string', Rule::in(['laboratory', 'lecture'])],
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'days' => ['nullable', 'array', 'min:1'],

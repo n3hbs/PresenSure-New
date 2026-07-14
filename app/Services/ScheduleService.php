@@ -28,6 +28,7 @@ final class ScheduleService
                 'room_id' => $data['room_id'],
                 'semester_id' => $data['semester_id'],
                 'block_code' => $data['block_code'],
+                'schedule_type' => $data['schedule_type'],
                 'start_time' => $data['start_time'],
                 'end_time' => $data['end_time'],
             ]);

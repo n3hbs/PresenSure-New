@@ -21,7 +21,14 @@ class DatabaseSeeder extends Seeder
             SemesterSeeder::class,
             DepartmentSeeder::class,
             ProgramSeeder::class,
-            RoleSeeder::class
+            RoleSeeder::class,
+            BuildingSeeder::class,
+            RoomSeeder::class,
+            CourseSeeder::class,
+            CourseBlockSeeder::class,
+            UserCourseBlockSeeder::class,
+            ScheduleSeeder::class,
+            ScheduleDaysSeeder::class,
         ]);
     }
 }

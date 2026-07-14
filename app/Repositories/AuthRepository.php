@@ -8,7 +8,7 @@ class AuthRepository
 {
     public function findCredentials(array $data) {
         return User::where('user_id', $data['user_id'])
-        ->with('roleAssignment.role')
+        ->with(['roleAssignment.role', 'userProfile'])
         ->first();
     }
 }

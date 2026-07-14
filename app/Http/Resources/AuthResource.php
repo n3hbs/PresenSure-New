@@ -25,6 +25,9 @@ class AuthResource extends JsonResource
             'user' => [
                 ...(new UserResource($user))->toArray($request),
                 'role' => $role ? new RoleResource($role) : null,
+                'profile' => $user->userProfile
+                    ? new UserProfileResource($user->userProfile)
+                    : null,
             ],
         ];
     }

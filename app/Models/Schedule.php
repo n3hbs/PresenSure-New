@@ -17,6 +17,7 @@ class Schedule extends Model
         'room_id',
         'semester_id',
         'block_code',
+        'schedule_type',
         'start_time',
         'end_time',
     ];
