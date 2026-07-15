@@ -13,10 +13,7 @@ class PeriodController extends Controller
 
     public function create(CreatePeriodRequest $request)
     {
-        $this->periodService->createPeriod($request->validated());
-
-        return response()->json([
-            'message' => 'Period Successfully Created',
-        ], 201);
+        $this->periodService->create($request->validated());
+        return response()->json(['message' => 'Period Successfully Created',], 201);
     }
 }

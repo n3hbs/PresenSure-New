@@ -8,7 +8,6 @@ class CourseService
 {
     public function __construct(
         protected CourseRepository $courseRepository,
-        protected SemesterService $semesterService
     ) {}
 
     public function createCourse(array $data){
@@ -45,19 +44,5 @@ class CourseService
                 'assigned_at' => $data['assigned_at'] ?? now(),
             ]);
         }
-    }
-
-    public function getUserCourseSchedule(string $userId)
-    {
-        $activeSemester = $this->semesterService->getActiveSemester();
-
-        if (!$activeSemester) {
-            return collect();
-        }
-
-        return $this->courseRepository->getUserCourseSchedule(
-            $userId,
-            $activeSemester->semester_id
-        );
     }
 }

@@ -24,7 +24,7 @@ class CreateCourseRequest extends FormRequest
     {
         return [
             'subject_code' => 'required|string|max:255|unique:courses,subject_code',
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:courses,name',
         ];
     }
 }

@@ -13,9 +13,7 @@ class BuildingController extends Controller
     ) {}
 
     public function create(CreateBuildingRequest $request) {
-        $this->buildingService->createBuilding($request->validated());
-        return response()->json([
-            'message' => 'Building Successfully Created',
-        ], 201);
+        $this->buildingService->create($request->validated());
+        return response()->json(['message' => 'Building Successfully Created',], 201);
     }
 }

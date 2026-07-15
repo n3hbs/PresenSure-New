@@ -14,8 +14,6 @@ class InstructorController extends Controller
     public function create(CreateInstructorRequest $request)
     {
         $this->instructorService->createInstructor($request->validated());
-        return response()->json([
-            'message' => 'Instructor successfully registered.',
-        ], 201);
+        return response()->json(['message' => 'Instructor successfully registered.',], 201);
     }
 }

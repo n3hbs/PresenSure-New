@@ -10,7 +10,7 @@ class RoomService
         protected RoomRepository $roomRepository
     ) {}
 
-    public function createBuilding(array $data)
+    public function create(array $data)
     {
         $this->roomRepository->create([
             'building_id' => $data['building_id'],

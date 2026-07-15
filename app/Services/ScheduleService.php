@@ -12,6 +12,7 @@ final class ScheduleService
     public function __construct(
         protected ScheduleRepository $scheduleRepository,
         protected CourseService $courseService,
+        protected SemesterService $semesterService
     ) {}
 
     public function createSchedule(array $data)
@@ -34,7 +35,11 @@ final class ScheduleService
             ]);
 
             $this->createScheduleDays($schedule->schedule_id, $data['days'] ?? []);
-            $this->assignUsersToCourseBlock($courseBlock->course_block_id, $data['user_ids'] ?? []);
+            $this->courseService->assignUsersToCourseBlock([
+                'course_block_id' => $courseBlock->course_block_id,
+                'user_ids' => $data['user_ids'] ?? [],
+                'assigned_at' => now(),
+            ]);
 
             return $schedule;
         });
@@ -51,14 +56,17 @@ final class ScheduleService
         }
     }
 
-    public function assignUsersToCourseBlock(int $courseBlockId, array $userIds): void
+    public function getUserScheduleByActiveSemester(string $userId)
     {
-        foreach (array_unique($userIds) as $userId) {
-            $this->courseService->assignUserToCourseBlock([
-                'user_id' => $userId,
-                'course_block_id' => $courseBlockId,
-                'assigned_at' => now(),
-            ]);
+        $activeSemester = $this->semesterService->getActiveSemester();
+
+        if (!$activeSemester) {
+            return collect();
         }
+
+        return $this->scheduleRepository->getUserScheduleBySemester(
+            $userId,
+            $activeSemester->semester_id
+        );
     }
 }

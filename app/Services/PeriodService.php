@@ -12,7 +12,7 @@ final class PeriodService
         protected PeriodRepository $periodRepository
     ) {}
 
-    public function createPeriod(array $data)
+    public function create(array $data)
     {
         return $this->periodRepository->create([
             'semester_id' => $data['semester_id'],

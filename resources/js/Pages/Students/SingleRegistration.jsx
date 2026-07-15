@@ -498,7 +498,7 @@ export default function SingleRegistration() {
 
         try {
             const response = await api.post(
-                "/student/single-registration",
+                "/student",
                 payload,
                 {
                     headers: {

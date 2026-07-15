@@ -12,9 +12,7 @@ class RoomController extends Controller
     ) {}
 
     public function create(CreateRoomRequest $request) {
-        $this->roomService->createBuilding($request->validated());
-        return response()->json([
-            'message' => 'Room Successfully Created',
-        ], 201);
+        $this->roomService->create($request->validated());
+        return response()->json(['message' => 'Room Successfully Created',], 201);
     }
 }

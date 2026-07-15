@@ -10,7 +10,7 @@ class BuildingService
         protected BuildingRepository $buildingRepository
     ) {}
 
-    public function createBuilding(array $data){
+    public function create(array $data){
         $this->buildingRepository->create([
             'code' => $data['code'],
             'name' => $data['name'],

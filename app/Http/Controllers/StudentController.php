@@ -17,9 +17,7 @@ class StudentController extends Controller
     public function create(CreateStudentRequest $request)
     {
         $this->studentService->registerStudent($request->validated());
-        return response()->json([
-            'message' => 'Student successfully registered.',
-        ], 201);
+        return response()->json(['message' => 'Student successfully registered.',], 201);
     }
 
     public function getStudentByActiveSemester()
@@ -36,8 +34,6 @@ class StudentController extends Controller
 
     public function checkStudent(string $user_id)
     {
-        return new CheckStudentResource(
-            $this->studentService->checkStudent($user_id)
-        );
+        return new CheckStudentResource($this->studentService->checkStudent($user_id));
     }
 }
