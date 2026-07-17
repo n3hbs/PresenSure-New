@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+PRD.md
+docs/PRD-*.md
+prompt/prompt.txt

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\AttendanceSessionController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DepartmentController;
@@ -36,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //schedule
     Route::post('schedule', [ScheduleController::class, 'create']);
-    Route::get('user/{user_id}/course-schedules', [ScheduleController::class, 'getUserSchedule']);
+    Route::get('user/{user_id}/course-schedules', [ScheduleController::class, 'getUserCourseSchedule']);
 
     //period
     Route::post('period', [PeriodController::class, 'create']);
@@ -56,4 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //semester
     Route::get('semester/active', [SemesterController::class, 'getActiveSemester']);
+
+    //attendance session
+    Route::post('attendance-session', [AttendanceSessionController::class, 'create']);
 });

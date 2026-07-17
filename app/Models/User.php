@@ -50,4 +50,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(BleDetection::class, 'user_id', 'user_id');
     }
+
+    public function attendancePolicies()
+    {
+        return $this->hasMany(AttendancePolicy::class, 'user_id', 'user_id');
+    }
+
+    public function excuseRequests()
+    {
+        return $this->hasMany(ExcuseRequest::class, 'user_id', 'user_id');
+    }
+
+    public function instructorMarks()
+    {
+        return $this->hasMany(InstructorMark::class, 'user_id', 'user_id');
+    }
 }

@@ -46,4 +46,9 @@ class AttendanceRecord extends Model
     {
         return $this->hasMany(BleDetection::class, 'attendance_record_id', 'attendance_record_id');
     }
+
+    public function instructorMarks()
+    {
+        return $this->hasMany(InstructorMark::class, 'attendance_record_id', 'attendance_record_id');
+    }
 }

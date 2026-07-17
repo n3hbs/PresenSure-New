@@ -56,4 +56,9 @@ class AttendanceSession extends Model
     {
         return $this->hasMany(AttendanceRecord::class, 'attendance_session_id', 'attendance_session_id');
     }
+
+    public function excuseRequests()
+    {
+        return $this->hasMany(ExcuseRequest::class, 'attendance_session_id', 'attendance_session_id');
+    }
 }

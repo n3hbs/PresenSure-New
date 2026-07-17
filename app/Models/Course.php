@@ -22,4 +22,15 @@ class Course extends Model
     {
         return $this->hasMany(CourseBlock::class, 'course_id', 'course_id');
     }
+
+    public function attendancePolicyCourses()
+    {
+        return $this->hasMany(AttendancePolicyCourse::class, 'course_id', 'course_id');
+    }
+
+    public function attendancePolicies()
+    {
+        return $this->belongsToMany(AttendancePolicy::class, 'attendance_policy_courses', 'course_id', 'attendance_policy_id')
+            ->withPivot('assigned_at');
+    }
 }
