@@ -27,7 +27,8 @@ class StartAttendanceSessionRequest extends FormRequest
             'period_id' => 'required|integer|exists:periods,period_id',
             'verification_mode' => 'required|string|in:ble,face,ble_face',
             'ble_source_type' => 'required|string|in:none,instructor_phone,room_beacon',
-            'beacon_id' => 'nullable|integer',
+            'beacon_id' => 'required_if:ble_source_type,room_beacon|nullable|string|max:255',
+            'requires_periodic_verification' => 'sometimes|boolean',
         ];
     }
 }

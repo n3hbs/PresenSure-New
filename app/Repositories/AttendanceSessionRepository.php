@@ -3,10 +3,10 @@
 namespace App\Repositories;
 
 use App\Models\AttendanceSession;
+use App\Models\BleDevice;
 use App\Models\Schedule;
 use App\Models\UserCourseBlock;
 use App\Repositories\Interfaces\AttendanceSessionRepositoryInterface;
-use Override;
 
 class AttendanceSessionRepository implements AttendanceSessionRepositoryInterface
 {
@@ -28,10 +28,15 @@ class AttendanceSessionRepository implements AttendanceSessionRepositoryInterfac
             ->findOrFail($schedule_id);
     }
 
+    public function findBleDeviceByPublicId(string $publicDeviceId): ?BleDevice
+    {
+        return BleDevice::where('public_device_id', $publicDeviceId)->first();
+    }
+
     public function isUserAssignedToCourseBlock(string $user_id, int $course_block_id): bool
     {
         return UserCourseBlock::where('user_id', $user_id)
-        ->where('course_block_id', $course_block_id)
-        ->exists();
+            ->where('course_block_id', $course_block_id)
+            ->exists();
     }
 }

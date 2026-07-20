@@ -12,6 +12,7 @@ class AttendanceSession extends Model
     protected $primaryKey = 'attendance_session_id';
 
     protected $fillable = [
+        'session_uuid',
         'schedule_id',
         'period_id',
         'instructor_id',
@@ -21,13 +22,19 @@ class AttendanceSession extends Model
         'broadcaster_user_id',
         'ble_broadcast_token',
         'ble_token_expires_at',
+        'requires_periodic_verification',
         'status',
         'start_at',
         'end_at',
     ];
 
+    protected $hidden = [
+        'session_uuid',
+    ];
+
     protected $casts = [
         'ble_token_expires_at' => 'datetime',
+        'requires_periodic_verification' => 'boolean',
         'start_at' => 'datetime',
         'end_at' => 'datetime',
     ];

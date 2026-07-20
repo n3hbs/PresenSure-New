@@ -12,6 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            $this->rebuildSqliteTableWithIncrementingId();
+
+            return;
+        }
+
         Schema::table('instructors', function (Blueprint $table) {
             $table->dropColumn('instructor_id');
         });
@@ -26,6 +32,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            $this->rebuildSqliteTableWithStringId();
+
+            return;
+        }
+
         Schema::table('instructors', function (Blueprint $table) {
             $table->string('old_instructor_id')->nullable();
         });
@@ -39,5 +51,80 @@ return new class extends Migration
 
         DB::statement('ALTER TABLE "instructors" RENAME COLUMN "old_instructor_id" TO "instructor_id"');
         DB::statement('ALTER TABLE "instructors" ALTER COLUMN "instructor_id" SET NOT NULL');
+    }
+
+    private function rebuildSqliteTableWithIncrementingId(): void
+    {
+        Schema::disableForeignKeyConstraints();
+
+        Schema::rename('instructors', 'instructors_before_incrementing_id');
+
+        Schema::create('instructors', function (Blueprint $table) {
+            $table->id('instructor_id');
+            $table->string('user_id');
+            $table->foreign('user_id')
+                ->references('user_id')
+                ->on('users')
+                ->cascadeOnDelete();
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')
+                ->references('department_id')
+                ->on('departments')
+                ->cascadeOnDelete();
+            $table->enum('status', ['Active', 'Inactive']);
+            $table->timestamps();
+        });
+
+        DB::table('instructors')->insertUsing(
+            ['user_id', 'department_id', 'status', 'created_at', 'updated_at'],
+            DB::table('instructors_before_incrementing_id')->select(
+                'user_id',
+                'department_id',
+                'status',
+                'created_at',
+                'updated_at'
+            )
+        );
+
+        Schema::drop('instructors_before_incrementing_id');
+        Schema::enableForeignKeyConstraints();
+    }
+
+    private function rebuildSqliteTableWithStringId(): void
+    {
+        Schema::disableForeignKeyConstraints();
+
+        Schema::rename('instructors', 'instructors_before_string_id');
+
+        Schema::create('instructors', function (Blueprint $table) {
+            $table->string('instructor_id');
+            $table->string('user_id');
+            $table->foreign('user_id')
+                ->references('user_id')
+                ->on('users')
+                ->cascadeOnDelete();
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')
+                ->references('department_id')
+                ->on('departments')
+                ->cascadeOnDelete();
+            $table->enum('status', ['Active', 'Inactive']);
+            $table->timestamps();
+        });
+
+        DB::table('instructors')->insertUsing(
+            ['instructor_id', 'user_id', 'department_id', 'status', 'created_at', 'updated_at'],
+            DB::table('instructors_before_string_id')->select(
+                'instructor_id',
+                'user_id',
+                'department_id',
+                'status',
+                'created_at',
+                'updated_at'
+            )
+        );
+
+        Schema::drop('instructors_before_string_id');
+        Schema::enableForeignKeyConstraints();
     }
 };
