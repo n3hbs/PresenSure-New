@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('attendance_sessions', function (Blueprint $table) {
             $table->id('attendance_session_id');
 
+            $table->string('session_code', 16)->unique();
+
             $table->foreignId('schedule_id')
                 ->constrained('schedules', 'schedule_id')
                 ->cascadeOnDelete();
@@ -27,33 +29,24 @@ return new class extends Migration
                 ->references('user_id')
                 ->on('users')
                 ->cascadeOnDelete();
+                
+            $table->foreignId('ble_device_id')
+                ->nullable()
+                ->constrained('ble_devices', 'ble_device_id')
+                ->nullOnDelete();
 
             $table->enum('verification_mode', ['ble', 'face', 'ble_face']);
-
-            $table->enum('ble_source_type', ['none', 'instructor_phone', 'room_beacon'])
-                ->default('none');
-
-            $table->unsignedBigInteger('beacon_id')->nullable();
-
-            $table->string('broadcaster_user_id')->nullable();
-            $table->foreign('broadcaster_user_id')
-                ->references('user_id')
-                ->on('users')
-                ->nullOnDelete();
 
             $table->string('ble_broadcast_token')->nullable();
             $table->timestamp('ble_token_expires_at')->nullable();
 
-            $table->enum('status', ['draft', 'active', 'ended', 'cancelled'])
+            $table->enum('status', ['draft', 'pending_device_confirmation', 'active', 'ended', 'cancelled'])
                 ->default('draft');
 
             $table->timestamp('start_at');
             $table->timestamp('end_at');
 
             $table->timestamps();
-
-            $table->index(['schedule_id', 'period_id']);
-            $table->index(['status', 'start_at', 'end_at']);
         });
     }
 

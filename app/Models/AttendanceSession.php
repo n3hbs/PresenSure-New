@@ -12,24 +12,23 @@ class AttendanceSession extends Model
     protected $primaryKey = 'attendance_session_id';
 
     protected $fillable = [
-        'session_uuid',
+        'session_code',
         'schedule_id',
         'period_id',
         'instructor_id',
+        'ble_device_id',
         'verification_mode',
-        'ble_source_type',
-        'beacon_id',
-        'broadcaster_user_id',
         'ble_broadcast_token',
         'ble_token_expires_at',
         'requires_periodic_verification',
         'status',
         'start_at',
         'end_at',
+        'device_started_at',
     ];
 
     protected $hidden = [
-        'session_uuid',
+        'ble_broadcast_token',
     ];
 
     protected $casts = [
@@ -37,6 +36,7 @@ class AttendanceSession extends Model
         'requires_periodic_verification' => 'boolean',
         'start_at' => 'datetime',
         'end_at' => 'datetime',
+        'device_started_at' => 'datetime',
     ];
 
     public function schedule()

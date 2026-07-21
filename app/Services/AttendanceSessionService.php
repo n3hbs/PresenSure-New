@@ -36,16 +36,11 @@ class AttendanceSessionService
             $endAt = $now->copy()->addHours(2)->min($scheduleEnd);
 
             $session = $this->attendanceSessionRepository->create([
-                'session_uuid' => (string) Str::uuid(),
+                'session_code' => strtoupper(Str::random(6)),
                 'schedule_id' => $schedule->schedule_id,
                 'period_id' => $data['period_id'],
                 'instructor_id' => $instructor->user_id,
                 'verification_mode' => $data['verification_mode'],
-                'ble_source_type' => $data['ble_source_type'],
-                'beacon_id' => $data['beacon_id'] ?? null,
-                'broadcaster_user_id' => $data['ble_source_type'] === 'instructor_phone'
-                    ? $instructor->user_id
-                    : null,
                 'ble_broadcast_token' => hash('sha256', $rawToken),
                 'ble_token_expires_at' => $endAt,
                 'requires_periodic_verification' => $data['requires_periodic_verification'] ?? false,

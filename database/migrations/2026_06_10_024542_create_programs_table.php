@@ -20,6 +20,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('program_code');
             $table->string('program_name');
+            $table->unsignedTinyInteger('program_years')->default(4);
             $table->timestamps();
         });
     }

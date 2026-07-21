@@ -13,8 +13,10 @@ class BleDevice extends Model
 
     protected $fillable = [
         'public_device_id',
+        'device_name',
         'room_id',
         'device_secret',
+        'status',
         'is_active',
     ];
 
@@ -30,5 +32,10 @@ class BleDevice extends Model
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id', 'room_id');
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->is_active && $this->status === 'active';
     }
 }

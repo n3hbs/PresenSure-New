@@ -9,6 +9,31 @@ use LogicException;
 
 class BeaconConfigurationService
 {
+    public function generateBlePayload(
+        AttendanceSession $session,
+        BleDevice $bleDevice,
+        string $rotatingToken
+    ): array {
+        $secretBytes = $this->deviceSecretBytes($bleDevice);
+        $issuedAt = $session->start_at->timestamp;
+        $expiresAt = $session->end_at->timestamp;
+        $canonicalPayload = implode('|', [
+            $session->session_uuid,
+            $session->session_code,
+            $rotatingToken,
+            (string) $issuedAt,
+            (string) $expiresAt,
+        ]);
+
+        return [
+            'session_code' => $session->session_code,
+            'rotating_token' => $rotatingToken,
+            'issued_at' => $issuedAt,
+            'expires_at' => $expiresAt,
+            'signature' => hash_hmac('sha256', $canonicalPayload, $secretBytes),
+        ];
+    }
+
     public function generate(
         AttendanceSession $session,
         BleDevice $bleDevice,
@@ -20,15 +45,7 @@ class BeaconConfigurationService
             throw new LogicException('The BLE advertisement interval must be between 100 and 5000 milliseconds.');
         }
 
-        $secretHex = strtolower(trim((string) $bleDevice->device_secret));
-
-        if (strlen($secretHex) !== 64 || ! ctype_xdigit($secretHex)) {
-            throw ValidationException::withMessages([
-                'beacon_id' => ['The selected ESP32 does not have a valid provisioned device secret.'],
-            ]);
-        }
-
-        $secretBytes = hex2bin($secretHex);
+        $secretBytes = $this->deviceSecretBytes($bleDevice);
         $attendanceType = $this->attendanceType($session->verification_mode);
         $startTime = $session->start_at->timestamp;
         $endTime = $session->end_at->timestamp;
@@ -85,5 +102,18 @@ class BeaconConfigurationService
             'ble_face' => 3,
             default => throw new LogicException('Unsupported attendance verification mode.'),
         };
+    }
+
+    private function deviceSecretBytes(BleDevice $bleDevice): string
+    {
+        $secretHex = strtolower(trim((string) $bleDevice->device_secret));
+
+        if (strlen($secretHex) !== 64 || ! ctype_xdigit($secretHex)) {
+            throw ValidationException::withMessages([
+                'device_id' => ['The selected ESP32 does not have a valid device secret.'],
+            ]);
+        }
+
+        return hex2bin($secretHex);
     }
 }

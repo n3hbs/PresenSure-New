@@ -16,17 +16,35 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // Independent user data
             UserSeeder::class,
+
+            // Academic calendar
             SchoolYearSeeder::class,
             SemesterSeeder::class,
+            PeriodSeeder::class,
+
+            // Organization
             DepartmentSeeder::class,
             ProgramSeeder::class,
+
+            // Authorization
             RoleSeeder::class,
+            UserRoleSeeder::class,
+
+            // Locations
             BuildingSeeder::class,
             RoomSeeder::class,
+            BleDeviceSeeder::class,
+
+            // Courses
             CourseSeeder::class,
             CourseBlockSeeder::class,
+
+            // User assignments
             UserCourseBlockSeeder::class,
+
+            // Class schedules
             ScheduleSeeder::class,
             ScheduleDaysSeeder::class,
         ]);

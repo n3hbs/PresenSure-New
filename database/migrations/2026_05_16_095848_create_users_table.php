@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->string('user_id')->primary();
             $table->string('first_name');
-            $table->string('middle_initial', 2);
+            $table->string('middle_initial', 2)->nullable();
             $table->string('last_name');
             $table->string('suffix', 20)->nullable();
             $table->enum(

@@ -13,18 +13,30 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id('schedule_id');
+
             $table->unsignedBigInteger('course_block_id');
             $table->foreign('course_block_id')
                 ->references('course_block_id')
                 ->on('course_blocks')
                 ->cascadeOnDelete();
-            $table->unsignedBigInteger('room_id');
+
+            $table->foreignId('room_id')
+                ->constrained('rooms', 'room_id')
+                ->cascadeOnDelete();
+
             $table->unsignedBigInteger('semester_id');
             $table->foreign('semester_id')
                 ->references('semester_id')
                 ->on('semesters')
                 ->cascadeOnDelete();
+
             $table->string('block_code');
+
+            $table->enum('schedule_type', [
+                'laboratory',
+                'lecture',
+            ]);
+
             $table->time('start_time');
             $table->time('end_time');
             $table->timestamps();
