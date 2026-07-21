@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AttendanceSession\CreateDeviceAttendanceSessionRequest;
 use App\Http\Requests\AttendanceSession\StartAttendanceSessionRequest;
 use App\Services\AttendanceSessionService;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class AttendanceSessionController extends Controller
         protected AttendanceSessionService $attendanceSessionService
     ) {}
 
-    public function create(StartAttendanceSessionRequest $request)
+    public function create(CreateDeviceAttendanceSessionRequest $request)
     {
         $result = $this->attendanceSessionService->createAttendanceSession(
             $request->validated(),

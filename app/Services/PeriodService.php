@@ -22,4 +22,8 @@ final class PeriodService
             'period_end' => $data['period_end'],
         ]);
     }
+
+    public function getActivePeriod() {
+        return $this->periodRepository->getActivePeriod();
+    }
 }

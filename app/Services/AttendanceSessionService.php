@@ -8,13 +8,15 @@ use App\Models\User;
 use App\Repositories\AttendanceSessionRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Exception;
 use Illuminate\Validation\ValidationException;
 
 class AttendanceSessionService
 {
     public function __construct(
         protected AttendanceSessionRepository $attendanceSessionRepository,
-        protected BeaconConfigurationService $beaconConfigurationService
+        protected BeaconConfigurationService $beaconConfigurationService,
+        protected PeriodService $periodService,
     ) {}
 
     public function createAttendanceSession(array $data, User $instructor): array
@@ -31,15 +33,28 @@ class AttendanceSessionService
             }
 
             [$now, $scheduleEnd] = $this->resolveScheduleWindow($schedule);
-            $bleDevice = $this->resolveRoomBeacon($data, $schedule);
+            $bleDevice = $this->resolveRoomDevice(
+                $data['device_id'],
+                $schedule
+            );
             $rawToken = Str::random(64);
             $endAt = $now->copy()->addHours(2)->min($scheduleEnd);
+
+            $period = $this->periodService->getActivePeriod();
+            if ($period === null) {
+                throw ValidationException::withMessages([
+                    'schedule_id' => [
+                        'No active attendance period exists for this semester.',
+                    ],
+                ]);
+            }
 
             $session = $this->attendanceSessionRepository->create([
                 'session_code' => strtoupper(Str::random(6)),
                 'schedule_id' => $schedule->schedule_id,
-                'period_id' => $data['period_id'],
+                'period_id' => $period->period_id,
                 'instructor_id' => $instructor->user_id,
+                'ble_device_id' => $bleDevice->ble_device_id,
                 'verification_mode' => $data['verification_mode'],
                 'ble_broadcast_token' => hash('sha256', $rawToken),
                 'ble_token_expires_at' => $endAt,
@@ -82,29 +97,36 @@ class AttendanceSessionService
         return [$now, $scheduleEnd];
     }
 
-    private function resolveRoomBeacon(array $data, Schedule $schedule): ?BleDevice
-    {
-        if ($data['ble_source_type'] !== 'room_beacon') {
-            return null;
-        }
-
-        $bleDevice = $this->attendanceSessionRepository->findBleDeviceByPublicId($data['beacon_id']);
+    private function resolveRoomDevice(
+        string $deviceId,
+        Schedule $schedule
+    ): BleDevice {
+        $bleDevice = $this->attendanceSessionRepository
+            ->findBleDeviceByPublicId($deviceId);
 
         if ($bleDevice === null) {
             throw ValidationException::withMessages([
-                'beacon_id' => ['The selected ESP32 is not registered.'],
+                'device_id' => [
+                    'The selected ESP32 is not registered.',
+                ],
             ]);
         }
 
-        if (! $bleDevice->is_active) {
+        if (! $bleDevice->isAvailable()) {
             throw ValidationException::withMessages([
-                'beacon_id' => ['The selected ESP32 is inactive.'],
+                'device_id' => [
+                    'The selected ESP32 is unavailable.',
+                ],
             ]);
         }
 
-        if ($bleDevice->room_id !== $schedule->room_id) {
+        if ((int) $bleDevice->room_id !== (int) $schedule->room_id) {
             throw ValidationException::withMessages([
-                'beacon_id' => ['The selected ESP32 is not assigned to the scheduled room.'],
+                'device_id' => [
+                    "{$bleDevice->device_name} belongs to room ID "
+                        . "{$bleDevice->room_id}, but the schedule belongs "
+                        . "to room ID {$schedule->room_id}.",
+                ],
             ]);
         }
 

@@ -15,18 +15,41 @@ class UserRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::where('user_id', '2000-0001')->firstOrFail();
-
-        $role = Role::where('role_name', 'administrator')->firstOrFail();
-
-        UserRole::updateOrCreate(
+        $assignments = [
             [
-                'user_id' => $user->user_id,
-                'role_id' => $role->role_id,
+                'user_id' => '2000-0001',
+                'role_name' => 'administrator',
             ],
             [
-                'assigned_at' => now(),
-            ]
-        );
+                'user_id' => 'C-2022-0138',
+                'role_name' => 'student',
+            ],
+            [
+                'user_id' => '2022-0138',
+                'role_name' => 'instructor',
+            ],
+        ];
+
+        foreach ($assignments as $assignment) {
+            $user = User::where(
+                'user_id',
+                $assignment['user_id']
+            )->firstOrFail();
+
+            $role = Role::where(
+                'role_name',
+                $assignment['role_name']
+            )->firstOrFail();
+
+            UserRole::updateOrCreate(
+                [
+                    'user_id' => $user->user_id,
+                    'role_id' => $role->role_id,
+                ],
+                [
+                    'assigned_at' => now(),
+                ]
+            );
+        }
     }
 }

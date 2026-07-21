@@ -13,4 +13,11 @@ final class PeriodRepository implements PeriodRepositoryInterface
     {
         return Period::create($data);
     }
+
+    public function getActivePeriod()
+    {
+        return Period::whereDate('period_start', '<=', now()->toDateString())
+            ->whereDate('period_end', '>=', now()->toDateString())
+            ->first();
+    }
 }

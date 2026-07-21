@@ -29,7 +29,7 @@ return new class extends Migration
                 ->references('user_id')
                 ->on('users')
                 ->cascadeOnDelete();
-                
+
             $table->foreignId('ble_device_id')
                 ->nullable()
                 ->constrained('ble_devices', 'ble_device_id')
@@ -39,6 +39,13 @@ return new class extends Migration
 
             $table->string('ble_broadcast_token')->nullable();
             $table->timestamp('ble_token_expires_at')->nullable();
+
+            $table->boolean('requires_periodic_verification')
+                ->default(false);
+
+            $table->timestamp('device_started_at')
+                ->nullable();
+
 
             $table->enum('status', ['draft', 'pending_device_confirmation', 'active', 'ended', 'cancelled'])
                 ->default('draft');

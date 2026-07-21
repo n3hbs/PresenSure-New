@@ -18,6 +18,10 @@ class RoleSeeder extends Seeder
                 'role_name' => 'instructor',
                 'description' => 'Instructor account',
             ],
+            [
+                'role_name' => 'student',
+                'description' => 'Student account',
+            ],
         ];
 
         foreach ($roles as $role) {

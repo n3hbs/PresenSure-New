@@ -18,7 +18,6 @@ class BeaconConfigurationService
         $issuedAt = $session->start_at->timestamp;
         $expiresAt = $session->end_at->timestamp;
         $canonicalPayload = implode('|', [
-            $session->session_uuid,
             $session->session_code,
             $rotatingToken,
             (string) $issuedAt,
@@ -53,7 +52,7 @@ class BeaconConfigurationService
         $rotatingSecret ??= bin2hex(random_bytes(32));
 
         $canonicalPayload = $this->canonicalPayload(
-            $session->session_uuid,
+            $session->session_code,
             $attendanceType,
             $startTime,
             $endTime,
@@ -63,7 +62,7 @@ class BeaconConfigurationService
         );
 
         return [
-            'session_id' => $session->session_uuid,
+            'session_code' => $session->session_code,
             'attendance_type' => $attendanceType,
             'start_time' => $startTime,
             'end_time' => $endTime,
@@ -75,7 +74,7 @@ class BeaconConfigurationService
     }
 
     public function canonicalPayload(
-        string $sessionId,
+        string $sessionCode,
         int $attendanceType,
         int $startTime,
         int $endTime,
@@ -84,7 +83,7 @@ class BeaconConfigurationService
         int $advertisementIntervalMs
     ): string {
         return implode('|', [
-            $sessionId,
+            $sessionCode,
             (string) $attendanceType,
             (string) $startTime,
             (string) $endTime,
