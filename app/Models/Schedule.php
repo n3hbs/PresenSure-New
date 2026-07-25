@@ -37,6 +37,10 @@ class Schedule extends Model
         return $this->belongsTo(Room::class, 'room_id', 'room_id');
     }
 
+    /**
+     * Meeting days loaded by AttendanceSessionRepository so the service can
+     * decide whether this schedule is allowed to start today.
+     */
     public function scheduleDays()
     {
         return $this->hasMany(ScheduleDay::class, 'schedule_id', 'schedule_id');

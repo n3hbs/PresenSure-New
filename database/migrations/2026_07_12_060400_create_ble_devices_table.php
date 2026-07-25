@@ -31,8 +31,6 @@ return new class extends Migration
                 'revoked',
             ])->default('unconfigured');
 
-            $table->boolean('is_active')->default(true);
-
             $table->timestamps();
         });
     }

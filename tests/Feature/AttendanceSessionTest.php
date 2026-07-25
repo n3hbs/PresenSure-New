@@ -4,14 +4,15 @@ namespace Tests\Feature;
 
 use App\Models\BleDevice;
 use App\Models\Period;
+use App\Models\Role;
 use App\Models\Schedule;
 use App\Models\ScheduleDay;
 use App\Models\User;
 use App\Models\UserCourseBlock;
+use App\Models\UserRole;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use LogicException;
 use Psr\Log\AbstractLogger;
@@ -61,7 +62,7 @@ class AttendanceSessionTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonPath('message', 'Attendance session created successfully.')
-            ->assertJsonPath('data.session.beacon_id', 'PS-1234ABCD')
+            ->assertJsonPath('data.session.ble_device_id', $this->bleDevice->ble_device_id)
             ->assertJsonPath('data.session.requires_periodic_verification', true)
             ->assertJsonPath('data.beacon_configuration.attendance_type', 3)
             ->assertJsonPath('data.beacon_configuration.continuous', true)
@@ -71,15 +72,13 @@ class AttendanceSessionTest extends TestCase
                 'data' => [
                     'session' => [
                         'attendance_session_id',
+                        'session_code',
                         'schedule_id',
                         'period_id',
                         'instructor_id',
+                        'ble_device_id',
                         'verification_mode',
-                        'ble_source_type',
-                        'beacon_id',
                         'requires_periodic_verification',
-                        'broadcaster_user_id',
-                        'ble_broadcast_token',
                         'ble_token_expires_at',
                         'status',
                         'start_at',
@@ -89,7 +88,7 @@ class AttendanceSessionTest extends TestCase
                     ],
                     'ble_token',
                     'beacon_configuration' => [
-                        'session_id',
+                        'session_code',
                         'attendance_type',
                         'start_time',
                         'end_time',
@@ -102,10 +101,10 @@ class AttendanceSessionTest extends TestCase
             ]);
 
         $rawToken = $response->json('data.ble_token');
-        $configurationSessionId = $response->json('data.beacon_configuration.session_id');
+        $sessionCode = $response->json('data.session.session_code');
 
-        $this->assertTrue(Str::isUuid($configurationSessionId));
-        $this->assertSame($rawToken, $response->json('data.session.ble_broadcast_token'));
+        $this->assertSame($sessionCode, $response->json('data.beacon_configuration.session_code'));
+        $this->assertArrayNotHasKey('ble_broadcast_token', $response->json('data.session'));
         $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{64}$/',
             $response->json('data.beacon_configuration.signature')
@@ -113,14 +112,24 @@ class AttendanceSessionTest extends TestCase
         $this->assertStringNotContainsString(self::DEVICE_SECRET, $response->getContent());
         $this->assertStringNotContainsString(self::DEVICE_SECRET, json_encode($logger->records));
         $this->assertDatabaseHas('attendance_sessions', [
-            'session_uuid' => $configurationSessionId,
-            'beacon_id' => $this->bleDevice->public_device_id,
+            'session_code' => $sessionCode,
+            'ble_device_id' => $this->bleDevice->ble_device_id,
             'ble_broadcast_token' => hash('sha256', $rawToken),
         ]);
         $this->assertNotSame(
             self::DEVICE_SECRET,
             DB::table('ble_devices')->value('device_secret')
         );
+    }
+
+    public function test_non_instructor_cannot_create_attendance_session(): void
+    {
+        UserRole::where('user_id', $this->instructor->user_id)->delete();
+
+        $this->postJson('/api/attendance-session', $this->validPayload())
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('attendance_sessions', 0);
     }
 
     public function test_beacon_is_looked_up_by_public_string_device_id(): void
@@ -132,7 +141,7 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertCreated()
-            ->assertJsonPath('data.session.beacon_id', $this->bleDevice->public_device_id);
+            ->assertJsonPath('data.session.ble_device_id', $this->bleDevice->ble_device_id);
     }
 
     public function test_missing_beacon_is_rejected(): void
@@ -141,18 +150,18 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('beacon_id');
+            ->assertJsonValidationErrors('device_id');
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
 
     public function test_inactive_beacon_is_rejected(): void
     {
-        $this->bleDevice->update(['is_active' => false]);
+        $this->bleDevice->update(['status' => 'inactive']);
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('beacon_id');
+            ->assertJsonValidationErrors('device_id');
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
@@ -170,7 +179,7 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('beacon_id');
+            ->assertJsonValidationErrors('device_id');
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
@@ -181,7 +190,7 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('beacon_id');
+            ->assertJsonValidationErrors('device_id');
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
@@ -219,6 +228,25 @@ class AttendanceSessionTest extends TestCase
         );
     }
 
+    public function test_requested_duration_is_used_when_before_class_end(): void
+    {
+        $payload = $this->validPayload();
+        $payload['requested_duration_minutes'] = 30;
+        $expectedEnd = Carbon::parse('2026-07-20 09:00:00', config('app.timezone'));
+
+        $response = $this->postJson('/api/attendance-session', $payload)
+            ->assertCreated();
+
+        $response->assertJsonPath(
+            'data.beacon_configuration.end_time',
+            $expectedEnd->timestamp
+        );
+        $this->assertSame(
+            $expectedEnd->toISOString(),
+            $response->json('data.session.end_at')
+        );
+    }
+
     public function test_configuration_failure_rolls_back_created_session(): void
     {
         config(['beacon.advertisement_interval_ms' => 99]);
@@ -241,17 +269,27 @@ class AttendanceSessionTest extends TestCase
     {
         return [
             'schedule_id' => $this->schedule->schedule_id,
-            'period_id' => $this->period->period_id,
+            'device_id' => $this->bleDevice->public_device_id,
             'verification_mode' => 'ble_face',
-            'ble_source_type' => 'room_beacon',
-            'beacon_id' => 'PS-1234ABCD',
-            'requires_periodic_verification' => true,
+            'continuous_checking' => true,
+            'requested_duration_minutes' => 120,
         ];
     }
 
     private function seedAttendanceSessionDependencies(): void
     {
         $this->instructor = User::factory()->create(['user_id' => '2000-0001']);
+
+        $instructorRole = Role::create([
+            'role_name' => 'instructor',
+            'description' => 'Creates and manages attendance sessions.',
+        ]);
+
+        UserRole::create([
+            'user_id' => $this->instructor->user_id,
+            'role_id' => $instructorRole->role_id,
+            'assigned_at' => now(),
+        ]);
 
         $schoolYearId = DB::table('school_years')->insertGetId([
             'school_year_start' => '2026-06-01',
@@ -323,7 +361,7 @@ class AttendanceSessionTest extends TestCase
             'public_device_id' => 'PS-1234ABCD',
             'room_id' => $roomId,
             'device_secret' => self::DEVICE_SECRET,
-            'is_active' => true,
+            'status' => 'active',
         ]);
     }
 }

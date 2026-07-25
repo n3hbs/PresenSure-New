@@ -14,6 +14,9 @@ final class PeriodRepository implements PeriodRepositoryInterface
         return Period::create($data);
     }
 
+    /**
+     * Return the first period whose inclusive start/end dates contain today.
+     */
     public function getActivePeriod()
     {
         return Period::whereDate('period_start', '<=', now()->toDateString())

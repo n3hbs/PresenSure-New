@@ -23,7 +23,12 @@ final class PeriodService
         ]);
     }
 
-    public function getActivePeriod() {
+    /**
+     * Give the attendance-session flow the academic period active today.
+     * The repository owns the date-based database query.
+     */
+    public function getActivePeriod()
+    {
         return $this->periodRepository->getActivePeriod();
     }
 }

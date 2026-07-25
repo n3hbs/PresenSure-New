@@ -6,19 +6,17 @@ use App\Models\BleDevice;
 
 interface AttendanceSessionRepositoryInterface
 {
+    public function isInstructor(string $userId): bool;
+
     public function create(array $data);
 
-    public function hasActiveSession(int $schedule_id): bool;
-
-    public function hasConflictingSession(int $scheduleId): bool;
+    public function findActiveSession(int $schedule_id);
 
     public function findScheduleForSession(int $schedule_id);
 
     public function findBleDeviceByPublicId(string $publicDeviceId): ?BleDevice;
 
-    public function findActivePeriod(int $semesterId);
-
-    public function findSessionForActivation(string $sessionId);
-
     public function isUserAssignedToCourseBlock(string $user_id, int $course_block_id): bool;
+
+    public function endAttendanceSession(int $attendanceSession_id, array $data);
 }

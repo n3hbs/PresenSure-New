@@ -45,7 +45,7 @@ class BeaconConfigurationServiceTest extends TestCase
         );
 
         $this->assertSame($expectedCanonicalPayload, $service->canonicalPayload(
-            $configuration['session_id'],
+            $configuration['session_code'],
             $configuration['attendance_type'],
             $configuration['start_time'],
             $configuration['end_time'],
@@ -73,7 +73,7 @@ class BeaconConfigurationServiceTest extends TestCase
     private function makeAttendanceSession(string $verificationMode): AttendanceSession
     {
         return new AttendanceSession([
-            'session_uuid' => '018f3f34-91ab-7abc-8def-0123456789ab',
+            'session_code' => '018f3f34-91ab-7abc-8def-0123456789ab',
             'verification_mode' => $verificationMode,
             'requires_periodic_verification' => true,
             'start_at' => Carbon::createFromTimestamp(1784512800, config('app.timezone')),

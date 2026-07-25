@@ -8,11 +8,14 @@ use App\Models\User;
 use App\Repositories\AttendanceSessionRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Exception;
 use Illuminate\Validation\ValidationException;
 
 class AttendanceSessionService
 {
+    /**
+     * Inject the collaborators responsible for attendance persistence, beacon
+     * configuration, and resolving the active academic period.
+     */
     public function __construct(
         protected AttendanceSessionRepository $attendanceSessionRepository,
         protected BeaconConfigurationService $beaconConfigurationService,
@@ -21,25 +24,36 @@ class AttendanceSessionService
 
     public function createAttendanceSession(array $data, User $instructor): array
     {
+        // A failure anywhere in this callback rolls back the session insert.
         return DB::transaction(function () use ($data, $instructor) {
+            // Load the schedule together with its scheduled meeting days.
             $schedule = $this->attendanceSessionRepository->findScheduleForSession((int) $data['schedule_id']);
 
+            // The authenticated account must have the instructor role.
+            if (! $this->attendanceSessionRepository->isInstructor($instructor->user_id)) {
+                abort(403, 'Only instructors can create attendance sessions.');
+            }
+
+            // Only an instructor assigned to this course block may start it.
             if (! $this->attendanceSessionRepository->isUserAssignedToCourseBlock($instructor->user_id, $schedule->course_block_id)) {
                 abort(403, 'You are not assigned to this schedule.');
             }
 
-            if ($this->attendanceSessionRepository->hasActiveSession($schedule->schedule_id)) {
+            // Prevent two active attendance sessions for the same schedule.
+            if ($this->attendanceSessionRepository->findActiveSession($schedule->schedule_id) !== null) {
                 abort(422, 'An active attendance session already exists for this schedule.');
             }
 
+            // Confirm the class occurs now and get the latest allowed end time.
             [$now, $scheduleEnd] = $this->resolveScheduleWindow($schedule);
+
+            // Look up the ESP32 by its public ID and validate its room/status.
             $bleDevice = $this->resolveRoomDevice(
                 $data['device_id'],
                 $schedule
             );
-            $rawToken = Str::random(64);
-            $endAt = $now->copy()->addHours(2)->min($scheduleEnd);
 
+            // Attach the session to the currently active academic period.
             $period = $this->periodService->getActivePeriod();
             if ($period === null) {
                 throw ValidationException::withMessages([
@@ -49,29 +63,46 @@ class AttendanceSessionService
                 ]);
             }
 
+            // Calculate the requested end time, but never pass the class end.
+            $requestedEnd = $now->copy()->addMinutes($data['requested_duration_minutes']);
+            $endAt = $requestedEnd;
+
+            if ($requestedEnd->isAfter($scheduleEnd)) {
+                $endAt = $scheduleEnd;
+            }
+
+            // The raw token is returned once; only its hash is stored.
+            $rawToken = Str::random(64);
+
+            // Persist the validated session data through the repository.
             $session = $this->attendanceSessionRepository->create([
+                // A short public code identifies the attendance session.
                 'session_code' => strtoupper(Str::random(6)),
                 'schedule_id' => $schedule->schedule_id,
                 'period_id' => $period->period_id,
                 'instructor_id' => $instructor->user_id,
                 'ble_device_id' => $bleDevice->ble_device_id,
                 'verification_mode' => $data['verification_mode'],
+
+                // Hashing avoids saving the usable raw BLE token in the table.
                 'ble_broadcast_token' => hash('sha256', $rawToken),
                 'ble_token_expires_at' => $endAt,
-                'requires_periodic_verification' => $data['requires_periodic_verification'] ?? false,
+
+                'requires_periodic_verification' => $data['continuous_checking'],
                 'status' => 'active',
                 'start_at' => $now,
                 'end_at' => $endAt,
             ]);
 
-            $beaconConfiguration = $bleDevice === null
-                ? null
-                : $this->beaconConfigurationService->generate($session, $bleDevice);
+            // Build the signed settings that will be passed to the ESP32.
+            $beaconConfiguration = $this->beaconConfigurationService->generate(
+                $session,
+                $bleDevice
+            );
 
+            // Return service data. The controller later serializes it as JSON.
             return [
-                'session' => array_replace($session->toArray(), [
-                    'ble_broadcast_token' => $rawToken,
-                ]),
+                'session' => $session->toArray(),
                 'ble_token' => $rawToken,
                 'beacon_configuration' => $beaconConfiguration,
             ];
@@ -80,30 +111,48 @@ class AttendanceSessionService
 
     private function resolveScheduleWindow(Schedule $schedule): array
     {
+        // Capture one current timestamp so every comparison uses the same time.
         $now = now();
-        $scheduledToday = $schedule->scheduleDays->contains(
-            'day',
-            strtolower($now->englishDayOfWeek)
-        );
+
+        // Match today's lowercase English day name against schedule_days.day.
+        $today = strtolower($now->englishDayOfWeek);
+        $scheduledToday = false;
+
+        foreach ($schedule->scheduleDays as $scheduleDay) {
+            if ($scheduleDay->day === $today) {
+                $scheduledToday = true;
+                break;
+            }
+        }
+
+        // Combine today's date with the schedule's stored start and end times.
         $scheduleStart = $now->copy()->startOfDay()->setTimeFromTimeString($schedule->start_time);
         $scheduleEnd = $now->copy()->startOfDay()->setTimeFromTimeString($schedule->end_time);
 
-        if (! $scheduledToday || $now->lt($scheduleStart) || $now->gte($scheduleEnd)) {
+        $isBeforeClass = $now->isBefore($scheduleStart);
+        $classHasEnded = ! $now->isBefore($scheduleEnd);
+
+        // Starting is allowed only on the correct day and inside [start, end).
+        if (! $scheduledToday || $isBeforeClass || $classHasEnded) {
             throw ValidationException::withMessages([
                 'schedule_id' => ['Attendance can only be started during the scheduled class window.'],
             ]);
         }
 
+        // The caller needs both the session start and maximum ending time.
         return [$now, $scheduleEnd];
     }
 
-    private function resolveRoomDevice(
-        string $deviceId,
-        Schedule $schedule
-    ): BleDevice {
+    /**
+     * Find the requested ESP32 and ensure it can serve this schedule.
+     */
+    private function resolveRoomDevice(string $deviceId, Schedule $schedule): BleDevice
+    {
+        // deviceId is the public string printed/configured on the ESP32.
         $bleDevice = $this->attendanceSessionRepository
             ->findBleDeviceByPublicId($deviceId);
 
+        // Reject an ID that is not registered in ble_devices.
         if ($bleDevice === null) {
             throw ValidationException::withMessages([
                 'device_id' => [
@@ -112,6 +161,7 @@ class AttendanceSessionService
             ]);
         }
 
+        // BleDevice decides availability from its current status.
         if (! $bleDevice->isAvailable()) {
             throw ValidationException::withMessages([
                 'device_id' => [
@@ -120,6 +170,7 @@ class AttendanceSessionService
             ]);
         }
 
+        // A room beacon cannot be used for a class scheduled in another room.
         if ((int) $bleDevice->room_id !== (int) $schedule->room_id) {
             throw ValidationException::withMessages([
                 'device_id' => [
@@ -130,6 +181,40 @@ class AttendanceSessionService
             ]);
         }
 
+        // The return type guarantees that callers receive a valid BleDevice.
         return $bleDevice;
+    }
+
+    public function endAttendanceSession(int $attendance_session_id, int $schedule_id)
+    {
+        $activeSession = $this->attendanceSessionRepository
+            ->findActiveSession($schedule_id);
+
+        if ($activeSession === null) {
+            return [
+                'success' => false,
+                'message' => 'No active attendance session was found.',
+                'data' => null,
+            ];
+        }
+
+        if ((int) $activeSession->attendance_session_id !== $attendance_session_id) {
+            return [
+                'success' => false,
+                'message' => 'The attendance session does not match the active session.',
+                'data' => null,
+            ];
+        }
+
+        $this->attendanceSessionRepository->endAttendanceSession($attendance_session_id, [
+            'status' => 'ended',
+            'end_at' => now(),
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Attendance session ended successfully.',
+            'data' => $activeSession->refresh(),
+        ];
     }
 }

@@ -9,8 +9,10 @@ class AttendanceSession extends Model
 {
     use HasFactory;
 
+    // This table uses attendance_session_id instead of Laravel's default id.
     protected $primaryKey = 'attendance_session_id';
 
+    // These are the fields that the repository may mass-assign during creation.
     protected $fillable = [
         'session_code',
         'schedule_id',
@@ -27,10 +29,12 @@ class AttendanceSession extends Model
         'device_started_at',
     ];
 
+    // Never expose the stored token hash during normal model serialization.
     protected $hidden = [
         'ble_broadcast_token',
     ];
 
+    // Convert database values into useful PHP date and Boolean values.
     protected $casts = [
         'ble_token_expires_at' => 'datetime',
         'requires_periodic_verification' => 'boolean',
