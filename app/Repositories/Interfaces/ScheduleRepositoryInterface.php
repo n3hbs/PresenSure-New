@@ -7,6 +7,6 @@ namespace App\Repositories\Interfaces;
 interface ScheduleRepositoryInterface
 {
     public function create(array $data);
-
     public function createScheduleDay(array $data);
+    public function findSchedule(int $schedule_id);
 }

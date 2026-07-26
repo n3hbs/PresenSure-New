@@ -35,4 +35,10 @@ final class ScheduleRepository implements ScheduleRepositoryInterface
             })
             ->get();
     }
+
+    public function findSchedule(int $schedule_id)
+    {
+        return Schedule::with('scheduleDays')
+            ->findOrFail($schedule_id);
+    }
 }

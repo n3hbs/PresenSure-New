@@ -11,28 +11,18 @@ use Illuminate\Http\JsonResponse;
 
 class AttendanceSessionController extends Controller
 {
-    /**
-     * Laravel injects the service so the controller only coordinates the HTTP
-     * request and response; business rules remain in the service.
-     */
     public function __construct(
         protected AttendanceSessionService $attendanceSessionService,
         protected AttendanceSessionRepository $attendanceSessionRepository
     ) {}
 
-    /**
-     * Create an attendance session for the authenticated instructor.
-     */
     public function create(CreateDeviceAttendanceSessionRequest $request): JsonResponse
     {
-        // validated() contains only fields allowed by the Form Request.
-        // user() is supplied by Sanctum and cannot be chosen by the client.
         $result = $this->attendanceSessionService->createAttendanceSession(
             $request->validated(),
             $request->user()
         );
 
-        // The service returns a PHP array; the controller converts it to JSON.
         return response()->json([
             'message' => 'Attendance session created successfully.',
             'data' => $result,
