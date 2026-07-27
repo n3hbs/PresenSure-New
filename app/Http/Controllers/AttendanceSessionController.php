@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceSession\CheckActiveAttendanceRequest;
+use App\Http\Requests\AttendanceSession\ContinueAttendanceRequest;
 use App\Http\Requests\AttendanceSession\CreateDeviceAttendanceSessionRequest;
 use App\Http\Requests\AttendanceSession\StopAttendanceRequest;
 use App\Repositories\AttendanceSessionRepository;
@@ -31,11 +32,20 @@ class AttendanceSessionController extends Controller
 
     public function stopAttendance(StopAttendanceRequest $request)
     {
-        $result = $this->attendanceSessionService->endAttendanceSession((int) $request->validated('attendance_session_id'), (int) $request->validated('schedule_id'));
+        $result = $this->attendanceSessionService->editAttendanceSession($request->validated(), "ended");
         return response()->json(
             $result,
             $result['success'] ? 200 : 422
         );
+    }
+
+    public function continueAttendance(ContinueAttendanceRequest $request)
+    {
+        $result = $this->attendanceSessionService->editAttendanceSession($request->validated(), "active");
+        return response()->json([
+            'message' => 'Attendance session continued successfully.',
+            'data' => $result,
+        ], 200);
     }
 
     public function checkActive(CheckActiveAttendanceRequest $request)

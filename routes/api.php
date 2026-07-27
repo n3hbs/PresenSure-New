@@ -59,5 +59,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Send validated input and the authenticated instructor into the create flow.
     Route::post('attendance-session', [AttendanceSessionController::class, 'create']);
     Route::get('attendance-session/active', [AttendanceSessionController::class, 'checkActive']);
-    Route::put('attendance-session', [AttendanceSessionController::class, 'stopAttendance']);
+    Route::put('attendance-session/stop', [AttendanceSessionController::class, 'stopAttendance']);
+    Route::put('attendance-session/continue', [AttendanceSessionController::class, 'continueAttendance']);
 });

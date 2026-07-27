@@ -10,5 +10,7 @@ interface AttendanceSessionRepositoryInterface
 
     public function findActiveSession(int $schedule_id);
 
-    public function endAttendanceSession(int $attendanceSession_id, array $data);
+    public function editAttendanceStatus(int $attendanceSession_id, array $data);
+
+    public function findAttendanceSession(int $attendanceSession_id, int $schedule_id);
 }

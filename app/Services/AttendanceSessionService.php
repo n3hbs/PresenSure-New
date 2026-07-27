@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AttendanceSession;
 use App\Models\BleDevice;
 use App\Models\Schedule;
 use App\Models\User;
@@ -162,36 +163,81 @@ class AttendanceSessionService
         return $bleDevice;
     }
 
-    public function endAttendanceSession(int $attendance_session_id, int $schedule_id)
+
+    //int $attendance_session_id, int $schedule_id, string $status
+    public function editAttendanceSession(array $data, string $status)
     {
-        $activeSession = $this->attendanceSessionRepository
-            ->findActiveSession($schedule_id);
+        $session = $this->attendanceSessionRepository->findAttendanceSession($data['attendance_session_id'], $data['schedule_id']);
+        $schedule = $this->scheduleRepository->findSchedule((int) $data['schedule_id']);
+        [, $scheduleEnd] = $this->resolveScheduleWindow($schedule);
 
-        if ($activeSession === null) {
+
+        if ($session === null) {
             return [
                 'success' => false,
-                'message' => 'No active attendance session was found.',
+                'message' => 'The attendance session was not found for this schedule.',
                 'data' => null,
             ];
         }
 
-        if ((int) $activeSession->attendance_session_id !== $attendance_session_id) {
+        if ($status === 'ended') {
+            $this->attendanceSessionRepository->editAttendanceStatus(
+                $data['attendance_session_id'],
+                [
+                    'status' => 'ended',
+                    'end_at' => now(),
+                ]
+            );
+
             return [
-                'success' => false,
-                'message' => 'The attendance session does not match the active session.',
-                'data' => null,
+                'success' => true,
+                'message' => 'Attendance session ended successfully.',
+                'data' => [
+                    'session' => $session->refresh()->toArray(),
+                ],
             ];
         }
 
-        $this->attendanceSessionRepository->endAttendanceSession($attendance_session_id, [
-            'status' => 'ended',
-            'end_at' => now(),
-        ]);
+        if ($status === 'active') {
+            $bleDevice = $this->resolveRoomDevice(
+                $data['device_id'],
+                $schedule
+            );
+            $rawToken = Str::random(64);
+
+            $this->attendanceSessionRepository->editAttendanceStatus(
+                $data['attendance_session_id'],
+                [
+                    'status' => 'active',
+                    'end_at' => $scheduleEnd,
+                    'ble_device_id' => $bleDevice->ble_device_id,
+                    'ble_broadcast_token' => hash('sha256', $rawToken),
+                    'ble_token_expires_at' => $scheduleEnd,
+                ]
+            );
+
+            $session->refresh();
+
+            $beaconConfiguration = $this->beaconConfigurationService->generate(
+                $session,
+                $bleDevice
+            );
+
+            return [
+                'session' => $session->toArray(),
+                'ble_token' => $rawToken,
+                'beacon_configuration' => $beaconConfiguration,
+            ];
+        }
+
+
 
         return [
-            'success' => true,
-            'message' => 'Attendance session ended successfully.',
-            'data' => $activeSession->refresh(),
+            'success' => false,
+            'message' => 'Invalid attendance session status.',
+            'data' => null,
         ];
     }
+
+    public function continueAttendanceSession(int $attendance_session_id, int $schedule_id) {}
 }
