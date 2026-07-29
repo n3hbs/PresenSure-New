@@ -24,35 +24,42 @@ class AttendanceSessionController extends Controller
             $request->user()
         );
 
-        return response()->json([
-            'message' => 'Attendance session created successfully.',
-            'data' => $result,
-        ], 201);
-    }
-
-    public function stopAttendance(StopAttendanceRequest $request)
-    {
-        $result = $this->attendanceSessionService->editAttendanceSession($request->validated(), "ended");
-        return response()->json(
-            $result,
-            $result['success'] ? 200 : 422
+        return $this->successResponse(
+            $result['data'],
+            $result['message'],
+            201
         );
     }
 
-    public function continueAttendance(ContinueAttendanceRequest $request)
+    public function stopAttendance(StopAttendanceRequest $request): JsonResponse
     {
-        $result = $this->attendanceSessionService->editAttendanceSession($request->validated(), "active");
-        return response()->json([
-            'message' => 'Attendance session continued successfully.',
-            'data' => $result,
-        ], 200);
+        $result = $this->attendanceSessionService->endAttendanceSession($request->validated());
+
+        return $this->successResponse(
+            $result['data'],
+            $result['message']
+        );
     }
 
-    public function checkActive(CheckActiveAttendanceRequest $request)
+    public function continueAttendance(ContinueAttendanceRequest $request): JsonResponse
+    {
+        $result = $this->attendanceSessionService->continueAttendanceSession($request->validated());
+
+        return $this->successResponse(
+            $result['data'],
+            $result['message']
+        );
+    }
+
+    public function checkActive(CheckActiveAttendanceRequest $request): JsonResponse
     {
         $result = $this->attendanceSessionRepository->findActiveSession((int) $request->validated('schedule_id'));
-        return response()->json([
-            'data' => $result
-        ]);
+
+        return $this->successResponse(
+            $result,
+            $result === null
+                ? 'No active attendance session was found.'
+                : 'Active attendance session retrieved successfully.'
+        );
     }
 }

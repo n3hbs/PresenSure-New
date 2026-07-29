@@ -17,10 +17,6 @@ use Illuminate\Validation\ValidationException;
 
 class AttendanceSessionService
 {
-    /**
-     * Inject the collaborators responsible for attendance persistence, beacon
-     * configuration, and resolving the active academic period.
-     */
     public function __construct(
         protected AttendanceSessionRepository $attendanceSessionRepository,
         protected BeaconConfigurationService $beaconConfigurationService,
@@ -42,7 +38,8 @@ class AttendanceSessionService
             if (! $this->userCourseBlockRepository->isUserAssignedToCourseBlock($instructor->user_id, $schedule->course_block_id)) {
                 abort(403, 'You are not assigned to this schedule.');
             }
-            if ($this->attendanceSessionRepository->findActiveSession($schedule->schedule_id) !== null) {
+            $existingSession = $this->attendanceSessionRepository->findActiveSession($schedule->schedule_id);
+            if ($existingSession !== null && $existingSession->status === 'active' && $existingSession->end_at->isFuture()) {
                 abort(422, 'An active attendance session already exists for this schedule.');
             }
             [$now, $scheduleEnd] = $this->resolveScheduleWindow($schedule);
@@ -93,9 +90,13 @@ class AttendanceSessionService
             );
 
             return [
-                'session' => $session->toArray(),
-                'ble_token' => $rawToken,
-                'beacon_configuration' => $beaconConfiguration,
+                'success' => true,
+                'message' => 'Attendance session created successfully.',
+                'data' => [
+                    'session' => $session->toArray(),
+                    'ble_token' => $rawToken,
+                    'beacon_configuration' => $beaconConfiguration,
+                ]
             ];
         });
     }
@@ -163,81 +164,96 @@ class AttendanceSessionService
         return $bleDevice;
     }
 
+    public function endAttendanceSession(array $data)
+    {
+        $session = $this->attendanceSessionRepository->findAttendanceSession($data['attendance_session_id'], $data['schedule_id']);
+        $schedule = $this->scheduleRepository->findSchedule($data['schedule_id']);
 
-    //int $attendance_session_id, int $schedule_id, string $status
-    public function editAttendanceSession(array $data, string $status)
+        $this->resolveScheduleWindow($schedule);
+        if ($session === null) {
+            throw ValidationException::withMessages([
+                'attendance_session_id' => [
+                    'The attendance session was not found for this schedule.',
+                ],
+            ]);
+        }
+        if ($session->status !== 'active') {
+            throw ValidationException::withMessages([
+                'status' => [
+                    'Only an active attendance session can be ended.',
+                ],
+            ]);
+        }
+        $this->attendanceSessionRepository->editAttendanceStatus(
+            $data['attendance_session_id'],
+            [
+                'status' => 'ended',
+                'end_at' => now(),
+            ]
+        );
+
+        return [
+            'success' => true,
+            'message' => 'Attendance session ended successfully.',
+            'data' => [
+                'session' => $session->refresh()->toArray(),
+            ],
+        ];
+    }
+
+
+    public function continueAttendanceSession(array $data)
     {
         $session = $this->attendanceSessionRepository->findAttendanceSession($data['attendance_session_id'], $data['schedule_id']);
         $schedule = $this->scheduleRepository->findSchedule((int) $data['schedule_id']);
         [, $scheduleEnd] = $this->resolveScheduleWindow($schedule);
-
-
         if ($session === null) {
-            return [
-                'success' => false,
-                'message' => 'The attendance session was not found for this schedule.',
-                'data' => null,
-            ];
-        }
-
-        if ($status === 'ended') {
-            $this->attendanceSessionRepository->editAttendanceStatus(
-                $data['attendance_session_id'],
-                [
-                    'status' => 'ended',
-                    'end_at' => now(),
-                ]
-            );
-
-            return [
-                'success' => true,
-                'message' => 'Attendance session ended successfully.',
-                'data' => [
-                    'session' => $session->refresh()->toArray(),
+            throw ValidationException::withMessages([
+                'attendance_session_id' => [
+                    'The attendance session was not found for this schedule.',
                 ],
-            ];
+            ]);
+        }
+        if ($session->status !== 'ended') {
+            throw ValidationException::withMessages([
+                'status' => [
+                    'Only an ended attendance session can be continued.',
+                ],
+            ]);
         }
 
-        if ($status === 'active') {
-            $bleDevice = $this->resolveRoomDevice(
-                $data['device_id'],
-                $schedule
-            );
-            $rawToken = Str::random(64);
+        $bleDevice = $this->resolveRoomDevice(
+            $data['device_id'],
+            $schedule
+        );
+        $rawToken = Str::random(64);
 
-            $this->attendanceSessionRepository->editAttendanceStatus(
-                $data['attendance_session_id'],
-                [
-                    'status' => 'active',
-                    'end_at' => $scheduleEnd,
-                    'ble_device_id' => $bleDevice->ble_device_id,
-                    'ble_broadcast_token' => hash('sha256', $rawToken),
-                    'ble_token_expires_at' => $scheduleEnd,
-                ]
-            );
+        $this->attendanceSessionRepository->editAttendanceStatus(
+            $data['attendance_session_id'],
+            [
+                'status' => 'active',
+                'end_at' => $scheduleEnd,
+                'ble_device_id' => $bleDevice->ble_device_id,
+                'ble_broadcast_token' => hash('sha256', $rawToken),
+                'ble_token_expires_at' => $scheduleEnd,
+            ]
+        );
 
-            $session->refresh();
+        $session->refresh();
 
-            $beaconConfiguration = $this->beaconConfigurationService->generate(
-                $session,
-                $bleDevice
-            );
+        $beaconConfiguration = $this->beaconConfigurationService->generate(
+            $session,
+            $bleDevice
+        );
 
-            return [
+        return [
+            'success' => true,
+            'message' => 'Attendance session continued successfully',
+            'data' => [
                 'session' => $session->toArray(),
                 'ble_token' => $rawToken,
                 'beacon_configuration' => $beaconConfiguration,
-            ];
-        }
-
-
-
-        return [
-            'success' => false,
-            'message' => 'Invalid attendance session status.',
-            'data' => null,
+            ]
         ];
     }
-
-    public function continueAttendanceSession(int $attendance_session_id, int $schedule_id) {}
 }

@@ -150,7 +150,8 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('device_id');
+            ->assertJsonPath('success', false)
+            ->assertJsonStructure(['data' => ['errors' => ['device_id']]]);
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
@@ -161,7 +162,8 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('device_id');
+            ->assertJsonPath('success', false)
+            ->assertJsonStructure(['data' => ['errors' => ['device_id']]]);
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
@@ -179,7 +181,8 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('device_id');
+            ->assertJsonPath('success', false)
+            ->assertJsonStructure(['data' => ['errors' => ['device_id']]]);
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
@@ -190,7 +193,8 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('device_id');
+            ->assertJsonPath('success', false)
+            ->assertJsonStructure(['data' => ['errors' => ['device_id']]]);
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
@@ -201,7 +205,8 @@ class AttendanceSessionTest extends TestCase
 
         $this->postJson('/api/attendance-session', $this->validPayload())
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('schedule_id');
+            ->assertJsonPath('success', false)
+            ->assertJsonStructure(['data' => ['errors' => ['schedule_id']]]);
 
         $this->assertDatabaseCount('attendance_sessions', 0);
     }
