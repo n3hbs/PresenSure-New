@@ -23,35 +23,38 @@ class StudentService
     public function registerStudent(array $data)
     {
         return DB::transaction(function () use ($data) {
+            $isExisting = ($data['registration_type'] ?? 'new') === 'existing';
 
-            //create User
-            $user = $this->userService
-                ->createUser($data);
+            if (! $isExisting) {
+                // create User
+                $user = $this->userService
+                    ->createUser($data);
 
-            //upload and store user image
-            $profile = $this->userProfileService
-                ->uploadProfile($data['image'] ?? null, $data['user_id']);
+                // upload and store user image
+                $profile = $this->userProfileService
+                    ->uploadProfile($data['image'] ?? null, $data['user_id']);
 
-            //get active semester
-            $semester = $this->semesterService
-                ->getActiveSemester();
+                // get role_id by role_name
+                $role_id = $this->roleService->getRoleId('student');
 
-
-            //check if there is an active semester
-            if (!$semester) {
-                throw new Exception(
-                    'No active semester found.'
-                );
+                // assign user role
+                $this->roleRepository->assignUserRole($data['user_id'], $role_id);
             }
 
-            //check if the student already enrolled
+            // get active semester
+            $semester = $this->semesterService->getActiveSemester()['data'] ?? null;
+
+            // check if there is an active semester
+            if (! $semester) {
+                throw new Exception('No active semester found.');
+            }
+
+            // check if the student already enrolled
             if ($this->studentRepository->isEnrolled($data['user_id'], $semester->semester_id)) {
-                throw new Exception(
-                    'Student already enrolled.'
-                );
+                throw new Exception('Student already enrolled.');
             }
 
-            //register student
+            // register student
             $student = $this->studentRepository->create([
                 'user_id' => $data['user_id'],
                 'semester_id' => $semester->semester_id,
@@ -59,30 +62,24 @@ class StudentService
                 'year' => $data['year'],
                 'block' => $data['block'],
             ]);
-
-            //get role_id by role_name
-            $role_id = $this->roleService->getRoleId('student');
-
-            //assign user role
-            $this->roleRepository->assignUserRole($data['user_id'], $role_id);
         });
     }
 
     public function getStudentByActiveSemester()
     {
-        $semesterId = $this->semesterService->getActiveSemester();
-        return $this->studentRepository->getStudentByActiveSemester($semesterId->semester_id);
+        $semester = $this->semesterService->getActiveSemester()['data'] ?? null;
+        return $this->studentRepository->getStudentByActiveSemester($semester->semester_id);
     }
 
     public function getStudentDetails(string $user_id)
     {
-        $semesterId = $this->semesterService->getActiveSemester();
-        return $this->studentRepository->getStudentDetails($user_id, $semesterId->semester_id);
+        $semester = $this->semesterService->getActiveSemester()['data'] ?? null;
+        return $this->studentRepository->getStudentDetails($user_id, $semester->semester_id);
     }
 
     public function checkStudent(string $user_id)
     {
-        $semester = $this->semesterService->getActiveSemester();
+        $semester = $this->semesterService->getActiveSemester()['data'] ?? null;
         if (!$semester) {
             throw new Exception('No active semester found.');
         }

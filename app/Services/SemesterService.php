@@ -10,7 +10,20 @@ class SemesterService
         private SemesterRepository $semesterRepositry,
     ) {}
 
-    public function getActiveSemester() {
-        return $this->semesterRepositry->getActiveSemester();
+    public function getActiveSemester()
+    {
+        $semester = $this->semesterRepositry->getActiveSemester();
+
+        if ($semester) {
+            return [
+                'data' => $semester,
+                'message' => 'Active semester retrieved successfully',
+            ];
+        }
+
+        return [
+            'data' => null,
+            'message' => 'No active semester found',
+        ];
     }
 }

@@ -14,20 +14,16 @@ class AttendanceRecord extends Model
     protected $fillable = [
         'attendance_session_id',
         'student_id',
-        'ble_verified',
-        'face_verified',
         'presence_verified',
-        'ble_verified_at',
+        'face_verified',
         'face_verified_at',
         'verified_at',
         'status',
     ];
 
     protected $casts = [
-        'ble_verified' => 'boolean',
         'face_verified' => 'boolean',
         'presence_verified' => 'boolean',
-        'ble_verified_at' => 'datetime',
         'face_verified_at' => 'datetime',
         'verified_at' => 'datetime',
     ];

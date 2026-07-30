@@ -12,9 +12,15 @@ class SemesterController extends Controller
         protected SemesterService $semesterService,
     ) {}
 
-    public function getActiveSemester(){
-        return SemesterResource::collection(
-            $this->semesterService->getActiveSemester()
+    public function getActiveSemester()
+    {
+        $semester = $this->semesterService->getActiveSemester();
+
+
+        return $this->successResponse(
+            $semester['data'],
+            $semester['message'],
+            201
         );
     }
 }

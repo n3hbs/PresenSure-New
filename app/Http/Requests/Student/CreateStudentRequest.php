@@ -22,14 +22,19 @@ class CreateStudentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isExisting = $this->input('registration_type') === 'existing';
+
         return [
+            'registration_type' => 'nullable|string|in:new,existing',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'user_id' => 'required|string|unique:users,user_id',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'user_id' => $isExisting
+                ? 'required|string|exists:users,user_id'
+                : 'required|string|unique:users,user_id',
+            'first_name' => $isExisting ? 'nullable|string|max:255' : 'required|string|max:255',
+            'last_name' => $isExisting ? 'nullable|string|max:255' : 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:5',
             'suffix' => 'nullable|string|max:10',
-            'sex' => 'required|in:male,female',
+            'sex' => $isExisting ? 'nullable|in:male,female' : 'required|in:male,female',
             'program_id' => 'required',
             'year' => 'required|string|max:50',
             'block' => 'required|string|max:50',
