@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\AttendanceSessionController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\CourseController;
@@ -61,4 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('attendance-session/active', [AttendanceSessionController::class, 'checkActive']);
     Route::put('attendance-session/stop', [AttendanceSessionController::class, 'stopAttendance']);
     Route::put('attendance-session/continue', [AttendanceSessionController::class, 'continueAttendance']);
+
+    // attendance record
+    Route::post('attendance-record', [AttendanceRecordController::class, 'create']);
 });
