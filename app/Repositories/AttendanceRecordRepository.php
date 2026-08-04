@@ -11,4 +11,12 @@ class AttendanceRecordRepository implements AttendanceRecordRepositoryInterface
     {
         return AttendanceRecord::create($data);
     }
+
+    public function getAttendanceRecord(int $attendance_record_id)
+    {
+        return AttendanceRecord::where('attendance_record_id', $attendance_record_id)
+            ->whereDate('verified_at', today())
+            ->latest('verified_at')
+            ->first();
+    }
 }

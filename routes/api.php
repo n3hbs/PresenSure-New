@@ -65,4 +65,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // attendance record
     Route::post('attendance-record', [AttendanceRecordController::class, 'create']);
+    Route::get('attendance-record/check', [AttendanceRecordController::class, 'checkRecord']);
 });

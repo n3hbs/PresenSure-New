@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AttendanceRecord\CheckAttendanceRecordRequest;
 use App\Http\Requests\AttendanceRecord\StoreAttendanceRecordRequest;
 use App\Models\AttendanceRecord;
+use App\Repositories\AttendanceRecordRepository;
 use App\Services\AttendanceRecordService;
 
 class AttendanceRecordController extends Controller
@@ -11,6 +13,7 @@ class AttendanceRecordController extends Controller
 
     public function __construct(
         protected AttendanceRecordService $attendanceRecordService,
+        protected AttendanceRecordRepository $attendanceRecordRepository,
     ) {}
     /**
      * Display a listing of the resource.
@@ -72,5 +75,17 @@ class AttendanceRecordController extends Controller
     public function destroy(AttendanceRecord $attendanceRecord)
     {
         //
+    }
+
+    public function checkRecord(CheckAttendanceRecordRequest $request)
+    {
+        $result = $this->attendanceRecordRepository->getAttendanceRecord($request->validated('attendance_record_id'));
+
+        return $this->successResponse(
+            $result,
+            $result === null
+                ? 'No active attendance record was found.'
+                : 'Active attendance record retrieved successfully.'
+        );
     }
 }
