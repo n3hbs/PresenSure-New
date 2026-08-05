@@ -23,7 +23,9 @@ class CheckAttendanceRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attendance_record_id' => 'required|exists:attendance_records,attendance_record_id',
+            'schedule_id' => 'required_without:attendance_schedule_id|nullable|integer|exists:schedules,schedule_id',
+            'attendance_schedule_id' => 'required_without:schedule_id|nullable|integer|exists:schedules,schedule_id',
         ];
     }
+
 }

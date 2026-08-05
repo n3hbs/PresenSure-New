@@ -6,5 +6,5 @@ interface AttendanceRecordRepositoryInterface
 {
     public function create(array $data);
 
-    public function getAttendanceRecord(int $attendance_record_id);
+    public function getAttendanceRecord(int $schedule_id, string $user_id);
 }

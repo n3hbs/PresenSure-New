@@ -12,11 +12,14 @@ class AttendanceRecordRepository implements AttendanceRecordRepositoryInterface
         return AttendanceRecord::create($data);
     }
 
-    public function getAttendanceRecord(int $attendance_record_id)
+    public function getAttendanceRecord(int $schedule_id, string $student_id)
     {
-        return AttendanceRecord::where('attendance_record_id', $attendance_record_id)
+        return AttendanceRecord::whereHas('attendanceSession', function ($query) use ($schedule_id) {
+            $query->where('schedule_id', $schedule_id);
+        })
+            ->where('student_id', $student_id)
             ->whereDate('verified_at', today())
-            ->latest('verified_at')
             ->first();
     }
+
 }

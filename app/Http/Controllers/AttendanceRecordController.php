@@ -79,13 +79,16 @@ class AttendanceRecordController extends Controller
 
     public function checkRecord(CheckAttendanceRecordRequest $request)
     {
-        $result = $this->attendanceRecordRepository->getAttendanceRecord($request->validated('attendance_record_id'));
+        $scheduleId = (int) ($request->validated('schedule_id') ?? $request->validated('attendance_schedule_id'));
+        $result = $this->attendanceRecordRepository->getAttendanceRecord($scheduleId, $request->user()->user_id);
 
         return $this->successResponse(
             $result,
             $result === null
                 ? 'No active attendance record was found.'
-                : 'Active attendance record retrieved successfully.'
+                : 'Active attendance record retrieved successfully.',
+            200
         );
     }
+
 }
