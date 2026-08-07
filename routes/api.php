@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // instructor
     Route::post('instructor', [InstructorController::class, 'create']);
+    Route::get('instructors', [InstructorController::class, 'getAll']);
 
     // course
     Route::post('course', [CourseController::class, 'create']);

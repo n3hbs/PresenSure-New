@@ -2,6 +2,18 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+    --radius-xs: 0.0625rem;
+    --radius-sm: 0.125rem;
+    --radius-md: 0.25rem;
+    --radius-lg: 0.375rem;
+    --radius-xl: 0.5rem;
+    --radius-2xl: 0.625rem;
+    --radius-3xl: 0.75rem;
+    --radius-4xl: 1rem;
+    --radius: 0.25rem;
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -17,3 +29,23 @@ html {
     visibility: hidden;
     pointer-events: none;
 }
+
+/* Hide scrollbar globally across browsers */
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Utility class for selective element scrollbar hiding */
+@utility no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+

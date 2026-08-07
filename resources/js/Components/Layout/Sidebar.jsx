@@ -48,18 +48,18 @@ export default function Sidebar({ collapsed = false, mobile = false, onClose }) 
         href === "/dashboard" ? url === href : url?.startsWith(href);
 
     const navClass = (active) =>
-        `flex w-full items-center rounded-xl py-3 text-sm font-medium transition-all duration-200 ${
+        `flex w-full items-center rounded-xl py-2.5 text-sm font-medium transition-all duration-200 ${
             active
                 ? "bg-blue-50 text-blue-700 shadow-sm shadow-blue-100/70"
                 : "text-gray-600 hover:bg-blue-50/70 hover:text-blue-700"
-        } ${showText ? "gap-3 px-4" : "justify-center px-3"}`;
+        } ${showText ? "gap-2.5 px-3" : "justify-center px-2.5"}`;
 
     const subNavClass = (active) =>
-        `flex items-center rounded-xl py-2.5 text-sm transition-all duration-200 ${
+        `flex items-center rounded-xl py-2 text-sm transition-all duration-200 ${
             active
                 ? "bg-blue-50 text-blue-700 font-medium"
                 : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-        } ${showText ? "gap-3 px-4" : "justify-center px-3"}`;
+        } ${showText ? "gap-2.5 px-3" : "justify-center px-2.5"}`;
 
     const handleLinkClick = () => {
         if (mobile) {
@@ -70,12 +70,12 @@ export default function Sidebar({ collapsed = false, mobile = false, onClose }) 
     return (
         <aside
             className={`flex h-screen flex-col bg-white shadow-xl shadow-blue-950/5 transition-all duration-300 ${
-                showText ? "w-72" : "w-20"
+                showText ? "w-60" : "w-16"
             }`}
         >
             <div
-                className={`flex h-20 items-center ${
-                    showText ? "justify-between px-6" : "justify-center px-3"
+                className={`flex h-16 items-center ${
+                    showText ? "justify-between px-4" : "justify-center px-2"
                 }`}
             >
                 <div
@@ -86,15 +86,15 @@ export default function Sidebar({ collapsed = false, mobile = false, onClose }) 
                     <img
                         src={Logo}
                         alt="PresenSure Logo"
-                        className="h-11 w-11 object-contain"
+                        className="h-9 w-9 object-contain"
                     />
                     {showText && (
-                        <div className="ml-3">
-                            <h1 className="text-xl font-bold tracking-tight text-gray-900">
+                        <div className="ml-2.5">
+                            <h1 className="text-lg font-bold tracking-tight text-gray-900 leading-tight">
                                 Presen
                                 <span className="text-blue-600">Sure</span>
                             </h1>
-                            <p className="text-xs font-medium text-gray-400">
+                            <p className="text-[11px] font-medium text-gray-400 leading-none">
                                 Smart Attendance
                             </p>
                         </div>
@@ -105,7 +105,7 @@ export default function Sidebar({ collapsed = false, mobile = false, onClose }) 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-full p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
+                        className="rounded-full p-1.5 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
                         aria-label="Close sidebar"
                     >
                         <XMarkIcon className="h-5 w-5" />
@@ -114,8 +114,8 @@ export default function Sidebar({ collapsed = false, mobile = false, onClose }) 
             </div>
 
             <nav
-                className={`flex-1 space-y-1.5 overflow-y-auto pb-6 ${
-                    showText ? "px-4" : "px-3"
+                className={`flex-1 space-y-1 overflow-y-auto pb-6 ${
+                    showText ? "px-3" : "px-2"
                 }`}
             >
                 <Link

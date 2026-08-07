@@ -17,8 +17,13 @@ class Instructor extends Model
         'status'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
     public function department()
     {
-        return $this->hasOne(Department::class, 'department_id', 'department_id');
+        return $this->belongsTo(Department::class, 'department_id', 'department_id');
     }
 }

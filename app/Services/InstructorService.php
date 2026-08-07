@@ -49,4 +49,9 @@ class InstructorService
             ];
         });
     }
+
+    public function getAllInstructors()
+    {
+        return $this->instructorRepository->getAllInstructors();
+    }
 }
