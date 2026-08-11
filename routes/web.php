@@ -37,3 +37,8 @@ Route::get('/students/student-details', function () {
 Route::get('/instructors', function () {
     return Inertia::render('Instructors/Index');
 })->name('instructors.index');
+
+Route::get('/instructors/single-registration', function () {
+    return Inertia::render('Instructors/SingleRegistration');
+})->name('instructors.single-registration');
+
