@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // schedule
     Route::post('schedule', [ScheduleController::class, 'create']);
     Route::get('user/{user_id}/course-schedules', [ScheduleController::class, 'getUserCourseSchedule']);
+    Route::get('schedule/{schedule_id}/students', [ScheduleController::class, 'getScheduleStudentList']);
 
     // period
     Route::post('period', [PeriodController::class, 'create']);

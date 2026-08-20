@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Http\Resources\Student\ActiveSemesterStudentListResource;
 use App\Repositories\ScheduleRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -68,5 +69,25 @@ final class ScheduleService
             $userId,
             $activeSemester->semester_id
         );
+    }
+
+    public function getScheduleStudentList(int $schedule_id): array
+    {
+        $students = $this->scheduleRepository->getScheduleStudentList($schedule_id);
+
+        $formattedStudents = ActiveSemesterStudentListResource::collection($students);
+        $studentsWithoutProfileCount = $students->filter(
+            fn ($user) => empty($user->userProfile?->imagelink)
+        )->count();
+
+        return [
+            'success' => true,
+            'message' => 'Student list retrieved successfully.',
+            'data' => [
+                'students' => $formattedStudents,
+                'student_count' => $students->count(),
+                'students_without_profile_image_count' => $studentsWithoutProfileCount,
+            ],
+        ];
     }
 }

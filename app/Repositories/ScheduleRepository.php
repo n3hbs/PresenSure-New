@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Models\Schedule;
 use App\Models\ScheduleDay;
+use App\Models\User;
 use App\Models\UserCourseBlock;
 use App\Repositories\Interfaces\ScheduleRepositoryInterface;
 
@@ -40,5 +41,26 @@ final class ScheduleRepository implements ScheduleRepositoryInterface
     {
         return Schedule::with('scheduleDays')
             ->findOrFail($schedule_id);
+    }
+
+    public function getScheduleStudentList(int $schedule_id)
+    {
+        $schedule = Schedule::findOrFail($schedule_id);
+
+        return User::with([
+            'userProfile',
+            'student.program',
+            'roleAssignment.role',
+        ])
+            ->whereHas('userCourseBlocks', function ($query) use ($schedule) {
+                $query->where('course_block_id', $schedule->course_block_id);
+            })
+            ->whereHas('roleAssignment.role', function ($query) {
+                $query->where('role_name', 'student');
+            })
+            ->orderByRaw("CASE WHEN LOWER(sex) = 'male' THEN 1 WHEN LOWER(sex) = 'female' THEN 2 ELSE 3 END")
+            ->orderBy('last_name', 'asc')
+            ->orderBy('first_name', 'asc')
+            ->get();
     }
 }
