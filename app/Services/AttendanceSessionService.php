@@ -89,6 +89,7 @@ class AttendanceSessionService
                 $bleDevice
             );
 
+
             return [
                 'success' => true,
                 'message' => 'Attendance session created successfully.',
@@ -192,11 +193,14 @@ class AttendanceSessionService
             ]
         );
 
+        $session->refresh();
+
+
         return [
             'success' => true,
             'message' => 'Attendance session ended successfully.',
             'data' => [
-                'session' => $session->refresh()->toArray(),
+                'session' => $session->toArray(),
             ],
         ];
     }
@@ -245,6 +249,7 @@ class AttendanceSessionService
             $session,
             $bleDevice
         );
+
 
         return [
             'success' => true,

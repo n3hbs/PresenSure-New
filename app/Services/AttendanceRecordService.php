@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\AttendanceRecordCreated;
 use App\Models\User;
 use App\Repositories\AttendanceRecordRepository;
 use App\Repositories\AttendanceSessionRepository;
@@ -45,6 +46,9 @@ class AttendanceRecordService
                 'rssi' => $data['rssi'],
                 'detected_at' => $data['detected_at'],
             ]);
+
+            // Dispatch WebSocket broadcast event for real-time monitoring
+            AttendanceRecordCreated::dispatch($attendanceRecord, $bleDetection);
 
             return [
                 'success' => true,
