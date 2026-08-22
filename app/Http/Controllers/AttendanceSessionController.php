@@ -62,4 +62,24 @@ class AttendanceSessionController extends Controller
                 : 'Active attendance session retrieved successfully.'
         );
     }
+
+    public function getSessionStudents(int $attendanceSessionId): JsonResponse
+    {
+        $result = $this->attendanceSessionService->getSessionStudents($attendanceSessionId);
+
+        return $this->successResponse(
+            $result['data'],
+            $result['message']
+        );
+    }
+
+    public function getActiveSessionStudents(CheckActiveAttendanceRequest $request): JsonResponse
+    {
+        $result = $this->attendanceSessionService->getActiveSessionStudents((int) $request->validated('schedule_id'));
+
+        return $this->successResponse(
+            $result['data'],
+            $result['message']
+        );
+    }
 }

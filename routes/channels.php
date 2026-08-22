@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (string) $user->user_id === (string) $id;
-});
+}, ['guards' => ['sanctum']]);
 
 Broadcast::channel('attendance.session.{sessionId}', function ($user, $sessionId) {
     $session = AttendanceSession::find($sessionId);
@@ -27,4 +27,4 @@ Broadcast::channel('attendance.session.{sessionId}', function ($user, $sessionId
                 ->where('schedule_id', $session->schedule_id);
         })
         ->exists();
-}, ['guards' => ['web', 'sanctum']]);
+}, ['guards' => ['sanctum']]);

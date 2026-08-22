@@ -25,8 +25,8 @@ class StoreAttendanceRecordRequest extends FormRequest
         return [
             'schedule_id' => 'required',
             'presence_verified' => 'required',
-            'face_verified' => 'required',
-            'face_verified_at' => 'required',
+            'face_verified' => 'nullable',
+            'face_verified_at' => 'nullable',
             'verified_at' => 'required',
             'rssi' => 'required',
             'detected_at' => 'required',

@@ -13,6 +13,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\StudentController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::post('user/signin', [AuthController::class, 'signIn']);
@@ -20,6 +21,7 @@ Route::post('user/signin', [AuthController::class, 'signIn']);
 // Sanctum resolves the bearer token into $request->user(). Requests without a
 // valid access token are rejected before any route in this group is executed.
 Route::middleware('auth:sanctum')->group(function () {
+    Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
     // students
     Route::post('student', [StudentController::class, 'create']);
@@ -62,6 +64,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Send validated input and the authenticated instructor into the create flow.
     Route::post('attendance-session', [AttendanceSessionController::class, 'create']);
     Route::get('attendance-session/active', [AttendanceSessionController::class, 'checkActive']);
+    Route::get('attendance-session/active/students', [AttendanceSessionController::class, 'getActiveSessionStudents']);
+    Route::get('attendance-session/{attendance_session_id}/students', [AttendanceSessionController::class, 'getSessionStudents']);
     Route::put('attendance-session/stop', [AttendanceSessionController::class, 'stopAttendance']);
     Route::put('attendance-session/continue', [AttendanceSessionController::class, 'continueAttendance']);
 
