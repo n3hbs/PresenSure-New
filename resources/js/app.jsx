@@ -1,4 +1,6 @@
 import "../css/app.css";
+import "./bootstrap";
+import "./echo";
 import { createInertiaApp } from "@inertiajs/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";

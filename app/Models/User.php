@@ -70,4 +70,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(InstructorMark::class, 'user_id', 'user_id');
     }
+
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class, 'student_id', 'user_id');
+    }
 }
