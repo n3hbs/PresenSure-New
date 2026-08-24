@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\AttendanceSessionController;
+use App\Http\Controllers\BleDetectionController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DepartmentController;
@@ -72,4 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // attendance record
     Route::post('attendance-record', [AttendanceRecordController::class, 'create']);
     Route::get('attendance-record/check', [AttendanceRecordController::class, 'checkRecord']);
+
+    // ble detection
+    Route::post('ble-detection', [BleDetectionController::class, 'store']);
 });
