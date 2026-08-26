@@ -18,18 +18,18 @@ class CheckStudentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $user = $this->resource['user'] ?? null;
+        $user = $this->resource['data']['user'] ?? $this->resource['user'] ?? null;
 
         return [
+            'success' => $this->resource['success'] ?? false,
             'exists' => $this->resource['exists'] ?? false,
-            'already_enrolled' => $this->resource['already_enrolled'] ?? false,
             'message' => $this->resource['message'] ?? null,
             'data' => $user ? [
                 ...((new UserResource($user))->toArray($request)),
                 'profile' => $user->userProfile
                     ? new UserProfileResource($user->userProfile)
                     : null,
-            ] : null,
+            ] : [],
         ];
     }
 }

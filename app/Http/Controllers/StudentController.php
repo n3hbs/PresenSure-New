@@ -16,8 +16,13 @@ class StudentController extends Controller
 
     public function create(CreateStudentRequest $request)
     {
-        $this->studentService->registerStudent($request->validated());
-        return response()->json(['message' => 'Student successfully registered.',], 201);
+        $result = $this->studentService->registerStudent($request->validated());
+
+        return $this->successResponse(
+            $result['data'],
+            $result['message'],
+            201
+        );
     }
 
     public function getStudentByActiveSemester()
