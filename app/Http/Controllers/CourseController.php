@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Course\AssignUserCourseBlockRequest;
 use App\Http\Requests\Course\CreateCourseBlockRequest;
 use App\Http\Requests\Course\CreateCourseRequest;
-use App\Http\Resources\UserCourseScheduleResource;
 use App\Services\CourseService;
 
 class CourseController extends Controller
