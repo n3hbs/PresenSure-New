@@ -90,7 +90,6 @@ class AttendanceSessionService
                 $bleDevice
             );
 
-
             return [
                 'success' => true,
                 'message' => 'Attendance session created successfully.',

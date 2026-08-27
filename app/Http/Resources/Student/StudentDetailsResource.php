@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Student;
 
+use App\Http\Resources\BaseResource;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\StudentResource;
 use App\Http\Resources\UserProfileResource;
@@ -9,9 +10,9 @@ use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class StudentDetailsResource extends JsonResource
+class StudentDetailsResource extends BaseResource
 {
-    public function toArray(Request $request): array
+    public function data(Request $request): array
     {
         return [
             'user' => new UserResource($this),
