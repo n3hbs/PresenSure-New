@@ -63,20 +63,13 @@ class StudentService
             }
 
             // register student
-            $student = $this->studentRepository->create([
+            return $this->studentRepository->create([
                 'user_id' => $data['user_id'],
                 'semester_id' => $semester->semester_id,
                 'program_id' => $data['program_id'],
                 'year' => $data['year'],
                 'block' => $data['block'],
             ]);
-            return [
-                'success' => true,
-                'message' => 'Student registered successfully.',
-                'data' => [
-                    'student' => $student->toArray(),
-                ],
-            ];
         });
     }
 
@@ -120,12 +113,11 @@ class StudentService
         $user = $this->userRepository->findByUserId($user_id);
 
         if (!$user) {
-            return [
-                'success' => false,
-                'exists' => false,
-                'message' => 'Student account not found.',
-                'data' => []
-            ];
+            throw ValidationException::withMessages([
+                'user_id' => [
+                    'Student account not found.',
+                ],
+            ]);
         }
 
         $alreadyEnrolled = $this->studentRepository->isEnrolled(
@@ -134,14 +126,9 @@ class StudentService
         );
 
         return [
-            'success' => true,
             'exists' => true,
-            'message' => $alreadyEnrolled
-                ? 'Student is already enrolled in the active semester.'
-                : 'Student account found.',
-            'data' => [
-                'user' => $user,
-            ],
+            'already_enrolled' => $alreadyEnrolled,
+            'user' => $user,
         ];
     }
 }

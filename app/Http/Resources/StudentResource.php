@@ -16,10 +16,10 @@ class StudentResource extends JsonResource
     {
         return [
             'student_id' => $this->student_id,
+            'user_id' => $this->user_id,
             'year' => $this->year,
             'block' => $this->block,
             'status' => $this->status,
-
             'program' => new ProgramResource(
                 $this->whenLoaded('program')
             ),

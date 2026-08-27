@@ -7,6 +7,7 @@ use App\Services\StudentService;
 use App\Http\Resources\Student\ActiveSemesterStudentListResource;
 use App\Http\Resources\Student\CheckStudentResource;
 use App\Http\Resources\Student\StudentDetailsResource;
+use App\Http\Resources\StudentResource;
 
 class StudentController extends Controller
 {
@@ -16,11 +17,11 @@ class StudentController extends Controller
 
     public function create(CreateStudentRequest $request)
     {
-        $result = $this->studentService->registerStudent($request->validated());
+        $student = $this->studentService->registerStudent($request->validated());
 
         return $this->successResponse(
-            $result['data'],
-            $result['message'],
+            new StudentResource($student),
+            'Student registered successfully.',
             201
         );
     }
@@ -28,17 +29,24 @@ class StudentController extends Controller
     public function getStudentByActiveSemester()
     {
         $students = $this->studentService->getStudentByActiveSemester();
-        return ActiveSemesterStudentListResource::collection($students);
+        return ActiveSemesterStudentListResource::collection($students)
+            ->message('Student List Retrieved Successfully.')
+            ->status(200);
     }
 
     public function getStudentDetails(string $user_id)
     {
         $student = $this->studentService->getStudentDetails($user_id);
-        return new StudentDetailsResource($student);
+        return (new StudentDetailsResource($student))
+            ->message('Student Details Retrieved Successfully.')
+            ->status(200);
     }
 
     public function checkStudent(string $user_id)
     {
-        return new CheckStudentResource($this->studentService->checkStudent($user_id));
+        $student = $this->studentService->checkStudent($user_id);
+        return (new CheckStudentResource($student))
+            ->message('Student Checked Successfully.')
+            ->status(200);
     }
 }
