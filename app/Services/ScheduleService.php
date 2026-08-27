@@ -75,19 +75,14 @@ final class ScheduleService
     {
         $students = $this->scheduleRepository->getScheduleStudentList($schedule_id);
 
-        $formattedStudents = ActiveSemesterStudentListResource::collection($students);
         $studentsWithoutProfileCount = $students->filter(
-            fn ($user) => empty($user->userProfile?->imagelink)
+            fn($user) => empty($user->userProfile?->imagelink)
         )->count();
 
         return [
-            'success' => true,
-            'message' => 'Student list retrieved successfully.',
-            'data' => [
-                'students' => $formattedStudents,
-                'student_count' => $students->count(),
-                'students_without_profile_image_count' => $studentsWithoutProfileCount,
-            ],
+            'students' => $students,
+            'student_count' => $students->count(),
+            'students_without_profile_image_count' => $studentsWithoutProfileCount,
         ];
     }
 }
