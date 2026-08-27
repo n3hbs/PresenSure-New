@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\InstructorRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class InstructorService
 {
@@ -13,8 +14,7 @@ class InstructorService
         protected UserProfileService $userProfileService,
         protected InstructorRepository $instructorRepository,
         protected RoleService $roleService
-    ) {
-    }
+    ) {}
     public function createInstructor(array $data)
     {
         return DB::transaction(function () use ($data) {
@@ -38,15 +38,17 @@ class InstructorService
             $role_id = $this->roleService->getRoleId('instructor');
 
             if (!$role_id) {
-                throw new Exception('Instructor role not found.');
+                throw ValidationException::withMessages([
+                    'role_id' => [
+                        'Instructor role not found.'
+                    ],
+                ]);
             }
 
             //assign user role
             $this->roleService->assignUserRole($data['user_id'], $role_id);
 
-            return [
-                'message' => "Instructor successfully registered."
-            ];
+            return $instructor;
         });
     }
 
