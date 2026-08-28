@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Building\CreateBuildingRequest;
+use App\Http\Resources\BuildingResource;
 use App\Services\BuildingService;
-use Illuminate\Http\Request;
 
 class BuildingController extends Controller
 {
@@ -12,8 +12,13 @@ class BuildingController extends Controller
         protected BuildingService $buildingService,
     ) {}
 
-    public function create(CreateBuildingRequest $request) {
-        $this->buildingService->create($request->validated());
-        return response()->json(['message' => 'Building Successfully Created',], 201);
+    public function create(CreateBuildingRequest $request)
+    {
+        $building = $this->buildingService->create($request->validated());
+        return $this->successResponse(
+            new BuildingResource($building),
+            'Building Successfully Created',
+            201
+        );
     }
 }

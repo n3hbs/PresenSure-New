@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\DepartmentRepository;
+use Illuminate\Validation\ValidationException;
 
 class DepartmentService
 {
@@ -12,6 +13,15 @@ class DepartmentService
 
     public function getDepartments()
     {
-        return $this->departmentRepository->getAll();
+        $department = $this->departmentRepository->getAll();
+        if ($department->isEmpty()) {
+            throw ValidationException::withMessages([
+                'department_id' => [
+                    'No department found.',
+                ],
+            ]);
+        }
+
+        return $department;
     }
 }

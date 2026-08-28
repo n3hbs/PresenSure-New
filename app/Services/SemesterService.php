@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\SemesterRepository;
+use Illuminate\Validation\ValidationException;
 
 class SemesterService
 {
@@ -14,16 +15,14 @@ class SemesterService
     {
         $semester = $this->semesterRepositry->getActiveSemester();
 
-        if ($semester) {
-            return [
-                'data' => $semester,
-                'message' => 'Active semester retrieved successfully',
-            ];
+        if (! $semester) {
+            throw ValidationException::withMessages([
+                'semester_id' => [
+                    'No active semester found.',
+                ],
+            ]);
         }
 
-        return [
-            'data' => null,
-            'message' => 'No active semester found',
-        ];
+        return $semester;
     }
 }

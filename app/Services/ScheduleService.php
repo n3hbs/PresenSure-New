@@ -59,7 +59,7 @@ final class ScheduleService
 
     public function getUserScheduleByActiveSemester(string $userId)
     {
-        $activeSemester = $this->semesterService->getActiveSemester()['data'] ?? null;
+        $activeSemester = $this->semesterService->getActiveSemester();
 
         if (!$activeSemester) {
             return collect();
