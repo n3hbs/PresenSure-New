@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\PeriodRepository;
+use Illuminate\Validation\ValidationException;
 
 final class PeriodService
 {
@@ -29,6 +30,16 @@ final class PeriodService
      */
     public function getActivePeriod()
     {
-        return $this->periodRepository->getActivePeriod();
+        $period = $this->periodRepository->getActivePeriod();
+
+        if (! $period) {
+            throw ValidationException::withMessages([
+                'period_id' => [
+                    'No active period found.',
+                ],
+            ]);
+        }
+
+        return $period;
     }
 }

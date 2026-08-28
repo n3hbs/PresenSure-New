@@ -13,8 +13,11 @@ class ProgramController extends Controller
 
     public function index()
     {
-        return ProgramResource::collection(
-            $this->programService->getPrograms()
+        $programs = $this->programService->getPrograms();
+        return $this->successResponse(
+            ProgramResource::collection($programs),
+            'Programs retrieved successfully.',
+            200
         );
     }
 }

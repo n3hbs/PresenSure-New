@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\SemesterResource;
 use App\Services\SemesterService;
-use Illuminate\Http\Request;
 
 class SemesterController extends Controller
 {
@@ -18,9 +17,9 @@ class SemesterController extends Controller
 
 
         return $this->successResponse(
-            $semester['data'],
-            $semester['message'],
-            201
+            new SemesterResource($semester),
+            'Active semester retrieved successfully.',
+            200
         );
     }
 }

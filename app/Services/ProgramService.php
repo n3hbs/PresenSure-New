@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\ProgramRepository;
+use Illuminate\Validation\ValidationException;
 
 class ProgramService
 {
@@ -12,6 +13,15 @@ class ProgramService
 
     public function getPrograms()
     {
-        return $this->programRepository->getAll();
+        $program = $this->programRepository->getAll();
+        if ($program->isEmpty()) {
+            throw ValidationException::withMessages([
+                'program_id' => [
+                    'No program found.',
+                ],
+            ]);
+        }
+
+        return $program;
     }
 }

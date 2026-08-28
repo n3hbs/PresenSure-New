@@ -42,7 +42,7 @@ class StudentService
             }
 
             // get active semester
-            $semester = $this->semesterService->getActiveSemester()['data'] ?? null;
+            $semester = $this->semesterService->getActiveSemester();
 
             // check if there is an active semester
             if (! $semester) {
@@ -75,7 +75,7 @@ class StudentService
 
     public function getStudentByActiveSemester()
     {
-        $semester = $this->semesterService->getActiveSemester()['data'] ?? null;
+        $semester = $this->semesterService->getActiveSemester();
 
         if (! $semester) {
             throw ValidationException::withMessages([
@@ -88,7 +88,7 @@ class StudentService
 
     public function getStudentDetails(string $user_id)
     {
-        $semester = $this->semesterService->getActiveSemester()['data'] ?? null;
+        $semester = $this->semesterService->getActiveSemester();
 
         if (! $semester) {
             throw ValidationException::withMessages([
@@ -101,7 +101,7 @@ class StudentService
 
     public function checkStudent(string $user_id)
     {
-        $semester = $this->semesterService->getActiveSemester()['data'] ?? null;
+        $semester = $this->semesterService->getActiveSemester();
         if (!$semester) {
             throw ValidationException::withMessages([
                 'semester_id' => [

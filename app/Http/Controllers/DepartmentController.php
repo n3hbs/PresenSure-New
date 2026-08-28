@@ -13,8 +13,11 @@ class DepartmentController extends Controller
 
     public function index()
     {
-        return DepartmentResource::collection(
-            $this->departmentService->getDepartments()
+        $departments = $this->departmentService->getDepartments();
+        return $this->successResponse(
+            DepartmentResource::collection($departments),
+            'Departments retrieved successfully.',
+            200
         );
     }
 }
