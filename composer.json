@@ -26,7 +26,8 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^3.8",
-        "pestphp/pest-plugin-laravel": "^3.2"
+        "pestphp/pest-plugin-laravel": "^3.2",
+        "squeak/rat": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -91,5 +92,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "squeak-rat": {
+            "type": "vcs",
+            "url": "https://github.com/CodeWithTeds/squeak-rat.git"
+        }
+    }
 }

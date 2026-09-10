@@ -1,0 +1,3553 @@
+{
+  "generated_at": "2026-09-09T00:41:12+00:00",
+  "stats": {
+    "routes": 36,
+    "files": 228,
+    "by_type": {
+      "Other": 145,
+      "Controller": 17,
+      "Middleware": 1,
+      "Model": 27,
+      "Service": 38
+    },
+    "graph": {
+      "nodes": 266,
+      "edges": 175,
+      "by_type": {
+        "Route": 36,
+        "Controller": 17,
+        "Other": 142,
+        "Middleware": 1,
+        "Model": 28,
+        "Service": 41,
+        "Database": 1
+      }
+    },
+    "findings": {
+      "critical": 0,
+      "high": 3,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "project_root": "C:\\laravelProjects\\PresenSure"
+  },
+  "findings": [
+    {
+      "id": "RAT-001",
+      "title": "Potential hardcoded secret",
+      "description": "Hardcoded secret-like string detected.",
+      "severity": "high",
+      "confidence": "medium",
+      "entry": "tests\\Feature\\AttendanceSessionTest.php",
+      "source": "hardcoded value",
+      "sink": "secret exposure",
+      "flow": [
+        "tests\\Feature\\AttendanceSessionTest.php",
+        "secret",
+        "exposure"
+      ],
+      "file": "tests\\Feature\\AttendanceSessionTest.php",
+      "line": 26,
+      "recommendations": [
+        "Move secret to env file",
+        "Rotate exposed credential",
+        "Scan git history"
+      ],
+      "category": "security",
+      "why": "File tests\\Feature\\AttendanceSessionTest.php:26 contains string matching secret pattern `SECRET = '`. Verify not a real credential."
+    },
+    {
+      "id": "RAT-002",
+      "title": "Potential hardcoded secret",
+      "description": "Hardcoded secret-like string detected.",
+      "severity": "high",
+      "confidence": "medium",
+      "entry": "tests\\Unit\\BeaconConfigurationServiceTest.php",
+      "source": "hardcoded value",
+      "sink": "secret exposure",
+      "flow": [
+        "tests\\Unit\\BeaconConfigurationServiceTest.php",
+        "secret",
+        "exposure"
+      ],
+      "file": "tests\\Unit\\BeaconConfigurationServiceTest.php",
+      "line": 13,
+      "recommendations": [
+        "Move secret to env file",
+        "Rotate exposed credential",
+        "Scan git history"
+      ],
+      "category": "security",
+      "why": "File tests\\Unit\\BeaconConfigurationServiceTest.php:13 contains string matching secret pattern `SECRET = '`. Verify not a real credential."
+    },
+    {
+      "id": "RAT-003",
+      "title": "Potential hardcoded secret",
+      "description": "Hardcoded secret-like string detected.",
+      "severity": "high",
+      "confidence": "medium",
+      "entry": "tests\\Unit\\BeaconConfigurationServiceTest.php",
+      "source": "hardcoded value",
+      "sink": "secret exposure",
+      "flow": [
+        "tests\\Unit\\BeaconConfigurationServiceTest.php",
+        "secret",
+        "exposure"
+      ],
+      "file": "tests\\Unit\\BeaconConfigurationServiceTest.php",
+      "line": 21,
+      "recommendations": [
+        "Move secret to env file",
+        "Rotate exposed credential",
+        "Scan git history"
+      ],
+      "category": "security",
+      "why": "File tests\\Unit\\BeaconConfigurationServiceTest.php:21 contains string matching secret pattern `Secret = '`. Verify not a real credential."
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "route:GET:/",
+        "type": "Route",
+        "name": "GET /",
+        "file": "routes\\web.php",
+        "line": 6,
+        "meta": {
+          "action": "Closure"
+        }
+      },
+      {
+        "id": "route:GET:/signin",
+        "type": "Route",
+        "name": "GET /signin",
+        "file": "routes\\web.php",
+        "line": 14,
+        "meta": {
+          "action": "Closure"
+        }
+      },
+      {
+        "id": "route:GET:/dashboard",
+        "type": "Route",
+        "name": "GET /dashboard",
+        "file": "routes\\web.php",
+        "line": 18,
+        "meta": {
+          "action": "Closure"
+        }
+      },
+      {
+        "id": "route:GET:/students",
+        "type": "Route",
+        "name": "GET /students",
+        "file": "routes\\web.php",
+        "line": 24,
+        "meta": {
+          "action": "Closure"
+        }
+      },
+      {
+        "id": "route:GET:/students/single-registration",
+        "type": "Route",
+        "name": "GET /students/single-registration",
+        "file": "routes\\web.php",
+        "line": 28,
+        "meta": {
+          "action": "Closure"
+        }
+      },
+      {
+        "id": "route:GET:/students/student-details",
+        "type": "Route",
+        "name": "GET /students/student-details",
+        "file": "routes\\web.php",
+        "line": 32,
+        "meta": {
+          "action": "Closure"
+        }
+      },
+      {
+        "id": "route:GET:/instructors",
+        "type": "Route",
+        "name": "GET /instructors",
+        "file": "routes\\web.php",
+        "line": 37,
+        "meta": {
+          "action": "Closure"
+        }
+      },
+      {
+        "id": "route:GET:/instructors/single-registration",
+        "type": "Route",
+        "name": "GET /instructors/single-registration",
+        "file": "routes\\web.php",
+        "line": 41,
+        "meta": {
+          "action": "Closure"
+        }
+      },
+      {
+        "id": "route:POST:user/signin",
+        "type": "Route",
+        "name": "POST user/signin",
+        "file": "routes\\api.php",
+        "line": 20,
+        "meta": {
+          "action": "AuthController@signIn"
+        }
+      },
+      {
+        "id": "controller:AuthController",
+        "type": "Controller",
+        "name": "AuthController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:POST:student",
+        "type": "Route",
+        "name": "POST student",
+        "file": "routes\\api.php",
+        "line": 28,
+        "meta": {
+          "action": "StudentController@create"
+        }
+      },
+      {
+        "id": "controller:StudentController",
+        "type": "Controller",
+        "name": "StudentController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:GET:student/getByActiveSemester",
+        "type": "Route",
+        "name": "GET student/getByActiveSemester",
+        "file": "routes\\api.php",
+        "line": 29,
+        "meta": {
+          "action": "StudentController@getStudentByActiveSemester"
+        }
+      },
+      {
+        "id": "route:GET:student/{user_id}",
+        "type": "Route",
+        "name": "GET student/{user_id}",
+        "file": "routes\\api.php",
+        "line": 30,
+        "meta": {
+          "action": "StudentController@getstudentDetails"
+        }
+      },
+      {
+        "id": "route:GET:student/check-user/{user_id}",
+        "type": "Route",
+        "name": "GET student/check-user/{user_id}",
+        "file": "routes\\api.php",
+        "line": 31,
+        "meta": {
+          "action": "StudentController@checkStudent"
+        }
+      },
+      {
+        "id": "route:POST:instructor",
+        "type": "Route",
+        "name": "POST instructor",
+        "file": "routes\\api.php",
+        "line": 34,
+        "meta": {
+          "action": "InstructorController@create"
+        }
+      },
+      {
+        "id": "controller:InstructorController",
+        "type": "Controller",
+        "name": "InstructorController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:GET:instructors",
+        "type": "Route",
+        "name": "GET instructors",
+        "file": "routes\\api.php",
+        "line": 35,
+        "meta": {
+          "action": "InstructorController@getAll"
+        }
+      },
+      {
+        "id": "route:POST:course",
+        "type": "Route",
+        "name": "POST course",
+        "file": "routes\\api.php",
+        "line": 38,
+        "meta": {
+          "action": "CourseController@create"
+        }
+      },
+      {
+        "id": "controller:CourseController",
+        "type": "Controller",
+        "name": "CourseController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:POST:course-block",
+        "type": "Route",
+        "name": "POST course-block",
+        "file": "routes\\api.php",
+        "line": 39,
+        "meta": {
+          "action": "CourseController@createBlock"
+        }
+      },
+      {
+        "id": "route:POST:course-block/assign-users",
+        "type": "Route",
+        "name": "POST course-block/assign-users",
+        "file": "routes\\api.php",
+        "line": 40,
+        "meta": {
+          "action": "CourseController@assign"
+        }
+      },
+      {
+        "id": "route:POST:schedule",
+        "type": "Route",
+        "name": "POST schedule",
+        "file": "routes\\api.php",
+        "line": 43,
+        "meta": {
+          "action": "ScheduleController@create"
+        }
+      },
+      {
+        "id": "controller:ScheduleController",
+        "type": "Controller",
+        "name": "ScheduleController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:GET:user/{user_id}/course-schedules",
+        "type": "Route",
+        "name": "GET user/{user_id}/course-schedules",
+        "file": "routes\\api.php",
+        "line": 44,
+        "meta": {
+          "action": "ScheduleController@getUserCourseSchedule"
+        }
+      },
+      {
+        "id": "route:GET:schedule/{schedule_id}/students",
+        "type": "Route",
+        "name": "GET schedule/{schedule_id}/students",
+        "file": "routes\\api.php",
+        "line": 45,
+        "meta": {
+          "action": "ScheduleController@getScheduleStudentList"
+        }
+      },
+      {
+        "id": "route:POST:period",
+        "type": "Route",
+        "name": "POST period",
+        "file": "routes\\api.php",
+        "line": 48,
+        "meta": {
+          "action": "PeriodController@create"
+        }
+      },
+      {
+        "id": "controller:PeriodController",
+        "type": "Controller",
+        "name": "PeriodController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:POST:building",
+        "type": "Route",
+        "name": "POST building",
+        "file": "routes\\api.php",
+        "line": 51,
+        "meta": {
+          "action": "BuildingController@create"
+        }
+      },
+      {
+        "id": "controller:BuildingController",
+        "type": "Controller",
+        "name": "BuildingController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:POST:room",
+        "type": "Route",
+        "name": "POST room",
+        "file": "routes\\api.php",
+        "line": 54,
+        "meta": {
+          "action": "RoomController@create"
+        }
+      },
+      {
+        "id": "controller:RoomController",
+        "type": "Controller",
+        "name": "RoomController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:GET:departments",
+        "type": "Route",
+        "name": "GET departments",
+        "file": "routes\\api.php",
+        "line": 57,
+        "meta": {
+          "action": "DepartmentController@index"
+        }
+      },
+      {
+        "id": "controller:DepartmentController",
+        "type": "Controller",
+        "name": "DepartmentController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:GET:programs",
+        "type": "Route",
+        "name": "GET programs",
+        "file": "routes\\api.php",
+        "line": 60,
+        "meta": {
+          "action": "ProgramController@index"
+        }
+      },
+      {
+        "id": "controller:ProgramController",
+        "type": "Controller",
+        "name": "ProgramController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:GET:semester/active",
+        "type": "Route",
+        "name": "GET semester/active",
+        "file": "routes\\api.php",
+        "line": 63,
+        "meta": {
+          "action": "SemesterController@getActiveSemester"
+        }
+      },
+      {
+        "id": "controller:SemesterController",
+        "type": "Controller",
+        "name": "SemesterController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:POST:attendance-session",
+        "type": "Route",
+        "name": "POST attendance-session",
+        "file": "routes\\api.php",
+        "line": 66,
+        "meta": {
+          "action": "AttendanceSessionController@create"
+        }
+      },
+      {
+        "id": "controller:AttendanceSessionController",
+        "type": "Controller",
+        "name": "AttendanceSessionController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:GET:attendance-session/active",
+        "type": "Route",
+        "name": "GET attendance-session/active",
+        "file": "routes\\api.php",
+        "line": 67,
+        "meta": {
+          "action": "AttendanceSessionController@checkActive"
+        }
+      },
+      {
+        "id": "route:GET:attendance-session/active/students",
+        "type": "Route",
+        "name": "GET attendance-session/active/students",
+        "file": "routes\\api.php",
+        "line": 68,
+        "meta": {
+          "action": "AttendanceSessionController@getActiveSessionStudents"
+        }
+      },
+      {
+        "id": "route:GET:attendance-session/{attendance_session_id}/students",
+        "type": "Route",
+        "name": "GET attendance-session/{attendance_session_id}/students",
+        "file": "routes\\api.php",
+        "line": 69,
+        "meta": {
+          "action": "AttendanceSessionController@getSessionStudents"
+        }
+      },
+      {
+        "id": "route:PUT:attendance-session/stop",
+        "type": "Route",
+        "name": "PUT attendance-session/stop",
+        "file": "routes\\api.php",
+        "line": 70,
+        "meta": {
+          "action": "AttendanceSessionController@stopAttendance"
+        }
+      },
+      {
+        "id": "route:PUT:attendance-session/continue",
+        "type": "Route",
+        "name": "PUT attendance-session/continue",
+        "file": "routes\\api.php",
+        "line": 71,
+        "meta": {
+          "action": "AttendanceSessionController@continueAttendance"
+        }
+      },
+      {
+        "id": "route:POST:attendance-record",
+        "type": "Route",
+        "name": "POST attendance-record",
+        "file": "routes\\api.php",
+        "line": 74,
+        "meta": {
+          "action": "AttendanceRecordController@create"
+        }
+      },
+      {
+        "id": "controller:AttendanceRecordController",
+        "type": "Controller",
+        "name": "AttendanceRecordController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "route:GET:attendance-record/check",
+        "type": "Route",
+        "name": "GET attendance-record/check",
+        "file": "routes\\api.php",
+        "line": 75,
+        "meta": {
+          "action": "AttendanceRecordController@checkRecord"
+        }
+      },
+      {
+        "id": "route:POST:ble-detection",
+        "type": "Route",
+        "name": "POST ble-detection",
+        "file": "routes\\api.php",
+        "line": 78,
+        "meta": {
+          "action": "BleDetectionController@store"
+        }
+      },
+      {
+        "id": "controller:BleDetectionController",
+        "type": "Controller",
+        "name": "BleDetectionController",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "other:AttendanceRecordCreated",
+        "type": "Other",
+        "name": "AttendanceRecordCreated",
+        "file": "app\\Events\\AttendanceRecordCreated.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "controller:Controller",
+        "type": "Controller",
+        "name": "Controller",
+        "file": "app\\Http\\Controllers\\Controller.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "controller:UserController",
+        "type": "Controller",
+        "name": "UserController",
+        "file": "app\\Http\\Controllers\\UserController.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "middleware:RoleMiddleware",
+        "type": "Middleware",
+        "name": "RoleMiddleware",
+        "file": "app\\Http\\Middleware\\RoleMiddleware.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CheckAttendanceRecordRequest",
+        "type": "Other",
+        "name": "CheckAttendanceRecordRequest",
+        "file": "app\\Http\\Requests\\AttendanceRecord\\CheckAttendanceRecordRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:StoreAttendanceRecordRequest",
+        "type": "Other",
+        "name": "StoreAttendanceRecordRequest",
+        "file": "app\\Http\\Requests\\AttendanceRecord\\StoreAttendanceRecordRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ActivateAttendanceSessionRequest",
+        "type": "Other",
+        "name": "ActivateAttendanceSessionRequest",
+        "file": "app\\Http\\Requests\\AttendanceSession\\ActivateAttendanceSessionRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CheckActiveAttendanceRequest",
+        "type": "Other",
+        "name": "CheckActiveAttendanceRequest",
+        "file": "app\\Http\\Requests\\AttendanceSession\\CheckActiveAttendanceRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ContinueAttendanceRequest",
+        "type": "Other",
+        "name": "ContinueAttendanceRequest",
+        "file": "app\\Http\\Requests\\AttendanceSession\\ContinueAttendanceRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreateDeviceAttendanceSessionRequest",
+        "type": "Other",
+        "name": "CreateDeviceAttendanceSessionRequest",
+        "file": "app\\Http\\Requests\\AttendanceSession\\CreateDeviceAttendanceSessionRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:StartAttendanceSessionRequest",
+        "type": "Other",
+        "name": "StartAttendanceSessionRequest",
+        "file": "app\\Http\\Requests\\AttendanceSession\\StartAttendanceSessionRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:StopAttendanceRequest",
+        "type": "Other",
+        "name": "StopAttendanceRequest",
+        "file": "app\\Http\\Requests\\AttendanceSession\\StopAttendanceRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:AuthRequest",
+        "type": "Other",
+        "name": "AuthRequest",
+        "file": "app\\Http\\Requests\\AuthRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:StoreBleDetectionRequest",
+        "type": "Other",
+        "name": "StoreBleDetectionRequest",
+        "file": "app\\Http\\Requests\\BleDetection\\StoreBleDetectionRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreateBuildingRequest",
+        "type": "Other",
+        "name": "CreateBuildingRequest",
+        "file": "app\\Http\\Requests\\Building\\CreateBuildingRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:AssignUserCourseBlockRequest",
+        "type": "Other",
+        "name": "AssignUserCourseBlockRequest",
+        "file": "app\\Http\\Requests\\Course\\AssignUserCourseBlockRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreateCourseBlockRequest",
+        "type": "Other",
+        "name": "CreateCourseBlockRequest",
+        "file": "app\\Http\\Requests\\Course\\CreateCourseBlockRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreateCourseRequest",
+        "type": "Other",
+        "name": "CreateCourseRequest",
+        "file": "app\\Http\\Requests\\Course\\CreateCourseRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreateInstructorRequest",
+        "type": "Other",
+        "name": "CreateInstructorRequest",
+        "file": "app\\Http\\Requests\\Instructor\\CreateInstructorRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreatePeriodRequest",
+        "type": "Other",
+        "name": "CreatePeriodRequest",
+        "file": "app\\Http\\Requests\\Period\\CreatePeriodRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreateRoomRequest",
+        "type": "Other",
+        "name": "CreateRoomRequest",
+        "file": "app\\Http\\Requests\\Room\\CreateRoomRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreateScheduleRequest",
+        "type": "Other",
+        "name": "CreateScheduleRequest",
+        "file": "app\\Http\\Requests\\Schedule\\CreateScheduleRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CreateStudentRequest",
+        "type": "Other",
+        "name": "CreateStudentRequest",
+        "file": "app\\Http\\Requests\\Student\\CreateStudentRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:AttendanceSessionResource",
+        "type": "Other",
+        "name": "AttendanceSessionResource",
+        "file": "app\\Http\\Resources\\AttendanceSessionResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:SessionStudentAttendanceResource",
+        "type": "Other",
+        "name": "SessionStudentAttendanceResource",
+        "file": "app\\Http\\Resources\\AttendanceSession\\SessionStudentAttendanceResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:AuthResource",
+        "type": "Other",
+        "name": "AuthResource",
+        "file": "app\\Http\\Resources\\AuthResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:BaseResource",
+        "type": "Other",
+        "name": "BaseResource",
+        "file": "app\\Http\\Resources\\BaseResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:BuildingResource",
+        "type": "Other",
+        "name": "BuildingResource",
+        "file": "app\\Http\\Resources\\BuildingResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CourseBlockResource",
+        "type": "Other",
+        "name": "CourseBlockResource",
+        "file": "app\\Http\\Resources\\CourseBlockResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CourseResource",
+        "type": "Other",
+        "name": "CourseResource",
+        "file": "app\\Http\\Resources\\CourseResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:DepartmentResource",
+        "type": "Other",
+        "name": "DepartmentResource",
+        "file": "app\\Http\\Resources\\DepartmentResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:InstructorResource",
+        "type": "Other",
+        "name": "InstructorResource",
+        "file": "app\\Http\\Resources\\InstructorResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:InstructorListResource",
+        "type": "Other",
+        "name": "InstructorListResource",
+        "file": "app\\Http\\Resources\\Instructor\\InstructorListResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:PeriodResource",
+        "type": "Other",
+        "name": "PeriodResource",
+        "file": "app\\Http\\Resources\\PeriodResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ProgramResource",
+        "type": "Other",
+        "name": "ProgramResource",
+        "file": "app\\Http\\Resources\\ProgramResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:RoleResource",
+        "type": "Other",
+        "name": "RoleResource",
+        "file": "app\\Http\\Resources\\RoleResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:RoomResource",
+        "type": "Other",
+        "name": "RoomResource",
+        "file": "app\\Http\\Resources\\RoomResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ScheduleResource",
+        "type": "Other",
+        "name": "ScheduleResource",
+        "file": "app\\Http\\Resources\\ScheduleResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ScheduleStudentListResource",
+        "type": "Other",
+        "name": "ScheduleStudentListResource",
+        "file": "app\\Http\\Resources\\Schedule\\ScheduleStudentListResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserCourseScheduleResource",
+        "type": "Other",
+        "name": "UserCourseScheduleResource",
+        "file": "app\\Http\\Resources\\Schedule\\UserCourseScheduleResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:SchoolYearResource",
+        "type": "Other",
+        "name": "SchoolYearResource",
+        "file": "app\\Http\\Resources\\SchoolYearResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:SemesterResource",
+        "type": "Other",
+        "name": "SemesterResource",
+        "file": "app\\Http\\Resources\\SemesterResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:StudentResource",
+        "type": "Other",
+        "name": "StudentResource",
+        "file": "app\\Http\\Resources\\StudentResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ActiveSemesterStudentListResource",
+        "type": "Other",
+        "name": "ActiveSemesterStudentListResource",
+        "file": "app\\Http\\Resources\\Student\\ActiveSemesterStudentListResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CheckStudentResource",
+        "type": "Other",
+        "name": "CheckStudentResource",
+        "file": "app\\Http\\Resources\\Student\\CheckStudentResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:StudentDetailsResource",
+        "type": "Other",
+        "name": "StudentDetailsResource",
+        "file": "app\\Http\\Resources\\Student\\StudentDetailsResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserProfileResource",
+        "type": "Other",
+        "name": "UserProfileResource",
+        "file": "app\\Http\\Resources\\UserProfileResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserResource",
+        "type": "Other",
+        "name": "UserResource",
+        "file": "app\\Http\\Resources\\UserResource.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:AttendancePolicy",
+        "type": "Model",
+        "name": "AttendancePolicy",
+        "file": "app\\Models\\AttendancePolicy.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:User",
+        "type": "Model",
+        "name": "User",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "model:AttendancePolicyCourse",
+        "type": "Model",
+        "name": "AttendancePolicyCourse",
+        "file": "app\\Models\\AttendancePolicyCourse.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:AttendanceRecord",
+        "type": "Model",
+        "name": "AttendanceRecord",
+        "file": "app\\Models\\AttendanceRecord.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:AttendanceSession",
+        "type": "Model",
+        "name": "AttendanceSession",
+        "file": "app\\Models\\AttendanceSession.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:BleDetection",
+        "type": "Model",
+        "name": "BleDetection",
+        "file": "app\\Models\\BleDetection.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:BleDevice",
+        "type": "Model",
+        "name": "BleDevice",
+        "file": "app\\Models\\BleDevice.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Building",
+        "type": "Model",
+        "name": "Building",
+        "file": "app\\Models\\Building.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Course",
+        "type": "Model",
+        "name": "Course",
+        "file": "app\\Models\\Course.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:CourseBlock",
+        "type": "Model",
+        "name": "CourseBlock",
+        "file": "app\\Models\\CourseBlock.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Department",
+        "type": "Model",
+        "name": "Department",
+        "file": "app\\Models\\Department.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:ExcuseRequest",
+        "type": "Model",
+        "name": "ExcuseRequest",
+        "file": "app\\Models\\ExcuseRequest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Instructor",
+        "type": "Model",
+        "name": "Instructor",
+        "file": "app\\Models\\Instructor.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:InstructorMark",
+        "type": "Model",
+        "name": "InstructorMark",
+        "file": "app\\Models\\InstructorMark.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Period",
+        "type": "Model",
+        "name": "Period",
+        "file": "app\\Models\\Period.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Permission",
+        "type": "Model",
+        "name": "Permission",
+        "file": "app\\Models\\Permission.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Program",
+        "type": "Model",
+        "name": "Program",
+        "file": "app\\Models\\Program.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Role",
+        "type": "Model",
+        "name": "Role",
+        "file": "app\\Models\\Role.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:RolePermission",
+        "type": "Model",
+        "name": "RolePermission",
+        "file": "app\\Models\\RolePermission.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Room",
+        "type": "Model",
+        "name": "Room",
+        "file": "app\\Models\\Room.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Schedule",
+        "type": "Model",
+        "name": "Schedule",
+        "file": "app\\Models\\Schedule.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:ScheduleDay",
+        "type": "Model",
+        "name": "ScheduleDay",
+        "file": "app\\Models\\ScheduleDay.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:SchoolYear",
+        "type": "Model",
+        "name": "SchoolYear",
+        "file": "app\\Models\\SchoolYear.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Semester",
+        "type": "Model",
+        "name": "Semester",
+        "file": "app\\Models\\Semester.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:Student",
+        "type": "Model",
+        "name": "Student",
+        "file": "app\\Models\\Student.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:User",
+        "type": "Other",
+        "name": "User",
+        "file": "app\\Models\\User.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:UserCourseBlock",
+        "type": "Model",
+        "name": "UserCourseBlock",
+        "file": "app\\Models\\UserCourseBlock.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:UserProfile",
+        "type": "Model",
+        "name": "UserProfile",
+        "file": "app\\Models\\UserProfile.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "model:UserRole",
+        "type": "Model",
+        "name": "UserRole",
+        "file": "app\\Models\\UserRole.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:AppServiceProvider",
+        "type": "Service",
+        "name": "AppServiceProvider",
+        "file": "app\\Providers\\AppServiceProvider.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:UserRepository",
+        "type": "Service",
+        "name": "UserRepository",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "service:StudentRepository",
+        "type": "Service",
+        "name": "StudentRepository",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "service:SemesterRepository",
+        "type": "Service",
+        "name": "SemesterRepository",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "service:UserProfileRepository",
+        "type": "Service",
+        "name": "UserProfileRepository",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "service:AttendanceRecordRepository",
+        "type": "Service",
+        "name": "AttendanceRecordRepository",
+        "file": "app\\Repositories\\AttendanceRecordRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:AttendanceSessionRepository",
+        "type": "Service",
+        "name": "AttendanceSessionRepository",
+        "file": "app\\Repositories\\AttendanceSessionRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:AuthRepository",
+        "type": "Service",
+        "name": "AuthRepository",
+        "file": "app\\Repositories\\AuthRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:BleDetectionRepository",
+        "type": "Service",
+        "name": "BleDetectionRepository",
+        "file": "app\\Repositories\\BleDetectionRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:BleDeviceRepository",
+        "type": "Service",
+        "name": "BleDeviceRepository",
+        "file": "app\\Repositories\\BleDeviceRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:BuildingRepository",
+        "type": "Service",
+        "name": "BuildingRepository",
+        "file": "app\\Repositories\\BuildingRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:CourseRepository",
+        "type": "Service",
+        "name": "CourseRepository",
+        "file": "app\\Repositories\\CourseRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:DepartmentRepository",
+        "type": "Service",
+        "name": "DepartmentRepository",
+        "file": "app\\Repositories\\DepartmentRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:InstructorRepository",
+        "type": "Service",
+        "name": "InstructorRepository",
+        "file": "app\\Repositories\\InstructorRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:AttendanceRecordRepositoryInterface",
+        "type": "Other",
+        "name": "AttendanceRecordRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\AttendanceRecordRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:AttendanceSessionRepositoryInterface",
+        "type": "Other",
+        "name": "AttendanceSessionRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\AttendanceSessionRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:BleDetectionRepositoryInterface",
+        "type": "Other",
+        "name": "BleDetectionRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\BleDetectionRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:BleDeviceRepositoryInterface",
+        "type": "Other",
+        "name": "BleDeviceRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\BleDeviceRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:BuildingRepositoryInterface",
+        "type": "Other",
+        "name": "BuildingRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\BuildingRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CourseRepositoryInterface",
+        "type": "Other",
+        "name": "CourseRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\CourseRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:DepartmentRepositoryInterface",
+        "type": "Other",
+        "name": "DepartmentRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\DepartmentRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:InstructorRepositoryInterface",
+        "type": "Other",
+        "name": "InstructorRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\InstructorRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:PeriodRepositoryInterface",
+        "type": "Other",
+        "name": "PeriodRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\PeriodRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ProgramRepositoryInterface",
+        "type": "Other",
+        "name": "ProgramRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\ProgramRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:RoleRepositoryInterface",
+        "type": "Other",
+        "name": "RoleRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\RoleRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:RoomRepositoryInterface",
+        "type": "Other",
+        "name": "RoomRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\RoomRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ScheduleRepositoryInterface",
+        "type": "Other",
+        "name": "ScheduleRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\ScheduleRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:SemesterRepositoryInterface",
+        "type": "Other",
+        "name": "SemesterRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\SemesterRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:StudentRepositoryInterface",
+        "type": "Other",
+        "name": "StudentRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\StudentRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserCourseBlockRepositoryInterface",
+        "type": "Other",
+        "name": "UserCourseBlockRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\UserCourseBlockRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserProfileRepositoryInterface",
+        "type": "Other",
+        "name": "UserProfileRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\UserProfileRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserRepositoryInterface",
+        "type": "Other",
+        "name": "UserRepositoryInterface",
+        "file": "app\\Repositories\\Interfaces\\UserRepositoryInterface.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:PeriodRepository",
+        "type": "Service",
+        "name": "PeriodRepository",
+        "file": "app\\Repositories\\PeriodRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:ProgramRepository",
+        "type": "Service",
+        "name": "ProgramRepository",
+        "file": "app\\Repositories\\ProgramRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:RoleRepository",
+        "type": "Service",
+        "name": "RoleRepository",
+        "file": "app\\Repositories\\RoleRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:RoomRepository",
+        "type": "Service",
+        "name": "RoomRepository",
+        "file": "app\\Repositories\\RoomRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:ScheduleRepository",
+        "type": "Service",
+        "name": "ScheduleRepository",
+        "file": "app\\Repositories\\ScheduleRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:UserCourseBlockRepository",
+        "type": "Service",
+        "name": "UserCourseBlockRepository",
+        "file": "app\\Repositories\\UserCourseBlockRepository.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:AttendanceRecordService",
+        "type": "Service",
+        "name": "AttendanceRecordService",
+        "file": "app\\Services\\AttendanceRecordService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "db:DB",
+        "type": "Database",
+        "name": "DB",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "service:AttendanceSessionService",
+        "type": "Service",
+        "name": "AttendanceSessionService",
+        "file": "app\\Services\\AttendanceSessionService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "str:Str",
+        "type": "Service",
+        "name": "Str",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "service:AuthService",
+        "type": "Service",
+        "name": "AuthService",
+        "file": "app\\Services\\AuthService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:BeaconConfigurationService",
+        "type": "Service",
+        "name": "BeaconConfigurationService",
+        "file": "app\\Services\\BeaconConfigurationService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:BleDetectionService",
+        "type": "Service",
+        "name": "BleDetectionService",
+        "file": "app\\Services\\BleDetectionService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:BuildingService",
+        "type": "Service",
+        "name": "BuildingService",
+        "file": "app\\Services\\BuildingService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:CourseService",
+        "type": "Service",
+        "name": "CourseService",
+        "file": "app\\Services\\CourseService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:DepartmentService",
+        "type": "Service",
+        "name": "DepartmentService",
+        "file": "app\\Services\\DepartmentService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:InstructorService",
+        "type": "Service",
+        "name": "InstructorService",
+        "file": "app\\Services\\InstructorService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:PeriodService",
+        "type": "Service",
+        "name": "PeriodService",
+        "file": "app\\Services\\PeriodService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:ProgramService",
+        "type": "Service",
+        "name": "ProgramService",
+        "file": "app\\Services\\ProgramService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:RoleService",
+        "type": "Service",
+        "name": "RoleService",
+        "file": "app\\Services\\RoleService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:RoomService",
+        "type": "Service",
+        "name": "RoomService",
+        "file": "app\\Services\\RoomService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:ScheduleService",
+        "type": "Service",
+        "name": "ScheduleService",
+        "file": "app\\Services\\ScheduleService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:SemesterService",
+        "type": "Service",
+        "name": "SemesterService",
+        "file": "app\\Services\\SemesterService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:StudentService",
+        "type": "Service",
+        "name": "StudentService",
+        "file": "app\\Services\\StudentService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:UserProfileService",
+        "type": "Service",
+        "name": "UserProfileService",
+        "file": "app\\Services\\UserProfileService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "service:UserService",
+        "type": "Service",
+        "name": "UserService",
+        "file": "app\\Services\\UserService.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:app",
+        "type": "Other",
+        "name": "app",
+        "file": "bootstrap\\app.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:packages",
+        "type": "Other",
+        "name": "packages",
+        "file": "bootstrap\\cache\\packages.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:services",
+        "type": "Other",
+        "name": "services",
+        "file": "bootstrap\\cache\\services.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:providers",
+        "type": "Other",
+        "name": "providers",
+        "file": "bootstrap\\providers.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:auth",
+        "type": "Other",
+        "name": "auth",
+        "file": "config\\auth.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:beacon",
+        "type": "Other",
+        "name": "beacon",
+        "file": "config\\beacon.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:broadcasting",
+        "type": "Other",
+        "name": "broadcasting",
+        "file": "config\\broadcasting.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:cache",
+        "type": "Other",
+        "name": "cache",
+        "file": "config\\cache.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:cloudinary",
+        "type": "Other",
+        "name": "cloudinary",
+        "file": "config\\cloudinary.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:cors",
+        "type": "Other",
+        "name": "cors",
+        "file": "config\\cors.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:database",
+        "type": "Other",
+        "name": "database",
+        "file": "config\\database.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:filesystems",
+        "type": "Other",
+        "name": "filesystems",
+        "file": "config\\filesystems.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:logging",
+        "type": "Other",
+        "name": "logging",
+        "file": "config\\logging.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:mail",
+        "type": "Other",
+        "name": "mail",
+        "file": "config\\mail.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:queue",
+        "type": "Other",
+        "name": "queue",
+        "file": "config\\queue.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:reverb",
+        "type": "Other",
+        "name": "reverb",
+        "file": "config\\reverb.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:sanctum",
+        "type": "Other",
+        "name": "sanctum",
+        "file": "config\\sanctum.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:session",
+        "type": "Other",
+        "name": "session",
+        "file": "config\\session.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserFactory",
+        "type": "Other",
+        "name": "UserFactory",
+        "file": "database\\factories\\UserFactory.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_05_16_095848_create_users_table",
+        "type": "Other",
+        "name": "2026_05_16_095848_create_users_table",
+        "file": "database\\migrations\\2026_05_16_095848_create_users_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "schema:Schema",
+        "type": "Service",
+        "name": "Schema",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_05_20_153056_create_personal_access_tokens_table",
+        "type": "Other",
+        "name": "2026_05_20_153056_create_personal_access_tokens_table",
+        "file": "database\\migrations\\2026_05_20_153056_create_personal_access_tokens_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_08_131619_create_user_profiles_table",
+        "type": "Other",
+        "name": "2026_06_08_131619_create_user_profiles_table",
+        "file": "database\\migrations\\2026_06_08_131619_create_user_profiles_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_10_024357_create_school_years_table",
+        "type": "Other",
+        "name": "2026_06_10_024357_create_school_years_table",
+        "file": "database\\migrations\\2026_06_10_024357_create_school_years_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_10_024428_create_departments_table",
+        "type": "Other",
+        "name": "2026_06_10_024428_create_departments_table",
+        "file": "database\\migrations\\2026_06_10_024428_create_departments_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_10_024503_create_semesters_table",
+        "type": "Other",
+        "name": "2026_06_10_024503_create_semesters_table",
+        "file": "database\\migrations\\2026_06_10_024503_create_semesters_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_10_024542_create_programs_table",
+        "type": "Other",
+        "name": "2026_06_10_024542_create_programs_table",
+        "file": "database\\migrations\\2026_06_10_024542_create_programs_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_10_024615_create_students_table",
+        "type": "Other",
+        "name": "2026_06_10_024615_create_students_table",
+        "file": "database\\migrations\\2026_06_10_024615_create_students_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_10_024638_create_instructors_table",
+        "type": "Other",
+        "name": "2026_06_10_024638_create_instructors_table",
+        "file": "database\\migrations\\2026_06_10_024638_create_instructors_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_16_064132_create_roles_table",
+        "type": "Other",
+        "name": "2026_06_16_064132_create_roles_table",
+        "file": "database\\migrations\\2026_06_16_064132_create_roles_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_16_064321_create_user_roles_table",
+        "type": "Other",
+        "name": "2026_06_16_064321_create_user_roles_table",
+        "file": "database\\migrations\\2026_06_16_064321_create_user_roles_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_06_25_094556_create_sessions_table",
+        "type": "Other",
+        "name": "2026_06_25_094556_create_sessions_table",
+        "file": "database\\migrations\\2026_06_25_094556_create_sessions_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_04_141948_create_courses_table",
+        "type": "Other",
+        "name": "2026_07_04_141948_create_courses_table",
+        "file": "database\\migrations\\2026_07_04_141948_create_courses_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_04_142023_create_course_blocks_table",
+        "type": "Other",
+        "name": "2026_07_04_142023_create_course_blocks_table",
+        "file": "database\\migrations\\2026_07_04_142023_create_course_blocks_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_05_140443_create_buildings_table",
+        "type": "Other",
+        "name": "2026_07_05_140443_create_buildings_table",
+        "file": "database\\migrations\\2026_07_05_140443_create_buildings_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_05_140502_create_rooms_table",
+        "type": "Other",
+        "name": "2026_07_05_140502_create_rooms_table",
+        "file": "database\\migrations\\2026_07_05_140502_create_rooms_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_05_140600_create_schedules_table",
+        "type": "Other",
+        "name": "2026_07_05_140600_create_schedules_table",
+        "file": "database\\migrations\\2026_07_05_140600_create_schedules_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_12_060338_create_periods_table",
+        "type": "Other",
+        "name": "2026_07_12_060338_create_periods_table",
+        "file": "database\\migrations\\2026_07_12_060338_create_periods_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_12_060400_create_ble_devices_table",
+        "type": "Other",
+        "name": "2026_07_12_060400_create_ble_devices_table",
+        "file": "database\\migrations\\2026_07_12_060400_create_ble_devices_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_12_060504_create_attendance_sessions_table",
+        "type": "Other",
+        "name": "2026_07_12_060504_create_attendance_sessions_table",
+        "file": "database\\migrations\\2026_07_12_060504_create_attendance_sessions_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_12_060602_create_attendance_records_table",
+        "type": "Other",
+        "name": "2026_07_12_060602_create_attendance_records_table",
+        "file": "database\\migrations\\2026_07_12_060602_create_attendance_records_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_12_125408_create_user_course_blocks_table",
+        "type": "Other",
+        "name": "2026_07_12_125408_create_user_course_blocks_table",
+        "file": "database\\migrations\\2026_07_12_125408_create_user_course_blocks_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_12_125431_create_schedule_days_table",
+        "type": "Other",
+        "name": "2026_07_12_125431_create_schedule_days_table",
+        "file": "database\\migrations\\2026_07_12_125431_create_schedule_days_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_12_125555_create_ble_detections_table",
+        "type": "Other",
+        "name": "2026_07_12_125555_create_ble_detections_table",
+        "file": "database\\migrations\\2026_07_12_125555_create_ble_detections_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_16_062426_create_attendance_policies_table",
+        "type": "Other",
+        "name": "2026_07_16_062426_create_attendance_policies_table",
+        "file": "database\\migrations\\2026_07_16_062426_create_attendance_policies_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_16_062426_create_attendance_policy_courses_table",
+        "type": "Other",
+        "name": "2026_07_16_062426_create_attendance_policy_courses_table",
+        "file": "database\\migrations\\2026_07_16_062426_create_attendance_policy_courses_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_16_062427_create_excuse_requests_table",
+        "type": "Other",
+        "name": "2026_07_16_062427_create_excuse_requests_table",
+        "file": "database\\migrations\\2026_07_16_062427_create_excuse_requests_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_16_062427_create_permissions_table",
+        "type": "Other",
+        "name": "2026_07_16_062427_create_permissions_table",
+        "file": "database\\migrations\\2026_07_16_062427_create_permissions_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_16_062428_create_instructor_marks_table",
+        "type": "Other",
+        "name": "2026_07_16_062428_create_instructor_marks_table",
+        "file": "database\\migrations\\2026_07_16_062428_create_instructor_marks_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_16_062428_create_role_permissions_table",
+        "type": "Other",
+        "name": "2026_07_16_062428_create_role_permissions_table",
+        "file": "database\\migrations\\2026_07_16_062428_create_role_permissions_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_21_205820_add_verification_fields_to_attendance_sessions_table",
+        "type": "Other",
+        "name": "2026_07_21_205820_add_verification_fields_to_attendance_sessions_table",
+        "file": "database\\migrations\\2026_07_21_205820_add_verification_fields_to_attendance_sessions_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_23_000000_remove_is_active_from_ble_devices_table",
+        "type": "Other",
+        "name": "2026_07_23_000000_remove_is_active_from_ble_devices_table",
+        "file": "database\\migrations\\2026_07_23_000000_remove_is_active_from_ble_devices_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:2026_07_30_144159_remove_ble_verified_and_ble_verified_at_from_attendance_records_table",
+        "type": "Other",
+        "name": "2026_07_30_144159_remove_ble_verified_and_ble_verified_at_from_attendance_records_table",
+        "file": "database\\migrations\\2026_07_30_144159_remove_ble_verified_and_ble_verified_at_from_attendance_records_table.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:BleDeviceSeeder",
+        "type": "Other",
+        "name": "BleDeviceSeeder",
+        "file": "database\\seeders\\BleDeviceSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:BuildingSeeder",
+        "type": "Other",
+        "name": "BuildingSeeder",
+        "file": "database\\seeders\\BuildingSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CourseBlockSeeder",
+        "type": "Other",
+        "name": "CourseBlockSeeder",
+        "file": "database\\seeders\\CourseBlockSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:CourseSeeder",
+        "type": "Other",
+        "name": "CourseSeeder",
+        "file": "database\\seeders\\CourseSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:DatabaseSeeder",
+        "type": "Other",
+        "name": "DatabaseSeeder",
+        "file": "database\\seeders\\DatabaseSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:DepartmentSeeder",
+        "type": "Other",
+        "name": "DepartmentSeeder",
+        "file": "database\\seeders\\DepartmentSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:PeriodSeeder",
+        "type": "Other",
+        "name": "PeriodSeeder",
+        "file": "database\\seeders\\PeriodSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ProgramSeeder",
+        "type": "Other",
+        "name": "ProgramSeeder",
+        "file": "database\\seeders\\ProgramSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:RoleSeeder",
+        "type": "Other",
+        "name": "RoleSeeder",
+        "file": "database\\seeders\\RoleSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:RoomSeeder",
+        "type": "Other",
+        "name": "RoomSeeder",
+        "file": "database\\seeders\\RoomSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ScheduleDaysSeeder",
+        "type": "Other",
+        "name": "ScheduleDaysSeeder",
+        "file": "database\\seeders\\ScheduleDaysSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ScheduleSeeder",
+        "type": "Other",
+        "name": "ScheduleSeeder",
+        "file": "database\\seeders\\ScheduleSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:SchoolYearSeeder",
+        "type": "Other",
+        "name": "SchoolYearSeeder",
+        "file": "database\\seeders\\SchoolYearSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:SemesterSeeder",
+        "type": "Other",
+        "name": "SemesterSeeder",
+        "file": "database\\seeders\\SemesterSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserCourseBlockSeeder",
+        "type": "Other",
+        "name": "UserCourseBlockSeeder",
+        "file": "database\\seeders\\UserCourseBlockSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserRoleSeeder",
+        "type": "Other",
+        "name": "UserRoleSeeder",
+        "file": "database\\seeders\\UserRoleSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:UserSeeder",
+        "type": "Other",
+        "name": "UserSeeder",
+        "file": "database\\seeders\\UserSeeder.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:app.blade",
+        "type": "Other",
+        "name": "app.blade",
+        "file": "resources\\views\\app.blade.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "controller:api",
+        "type": "Controller",
+        "name": "api",
+        "file": "routes\\api.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "route:Route",
+        "type": "Service",
+        "name": "Route",
+        "file": "",
+        "line": 0,
+        "meta": {}
+      },
+      {
+        "id": "other:channels",
+        "type": "Other",
+        "name": "channels",
+        "file": "routes\\channels.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:console",
+        "type": "Other",
+        "name": "console",
+        "file": "routes\\console.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:web",
+        "type": "Other",
+        "name": "web",
+        "file": "routes\\web.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:AttendanceSessionTest",
+        "type": "Other",
+        "name": "AttendanceSessionTest",
+        "file": "tests\\Feature\\AttendanceSessionTest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:ExampleTest",
+        "type": "Other",
+        "name": "ExampleTest",
+        "file": "tests\\Feature\\ExampleTest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:Pest",
+        "type": "Other",
+        "name": "Pest",
+        "file": "tests\\Pest.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:TestCase",
+        "type": "Other",
+        "name": "TestCase",
+        "file": "tests\\TestCase.php",
+        "line": 1,
+        "meta": {}
+      },
+      {
+        "id": "other:BeaconConfigurationServiceTest",
+        "type": "Other",
+        "name": "BeaconConfigurationServiceTest",
+        "file": "tests\\Unit\\BeaconConfigurationServiceTest.php",
+        "line": 1,
+        "meta": {}
+      }
+    ],
+    "edges": [
+      {
+        "from": "route:POST:user/signin",
+        "to": "controller:AuthController",
+        "kind": "CALLS",
+        "label": "AuthController@signIn",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:student",
+        "to": "controller:StudentController",
+        "kind": "CALLS",
+        "label": "StudentController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:student/getByActiveSemester",
+        "to": "controller:StudentController",
+        "kind": "CALLS",
+        "label": "StudentController@getStudentByActiveSemester",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:student/{user_id}",
+        "to": "controller:StudentController",
+        "kind": "CALLS",
+        "label": "StudentController@getstudentDetails",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:student/check-user/{user_id}",
+        "to": "controller:StudentController",
+        "kind": "CALLS",
+        "label": "StudentController@checkStudent",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:instructor",
+        "to": "controller:InstructorController",
+        "kind": "CALLS",
+        "label": "InstructorController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:instructors",
+        "to": "controller:InstructorController",
+        "kind": "CALLS",
+        "label": "InstructorController@getAll",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:course",
+        "to": "controller:CourseController",
+        "kind": "CALLS",
+        "label": "CourseController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:course-block",
+        "to": "controller:CourseController",
+        "kind": "CALLS",
+        "label": "CourseController@createBlock",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:course-block/assign-users",
+        "to": "controller:CourseController",
+        "kind": "CALLS",
+        "label": "CourseController@assign",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:schedule",
+        "to": "controller:ScheduleController",
+        "kind": "CALLS",
+        "label": "ScheduleController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:user/{user_id}/course-schedules",
+        "to": "controller:ScheduleController",
+        "kind": "CALLS",
+        "label": "ScheduleController@getUserCourseSchedule",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:schedule/{schedule_id}/students",
+        "to": "controller:ScheduleController",
+        "kind": "CALLS",
+        "label": "ScheduleController@getScheduleStudentList",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:period",
+        "to": "controller:PeriodController",
+        "kind": "CALLS",
+        "label": "PeriodController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:building",
+        "to": "controller:BuildingController",
+        "kind": "CALLS",
+        "label": "BuildingController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:room",
+        "to": "controller:RoomController",
+        "kind": "CALLS",
+        "label": "RoomController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:departments",
+        "to": "controller:DepartmentController",
+        "kind": "CALLS",
+        "label": "DepartmentController@index",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:programs",
+        "to": "controller:ProgramController",
+        "kind": "CALLS",
+        "label": "ProgramController@index",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:semester/active",
+        "to": "controller:SemesterController",
+        "kind": "CALLS",
+        "label": "SemesterController@getActiveSemester",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:attendance-session",
+        "to": "controller:AttendanceSessionController",
+        "kind": "CALLS",
+        "label": "AttendanceSessionController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:attendance-session/active",
+        "to": "controller:AttendanceSessionController",
+        "kind": "CALLS",
+        "label": "AttendanceSessionController@checkActive",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:attendance-session/active/students",
+        "to": "controller:AttendanceSessionController",
+        "kind": "CALLS",
+        "label": "AttendanceSessionController@getActiveSessionStudents",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:attendance-session/{attendance_session_id}/students",
+        "to": "controller:AttendanceSessionController",
+        "kind": "CALLS",
+        "label": "AttendanceSessionController@getSessionStudents",
+        "meta": {}
+      },
+      {
+        "from": "route:PUT:attendance-session/stop",
+        "to": "controller:AttendanceSessionController",
+        "kind": "CALLS",
+        "label": "AttendanceSessionController@stopAttendance",
+        "meta": {}
+      },
+      {
+        "from": "route:PUT:attendance-session/continue",
+        "to": "controller:AttendanceSessionController",
+        "kind": "CALLS",
+        "label": "AttendanceSessionController@continueAttendance",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:attendance-record",
+        "to": "controller:AttendanceRecordController",
+        "kind": "CALLS",
+        "label": "AttendanceRecordController@create",
+        "meta": {}
+      },
+      {
+        "from": "route:GET:attendance-record/check",
+        "to": "controller:AttendanceRecordController",
+        "kind": "CALLS",
+        "label": "AttendanceRecordController@checkRecord",
+        "meta": {}
+      },
+      {
+        "from": "route:POST:ble-detection",
+        "to": "controller:BleDetectionController",
+        "kind": "CALLS",
+        "label": "BleDetectionController@store",
+        "meta": {}
+      },
+      {
+        "from": "model:AttendancePolicy",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:AttendanceRecord",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:BleDetection",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:ExcuseRequest",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:Instructor",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:InstructorMark",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:Student",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:UserCourseBlock",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:UserProfile",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "model:UserRole",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "service:AppServiceProvider",
+        "to": "service:UserRepository",
+        "kind": "CALLS",
+        "label": "UserRepository",
+        "meta": {}
+      },
+      {
+        "from": "service:AppServiceProvider",
+        "to": "service:StudentRepository",
+        "kind": "CALLS",
+        "label": "StudentRepository",
+        "meta": {}
+      },
+      {
+        "from": "service:AppServiceProvider",
+        "to": "service:SemesterRepository",
+        "kind": "CALLS",
+        "label": "SemesterRepository",
+        "meta": {}
+      },
+      {
+        "from": "service:AppServiceProvider",
+        "to": "service:UserProfileRepository",
+        "kind": "CALLS",
+        "label": "UserProfileRepository",
+        "meta": {}
+      },
+      {
+        "from": "service:AttendanceSessionRepository",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "service:AuthRepository",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "service:InstructorRepository",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "service:ScheduleRepository",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "service:StudentRepository",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "service:UserRepository",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "service:UserRepository",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "service:AttendanceRecordService",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "service:AttendanceSessionService",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "service:AttendanceSessionService",
+        "to": "str:Str",
+        "kind": "DEPENDS_ON",
+        "label": "Str::",
+        "meta": {}
+      },
+      {
+        "from": "service:AttendanceSessionService",
+        "to": "str:Str",
+        "kind": "DEPENDS_ON",
+        "label": "Str::",
+        "meta": {}
+      },
+      {
+        "from": "service:AttendanceSessionService",
+        "to": "str:Str",
+        "kind": "DEPENDS_ON",
+        "label": "Str::",
+        "meta": {}
+      },
+      {
+        "from": "service:InstructorService",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "service:ScheduleService",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "service:StudentService",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "service:UserService",
+        "to": "str:Str",
+        "kind": "DEPENDS_ON",
+        "label": "Str::",
+        "meta": {}
+      },
+      {
+        "from": "other:database",
+        "to": "str:Str",
+        "kind": "DEPENDS_ON",
+        "label": "Str::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_05_16_095848_create_users_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_05_16_095848_create_users_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_05_20_153056_create_personal_access_tokens_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_05_20_153056_create_personal_access_tokens_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_08_131619_create_user_profiles_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_08_131619_create_user_profiles_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024357_create_school_years_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024357_create_school_years_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024428_create_departments_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024428_create_departments_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024503_create_semesters_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024503_create_semesters_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024542_create_programs_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024542_create_programs_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024615_create_students_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024615_create_students_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024638_create_instructors_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_10_024638_create_instructors_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_16_064132_create_roles_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_16_064132_create_roles_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_16_064321_create_user_roles_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_16_064321_create_user_roles_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_25_094556_create_sessions_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_06_25_094556_create_sessions_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_04_141948_create_courses_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_04_141948_create_courses_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_04_142023_create_course_blocks_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_04_142023_create_course_blocks_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_05_140443_create_buildings_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_05_140443_create_buildings_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_05_140502_create_rooms_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_05_140502_create_rooms_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_05_140600_create_schedules_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_05_140600_create_schedules_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_060338_create_periods_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_060338_create_periods_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_060400_create_ble_devices_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_060400_create_ble_devices_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_060504_create_attendance_sessions_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_060504_create_attendance_sessions_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_060602_create_attendance_records_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_060602_create_attendance_records_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_125408_create_user_course_blocks_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_125408_create_user_course_blocks_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_125431_create_schedule_days_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_125431_create_schedule_days_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_125555_create_ble_detections_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_12_125555_create_ble_detections_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062426_create_attendance_policies_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062426_create_attendance_policies_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062426_create_attendance_policy_courses_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062426_create_attendance_policy_courses_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062427_create_excuse_requests_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062427_create_excuse_requests_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062427_create_permissions_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062427_create_permissions_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062428_create_instructor_marks_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062428_create_instructor_marks_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062428_create_role_permissions_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_16_062428_create_role_permissions_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_23_000000_remove_is_active_from_ble_devices_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_23_000000_remove_is_active_from_ble_devices_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_23_000000_remove_is_active_from_ble_devices_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_23_000000_remove_is_active_from_ble_devices_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_30_144159_remove_ble_verified_and_ble_verified_at_from_attendance_records_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:2026_07_30_144159_remove_ble_verified_and_ble_verified_at_from_attendance_records_table",
+        "to": "schema:Schema",
+        "kind": "DEPENDS_ON",
+        "label": "Schema::",
+        "meta": {}
+      },
+      {
+        "from": "other:UserRoleSeeder",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "other:UserSeeder",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "controller:api",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:web",
+        "to": "route:Route",
+        "kind": "DEPENDS_ON",
+        "label": "Route::",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "model:User",
+        "kind": "WRITES",
+        "label": "User",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      },
+      {
+        "from": "other:AttendanceSessionTest",
+        "to": "db:DB",
+        "kind": "DEPENDS_ON",
+        "label": "DB::",
+        "meta": {}
+      }
+    ],
+    "stats": {
+      "nodes": 266,
+      "edges": 175,
+      "by_type": {
+        "Route": 36,
+        "Controller": 17,
+        "Other": 142,
+        "Middleware": 1,
+        "Model": 28,
+        "Service": 41,
+        "Database": 1
+      }
+    }
+  }
+}
