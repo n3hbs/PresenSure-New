@@ -6,15 +6,16 @@ use App\Http\Requests\AttendanceSession\CheckActiveAttendanceRequest;
 use App\Http\Requests\AttendanceSession\ContinueAttendanceRequest;
 use App\Http\Requests\AttendanceSession\CreateDeviceAttendanceSessionRequest;
 use App\Http\Requests\AttendanceSession\StopAttendanceRequest;
-use App\Repositories\AttendanceSessionRepository;
+use App\Http\Resources\AttendanceSession\AttendanceSessionStudentsResource;
+use App\Http\Resources\AttendanceSession\CreateAttendanceSessionResource;
+use App\Http\Resources\AttendanceSessionResource;
 use App\Services\AttendanceSessionService;
 use Illuminate\Http\JsonResponse;
 
 class AttendanceSessionController extends Controller
 {
     public function __construct(
-        protected AttendanceSessionService $attendanceSessionService,
-        protected AttendanceSessionRepository $attendanceSessionRepository
+        protected AttendanceSessionService $attendanceSessionService
     ) {}
 
     public function create(CreateDeviceAttendanceSessionRequest $request): JsonResponse
@@ -25,8 +26,8 @@ class AttendanceSessionController extends Controller
         );
 
         return $this->successResponse(
-            $result['data'],
-            $result['message'],
+            new CreateAttendanceSessionResource($result),
+            'Attendance session created successfully.',
             201
         );
     }
@@ -36,8 +37,8 @@ class AttendanceSessionController extends Controller
         $result = $this->attendanceSessionService->endAttendanceSession($request->validated());
 
         return $this->successResponse(
-            $result['data'],
-            $result['message']
+            new AttendanceSessionResource($result),
+            'Attendance session ended successfully.'
         );
     }
 
@@ -46,20 +47,18 @@ class AttendanceSessionController extends Controller
         $result = $this->attendanceSessionService->continueAttendanceSession($request->validated());
 
         return $this->successResponse(
-            $result['data'],
-            $result['message']
+            new CreateAttendanceSessionResource($result),
+            'Attendance session continued successfully.'
         );
     }
 
     public function checkActive(CheckActiveAttendanceRequest $request): JsonResponse
     {
-        $result = $this->attendanceSessionRepository->findActiveSession((int) $request->validated('schedule_id'));
+        $session = $this->attendanceSessionService->findActiveSession((int) $request->validated('schedule_id'));
 
         return $this->successResponse(
-            $result,
-            $result === null
-                ? 'No active attendance session was found.'
-                : 'Active attendance session retrieved successfully.'
+            new AttendanceSessionResource($session),
+            'Active attendance session retrieved successfully.'
         );
     }
 
@@ -68,8 +67,8 @@ class AttendanceSessionController extends Controller
         $result = $this->attendanceSessionService->getSessionStudents($attendanceSessionId);
 
         return $this->successResponse(
-            $result['data'],
-            $result['message']
+            new AttendanceSessionStudentsResource($result),
+            'Attendance session student list retrieved successfully.'
         );
     }
 
@@ -78,8 +77,8 @@ class AttendanceSessionController extends Controller
         $result = $this->attendanceSessionService->getActiveSessionStudents((int) $request->validated('schedule_id'));
 
         return $this->successResponse(
-            $result['data'],
-            $result['message']
+            new AttendanceSessionStudentsResource($result),
+            'Active attendance session student list retrieved successfully.'
         );
     }
 }

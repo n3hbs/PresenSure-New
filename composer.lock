@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea0ec5d0f25899a5cd8ef13f05d25114",
+    "content-hash": "7944ff1d107a37075d3ce982f6dcb13e",
     "packages": [
         {
             "name": "brick/math",
@@ -10397,6 +10397,89 @@
             "time": "2024-10-09T05:16:32+00:00"
         },
         {
+            "name": "squeak/rat",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CodeWithTeds/squeak-rat.git",
+                "reference": "823a19ae27b70f727c39d87771c8682c00d288f7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CodeWithTeds/squeak-rat/zipball/823a19ae27b70f727c39d87771c8682c00d288f7",
+                "reference": "823a19ae27b70f727c39d87771c8682c00d288f7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "illuminate/console": "^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "illuminate/filesystem": "^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "nikic/php-parser": "^4.0|^5.0",
+                "php": "^8.1|^8.2|^8.3|^8.4",
+                "symfony/console": "^5.4|^6.0|^7.0|^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.0|^11.0"
+            },
+            "suggest": {
+                "ext-gd": "For true-color rat.png rendering in terminal (fallback to block letters if missing)",
+                "ext-imagick": "Alternative image handling",
+                "ext-posix": "For TTY detection (vendor exclusion always works without it)"
+            },
+            "default-branch": true,
+            "bin": [
+                "bin/rat"
+            ],
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Rat\\RatServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rat\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Rat\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php -r \"file_exists('bin/rat') && chmod('bin/rat', 0755);\""
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "RAT",
+                    "role": "Laravel Security & Behavior Analyzer"
+                }
+            ],
+            "description": "squeak/rat — squeak-rat: Laravel Application Security & Behavior Analyzer. Terminal forensic tool for Laravel. 🐀 RAT follows the trail.",
+            "keywords": [
+                "forensic",
+                "laravel",
+                "security",
+                "static-analysis",
+                "taint-analysis",
+                "terminal"
+            ],
+            "support": {
+                "source": "https://github.com/CodeWithTeds/squeak-rat/tree/main",
+                "issues": "https://github.com/CodeWithTeds/squeak-rat/issues"
+            },
+            "time": "2026-09-08T15:26:52+00:00"
+        },
+        {
             "name": "staabm/side-effects-detector",
             "version": "1.0.5",
             "source": {
@@ -10698,7 +10781,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "squeak/rat": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Http\Resources\AttendanceSession\SessionStudentAttendanceResource;
 use App\Models\AttendanceSession;
 use App\Models\BleDevice;
 use App\Models\Schedule;
@@ -41,7 +40,9 @@ class AttendanceSessionService
             }
             $existingSession = $this->attendanceSessionRepository->findActiveSession($schedule->schedule_id);
             if ($existingSession !== null && $existingSession->status === 'active' && $existingSession->end_at->isFuture()) {
-                abort(422, 'An active attendance session already exists for this schedule.');
+                throw ValidationException::withMessages([
+                    'schedule_id' => ['An active attendance session already exists for this schedule.'],
+                ]);
             }
             [$now, $scheduleEnd] = $this->resolveScheduleWindow($schedule);
 
@@ -91,13 +92,9 @@ class AttendanceSessionService
             );
 
             return [
-                'success' => true,
-                'message' => 'Attendance session created successfully.',
-                'data' => [
-                    'session' => $session->toArray(),
-                    'ble_token' => $rawToken,
-                    'beacon_configuration' => $beaconConfiguration,
-                ]
+                'session' => $session,
+                'ble_token' => $rawToken,
+                'beacon_configuration' => $beaconConfiguration,
             ];
         });
     }
@@ -196,13 +193,7 @@ class AttendanceSessionService
         $session->refresh();
 
 
-        return [
-            'success' => true,
-            'message' => 'Attendance session ended successfully.',
-            'data' => [
-                'session' => $session->toArray(),
-            ],
-        ];
+        return $session;
     }
 
 
@@ -252,14 +243,23 @@ class AttendanceSessionService
 
 
         return [
-            'success' => true,
-            'message' => 'Attendance session continued successfully',
-            'data' => [
-                'session' => $session->toArray(),
-                'ble_token' => $rawToken,
-                'beacon_configuration' => $beaconConfiguration,
-            ]
+            'session' => $session,
+            'ble_token' => $rawToken,
+            'beacon_configuration' => $beaconConfiguration,
         ];
+    }
+
+    public function findActiveSession(int $scheduleId): AttendanceSession
+    {
+        $session = $this->attendanceSessionRepository->findActiveSession($scheduleId);
+
+        if ($session === null) {
+            throw ValidationException::withMessages([
+                'schedule_id' => ['No active attendance session was found for this schedule.'],
+            ]);
+        }
+
+        return $session;
     }
 
     public function getSessionStudents(int $attendanceSessionId): array
@@ -267,7 +267,9 @@ class AttendanceSessionService
         $session = $this->attendanceSessionRepository->findById($attendanceSessionId);
 
         if ($session === null) {
-            abort(404, 'Attendance session not found.');
+            throw ValidationException::withMessages([
+                'attendance_session_id' => ['Attendance session not found.'],
+            ]);
         }
 
         $students = $this->attendanceSessionRepository->getSessionStudentsWithAttendance(
@@ -282,31 +284,21 @@ class AttendanceSessionService
         $unmarkedCount = $totalStudents - ($presentCount + $lateCount + $absentCount);
 
         return [
-            'success' => true,
-            'message' => 'Attendance session student list retrieved successfully.',
-            'data' => [
-                'session_id' => $session->attendance_session_id,
-                'schedule_id' => $session->schedule_id,
-                'session_status' => $session->status,
-                'summary' => [
-                    'total_students' => $totalStudents,
-                    'present_count' => $presentCount,
-                    'late_count' => $lateCount,
-                    'absent_count' => $absentCount,
-                    'unmarked_count' => $unmarkedCount,
-                ],
-                'students' => SessionStudentAttendanceResource::collection($students),
+            'session' => $session,
+            'students' => $students,
+            'summary' => [
+                'total_students' => $totalStudents,
+                'present_count' => $presentCount,
+                'late_count' => $lateCount,
+                'absent_count' => $absentCount,
+                'unmarked_count' => $unmarkedCount,
             ],
         ];
     }
 
     public function getActiveSessionStudents(int $scheduleId): array
     {
-        $session = $this->attendanceSessionRepository->findActiveSession($scheduleId);
-
-        if ($session === null) {
-            abort(404, 'No active attendance session found for this schedule.');
-        }
+        $session = $this->findActiveSession($scheduleId);
 
         return $this->getSessionStudents($session->attendance_session_id);
     }
