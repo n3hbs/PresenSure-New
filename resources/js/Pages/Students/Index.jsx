@@ -160,6 +160,7 @@ export default function Students() {
         error,
     } = useQuery({
         queryKey: activeStudentsQueryKey,
+        refetchOnMount: "always",
         queryFn: async () => {
             const token = sessionStorage.getItem("token");
             const response = await api.get("/student/getByActiveSemester", {
@@ -345,6 +346,10 @@ export default function Students() {
 
     const sortOptions = [
         {
+            label: "Default",
+            value: "default",
+        },
+        {
             label: "Name A-Z",
             value: "name_asc",
             sorter: (a, b) => a.fullName.localeCompare(b.fullName),
@@ -358,11 +363,6 @@ export default function Students() {
             label: "Student ID",
             value: "id_asc",
             sorter: (a, b) => a.userId.localeCompare(b.userId),
-        },
-        {
-            label: "Program",
-            value: "program_asc",
-            sorter: (a, b) => a.programCode.localeCompare(b.programCode),
         },
     ];
 
@@ -491,7 +491,7 @@ export default function Students() {
                 loading={loading}
                 rowKey="userId"
                 sortOptions={sortOptions}
-                defaultSort="name_asc"
+                defaultSort="default"
                 pageSizeOptions={[10, 25, 50]}
                 emptyMessage="No students match the current filters."
             />
