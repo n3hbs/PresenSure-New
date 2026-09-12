@@ -16,10 +16,9 @@ class RoleRepository implements RoleRepositoryInterface
 
     public function assignUserRole(string $user_id, int $role_id)
     {
-        return UserRole::create([
-            'user_id' => $user_id,
-            'role_id' => $role_id,
-            'assigned_at' => now(),
-        ]);
+        return UserRole::firstOrCreate(
+            ['user_id' => $user_id, 'role_id' => $role_id],
+            ['assigned_at' => now()]
+        );
     }
 }

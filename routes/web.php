@@ -29,6 +29,10 @@ Route::get('/students/single-registration', function () {
     return Inertia::render('Students/SingleRegistration');
 })->name('students.single-registration');
 
+Route::get('/students/bulk-registration', function () {
+    return Inertia::render('Students/BulkRegistration');
+})->name('students.bulk-registration');
+
 Route::get('/students/student-details', function () {
     return Inertia::render('Students/StudentDetails');
 })->name('student.student-details');

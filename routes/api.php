@@ -18,10 +18,12 @@ use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::post('user/signin', [AuthController::class, 'signIn']);
+Route::get('student/bulk-template', [StudentController::class, 'downloadTemplate']);
 
 // Sanctum resolves the bearer token into $request->user(). Requests without a
 // valid access token are rejected before any route in this group is executed.
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user/auth-check', [AuthController::class, 'check']);
     Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
     // students
@@ -29,6 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/getByActiveSemester', [StudentController::class, 'getStudentByActiveSemester']);
     Route::get('student/{user_id}', [StudentController::class, 'getstudentDetails']);
     Route::get('student/check-user/{user_id}', [StudentController::class, 'checkStudent']);
+    Route::post('student/bulk-extract', [StudentController::class, 'extractBulk']);
+    Route::post('student/bulk-store', [StudentController::class, 'storeBulk']);
 
     // instructor
     Route::post('instructor', [InstructorController::class, 'create']);

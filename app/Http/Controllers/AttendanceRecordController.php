@@ -4,91 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceRecord\CheckAttendanceRecordRequest;
 use App\Http\Requests\AttendanceRecord\StoreAttendanceRecordRequest;
-use App\Models\AttendanceRecord;
-use App\Repositories\AttendanceRecordRepository;
+use App\Http\Resources\AttendanceRecordResource;
+use App\Http\Resources\CreateAttendanceRecordResource;
 use App\Services\AttendanceRecordService;
+use Illuminate\Http\JsonResponse;
 
 class AttendanceRecordController extends Controller
 {
-
     public function __construct(
-        protected AttendanceRecordService $attendanceRecordService,
-        protected AttendanceRecordRepository $attendanceRecordRepository,
+        protected AttendanceRecordService $attendanceRecordService
     ) {}
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(StoreAttendanceRecordRequest $request)
+    public function create(StoreAttendanceRecordRequest $request): JsonResponse
     {
-        $result = $this->attendanceRecordService->createAttendanceRecord($request->validated(), $request->user());
+        $result = $this->attendanceRecordService->createAttendanceRecord(
+            $request->validated(),
+            $request->user()
+        );
 
         return $this->successResponse(
-            $result['data'],
-            $result['message'],
+            new CreateAttendanceRecordResource($result),
+            'Attendance record created successfully.',
             201
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store()
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(AttendanceRecord $attendanceRecord)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(AttendanceRecord $attendanceRecord)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update()
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(AttendanceRecord $attendanceRecord)
-    {
-        //
-    }
-
-    public function checkRecord(CheckAttendanceRecordRequest $request)
+    public function checkRecord(CheckAttendanceRecordRequest $request): JsonResponse
     {
         $scheduleId = (int) ($request->validated('schedule_id') ?? $request->validated('attendance_schedule_id'));
-        $result = $this->attendanceRecordRepository->getAttendanceRecord($scheduleId, $request->user()->user_id);
+        $record = $this->attendanceRecordService->getAttendanceRecord($scheduleId, $request->user()->user_id);
 
         return $this->successResponse(
-            $result,
-            $result === null
-                ? 'No active attendance record was found.'
-                : 'Active attendance record retrieved successfully.',
-            200
+            new AttendanceRecordResource($record),
+            'Active attendance record retrieved successfully.'
         );
     }
-
 }

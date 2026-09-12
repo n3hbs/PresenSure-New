@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Imports\StudentBulkImport;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\RoleRepository;
 use App\Repositories\StudentRepository;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentService
 {
@@ -69,6 +72,7 @@ class StudentService
                 'program_id' => $data['program_id'],
                 'year' => $data['year'],
                 'block' => $data['block'],
+                'status' => 'Active',
             ]);
         });
     }
@@ -130,5 +134,75 @@ class StudentService
             'already_enrolled' => $alreadyEnrolled,
             'user' => $user,
         ];
+    }
+
+    public function extractBulkStudents(UploadedFile $file): array
+    {
+        $activeSemester = $this->semesterService->getActiveSemester();
+        $import = new StudentBulkImport($activeSemester, $this->studentRepository);
+
+        Excel::import($import, $file);
+
+        return $import->getData();
+    }
+
+    public function storeBulkStudents(array $students): array
+    {
+        return DB::transaction(function () use ($students) {
+            $activeSemester = $this->semesterService->getActiveSemester();
+            $roleId = $this->roleService->getRoleId('student');
+
+            $enrolledCount = 0;
+            $skippedCount = 0;
+            $errors = [];
+
+            foreach ($students as $index => $row) {
+                $userId = trim($row['user_id'] ?? '');
+                if (empty($userId)) {
+                    continue;
+                }
+
+                try {
+                    if ($this->studentRepository->isEnrolled($userId, $activeSemester->semester_id)) {
+                        $skippedCount++;
+                        continue;
+                    }
+
+                    // 1. Create or ensure User exists
+                    $user = $this->userService->createUser([
+                        'user_id' => $userId,
+                        'first_name' => $row['first_name'] ?? '',
+                        'last_name' => $row['last_name'] ?? '',
+                        'middle_initial' => $row['middle_initial'] ?? null,
+                        'suffix' => $row['suffix'] ?? null,
+                        'sex' => strtolower($row['sex'] ?? 'male') === 'female' ? 'female' : 'male',
+                    ]);
+
+                    // 2. Assign student role
+                    $this->roleRepository->assignUserRole($user->user_id, $roleId);
+
+                    // 3. Enroll student for active semester
+                    $this->studentRepository->create([
+                        'user_id' => $user->user_id,
+                        'semester_id' => $activeSemester->semester_id,
+                        'program_id' => $row['program_id'],
+                        'year' => $row['year'] ?? 'First Year',
+                        'block' => $row['block'] ?? 'A',
+                        'status' => 'Active',
+                    ]);
+
+                    $enrolledCount++;
+                } catch (\Throwable $e) {
+                    $errors[] = "Row " . ($index + 1) . " ({$userId}): " . $e->getMessage();
+                }
+            }
+
+            return [
+                'enrolled_count' => $enrolledCount,
+                'skipped_count' => $skippedCount,
+                'total_received' => count($students),
+                'errors' => $errors,
+            ];
+        });
     }
 }

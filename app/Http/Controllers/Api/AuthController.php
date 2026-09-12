@@ -27,4 +27,17 @@ class AuthController extends Controller
             'data' => new AuthResource($result)
         ]);
     }
+
+    public function check(\Illuminate\Http\Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'authenticated' => true,
+            'user' => [
+                'user_id' => $user?->user_id,
+                'name' => $user?->name,
+            ],
+        ]);
+    }
 }

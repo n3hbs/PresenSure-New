@@ -1,10 +1,13 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar";
 import TopNavbar from "./Navbar"; // Fixed import filename alignment
+import useAuthCheck from "@/Hooks/useAuthCheck";
+import SessionExpiredModal from "@/Components/UI/SessionExpiredModal";
 
 export default function MainLayout({ children }) {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const { isSessionExpired } = useAuthCheck();
 
     const handleMenu = () => {
         if (window.innerWidth >= 1024) {
@@ -17,6 +20,9 @@ export default function MainLayout({ children }) {
 
     return (
         <div className="flex h-screen bg-gray-100">
+            {/* Session Expired / Re-login Modal */}
+            <SessionExpiredModal isOpen={isSessionExpired} />
+
             {/* Desktop Sidebar */}
             <div className="hidden lg:block">
                 <Sidebar collapsed={sidebarCollapsed} />

@@ -22,7 +22,7 @@ class StudentRepository implements StudentRepositoryInterface
                 $query->where('role_name', 'student');
             });
     }
-    
+
     public function create(array $data)
     {
         return Student::create($data);
@@ -38,6 +38,7 @@ class StudentRepository implements StudentRepositoryInterface
     public function getStudentByActiveSemester(int $semesterId)
     {
         return $this->activeSemesterStudentQuery($semesterId)
+            ->orderByDesc('created_at')
             ->get();
     }
 

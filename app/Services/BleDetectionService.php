@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BleDetection;
 use App\Models\User;
 use App\Repositories\AttendanceRecordRepository;
 use App\Repositories\AttendanceSessionRepository;
@@ -43,19 +44,11 @@ class BleDetectionService
             ]);
         }
 
-        $bleDetection = $this->bleDetectionRepository->create([
+        return $this->bleDetectionRepository->create([
             'attendance_record_id' => $attendanceRecord->attendance_record_id,
             'user_id' => $student->user_id,
             'rssi' => $data['rssi'],
             'detected_at' => $data['detected_at'],
         ]);
-
-        return [
-            'success' => true,
-            'message' => 'BLE detection recorded successfully.',
-            'data' => [
-                'bleDetection' => $bleDetection,
-            ],
-        ];
     }
 }

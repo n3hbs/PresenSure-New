@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\AttendanceRecordCreated;
+use App\Models\AttendanceRecord;
 use App\Models\User;
 use App\Repositories\AttendanceRecordRepository;
 use App\Repositories\AttendanceSessionRepository;
@@ -51,13 +52,22 @@ class AttendanceRecordService
             AttendanceRecordCreated::dispatch($attendanceRecord, $bleDetection);
 
             return [
-                'success' => true,
-                'message' => 'Attendance record created successfully.',
-                'data' => [
-                    'attendanceRecord' => $attendanceRecord,
-                    'bleDetection' => $bleDetection,
-                ],
+                'attendance_record' => $attendanceRecord,
+                'ble_detection' => $bleDetection,
             ];
         });
+    }
+
+    public function getAttendanceRecord(int $scheduleId, string $userId): AttendanceRecord
+    {
+        $record = $this->attendanceRecordRepository->getAttendanceRecord($scheduleId, $userId);
+
+        if ($record === null) {
+            throw ValidationException::withMessages([
+                'schedule_id' => ['No active attendance record was found for this schedule.'],
+            ]);
+        }
+
+        return $record;
     }
 }

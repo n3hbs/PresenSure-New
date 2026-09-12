@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BleDetection\StoreBleDetectionRequest;
+use App\Http\Resources\BleDetectionResource;
 use App\Services\BleDetectionService;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class BleDetectionController extends Controller
 {
@@ -12,13 +13,16 @@ class BleDetectionController extends Controller
         protected BleDetectionService $bleDetectionService
     ) {}
 
-    public function store(StoreBleDetectionRequest $request)
+    public function store(StoreBleDetectionRequest $request): JsonResponse
     {
-        $result = $this->bleDetectionService->createBleDetection($request->validated(), $request->user());
+        $bleDetection = $this->bleDetectionService->createBleDetection(
+            $request->validated(),
+            $request->user()
+        );
 
         return $this->successResponse(
-            $result['data'],
-            $result['message'],
+            new BleDetectionResource($bleDetection),
+            'BLE detection recorded successfully.',
             201
         );
     }
