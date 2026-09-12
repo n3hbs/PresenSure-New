@@ -1,3 +1,4 @@
+import { Head } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
 import { ThemeProvider } from "@/Context/ThemeContext";
 import Navbar from "@/Components/Landing/Navbar";
@@ -10,6 +11,7 @@ import Footer from "@/Components/Landing/Footer";
 export default function Index() {
     return (
         <ThemeProvider>
+            <Head title="Welcome" />
             <AppLayout>
                 <div className="min-h-screen font-sans antialiased">
                     <Navbar />
