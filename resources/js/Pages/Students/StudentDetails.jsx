@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeftIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 
@@ -45,7 +45,8 @@ export default function StudentDetails() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <Head title="Student Details" />
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <Breadcrumbs
                     crumbs={[
                         { label: "Dashboard", href: "/dashboard" },

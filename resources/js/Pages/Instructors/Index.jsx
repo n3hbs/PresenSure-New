@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     ArchiveBoxIcon,
@@ -319,7 +319,9 @@ export default function Instructors() {
     ];
 
     return (
-        <div className="space-y-6">
+        <>
+            <Head title="Instructors" />
+            <div className="space-y-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <Breadcrumbs
@@ -432,6 +434,7 @@ export default function Instructors() {
                 emptyMessage="No instructors match the current filters."
             />
         </div>
+        </>
     );
 }
 

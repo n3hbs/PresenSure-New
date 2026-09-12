@@ -1,4 +1,4 @@
-import { usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import MainLayout from "@/Components/Layout/MainLayout";
 
 export default function Dashboard() {
@@ -6,7 +6,9 @@ export default function Dashboard() {
     const { auth } = usePage().props;
 
     return (
-        <div className="space-y-6">
+        <>
+            <Head title="Dashboard" />
+            <div className="space-y-6">
             {/* Welcome Banner */}
             <div className="bg-white p-6 rounded-xl border shadow-sm">
                 <h1 className="text-2xl font-bold text-gray-800">
@@ -40,6 +42,7 @@ export default function Dashboard() {
                 Main Dashboard content, charts, or recent activity feeds go here.
             </div>
         </div>
+        </>
     );
 }
 
