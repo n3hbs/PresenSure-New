@@ -14,6 +14,7 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
 use App\Repositories\Interfaces\SemesterRepositoryInterface;
 use App\Repositories\Interfaces\UserProfileRepositoryInterface;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -51,5 +52,21 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('production') || filter_var(env('FORCE_HTTPS', false), FILTER_VALIDATE_BOOLEAN)) {
             URL::forceScheme('https');
         }
+
+        // Expire token only if idle/inactive for more than 60 minutes
+        Sanctum::authenticateAccessTokensUsing(function ($accessToken, $isValid) {
+            if (! $isValid) {
+                return false;
+            }
+
+            $lastActivity = $accessToken->last_used_at ?? $accessToken->created_at;
+
+            if ($lastActivity && $lastActivity->lt(now()->subMinutes(60))) {
+                $accessToken->delete();
+                return false;
+            }
+
+            return true;
+        });
     }
 }

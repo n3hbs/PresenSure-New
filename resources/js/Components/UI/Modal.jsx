@@ -15,6 +15,7 @@ export default function Modal({
     preventClose = false,
     showCloseButton,
     zIndex = "z-90",
+    className = "",
 }) {
     const isVisible = isOpen ?? open ?? false;
 
@@ -55,48 +56,56 @@ export default function Modal({
             role="presentation"
         >
             <div
-                className={`relative w-full ${widthClass} rounded-xl bg-white p-5 shadow-2xl shadow-blue-950/20`}
+                className={`relative flex flex-col w-full ${widthClass} overflow-hidden rounded-xl bg-white shadow-2xl shadow-blue-950/20 ${className}`}
                 role="dialog"
                 aria-modal="true"
             >
-                {shouldShowClose && onClose && (
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="absolute top-4 right-4 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
-                        aria-label="Close modal"
-                    >
-                        <XMarkIcon className="h-5 w-5" />
-                    </button>
+                {/* Header (Title, Icon, Close Button) */}
+                {(title || icon || (shouldShowClose && onClose)) && (
+                    <div className="shrink-0 flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                        <div className="flex items-center gap-3">
+                            {icon && (
+                                <div
+                                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg}`}
+                                >
+                                    {icon}
+                                </div>
+                            )}
+                            {title && (
+                                <h2 className="text-base sm:text-lg font-bold text-gray-900">
+                                    {title}
+                                </h2>
+                            )}
+                        </div>
+
+                        {shouldShowClose && onClose && (
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+                                aria-label="Close modal"
+                            >
+                                <XMarkIcon className="h-5 w-5" />
+                            </button>
+                        )}
+                    </div>
                 )}
 
-                <div className="flex items-start gap-3">
-                    {icon && (
-                        <div
-                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconBg}`}
-                        >
-                            {icon}
-                        </div>
-                    )}
-
-                    <div className="min-w-0 flex-1">
-                        {title && (
-                            <h2 className="text-lg font-bold text-gray-900">
-                                {title}
-                            </h2>
-                        )}
+                {/* Body (Description & Children) */}
+                {(description || children) && (
+                    <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 text-sm text-gray-600">
                         {description && (
-                            <p className="mt-1 text-sm text-gray-500">
+                            <p className={children ? "mb-3 text-gray-600 leading-relaxed" : "text-gray-600 leading-relaxed"}>
                                 {description}
                             </p>
                         )}
+                        {children}
                     </div>
-                </div>
+                )}
 
-                {children && <div className="mt-4 text-sm text-gray-600">{children}</div>}
-
+                {/* Footer (Buttons) */}
                 {footer && (
-                    <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <div className="shrink-0 flex flex-col-reverse gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4 sm:flex-row sm:justify-end">
                         {footer}
                     </div>
                 )}

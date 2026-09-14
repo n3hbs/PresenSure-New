@@ -6,7 +6,7 @@ import Logo from "@/assets/images/MainLogo.webp";
 import Button from "@/Components/UI/Button";
 
 import api from "@/Services/api";
-import { activeSemesterStorageKey } from "@/Services/queryKeys";
+import { setAuthSession } from "@/Services/auth";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -30,9 +30,7 @@ export default function Login() {
 
             const { token, user } = response.data.data;
 
-            sessionStorage.removeItem(activeSemesterStorageKey);
-            sessionStorage.setItem("token", token);
-            sessionStorage.setItem("user", JSON.stringify(user));
+            setAuthSession(token, user);
 
             router.visit("/dashboard");
         } catch (error) {

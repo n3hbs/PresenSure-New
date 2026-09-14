@@ -11,13 +11,14 @@ class StudentRepository implements StudentRepositoryInterface
     private function activeSemesterStudentQuery(int $semesterId)
     {
         return User::with([
-            'student.program.department',
+            'student' => function ($query) use ($semesterId) {
+                $query->orderByRaw('CASE WHEN semester_id = ? THEN 0 ELSE 1 END', [$semesterId])
+                    ->orderByDesc('created_at')
+                    ->with('program.department');
+            },
             'roleAssignment.role',
             'userProfile',
         ])
-            ->whereHas('student', function ($query) use ($semesterId) {
-                $query->where('semester_id', $semesterId);
-            })
             ->whereHas('roleAssignment.role', function ($query) {
                 $query->where('role_name', 'student');
             });
@@ -45,6 +46,18 @@ class StudentRepository implements StudentRepositoryInterface
     public function getStudentDetails(string $user_id, int $semesterId)
     {
         return $this->activeSemesterStudentQuery($semesterId)
+            ->with([
+                'userCourseBlocks' => function ($query) use ($semesterId) {
+                    $query->whereHas('courseBlock', function ($q) use ($semesterId) {
+                        $q->where('semester_id', $semesterId);
+                    })->with([
+                        'courseBlock.course',
+                        'courseBlock.semester',
+                        'courseBlock.schedules.scheduleDays',
+                        'courseBlock.schedules.room.building',
+                    ]);
+                },
+            ])
             ->where('user_id', $user_id)
             ->first();
     }

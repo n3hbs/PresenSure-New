@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     ArchiveBoxIcon,
     ArrowRightIcon,
+    CloudArrowUpIcon,
     MagnifyingGlassIcon,
     UserGroupIcon,
     UserPlusIcon,
@@ -22,6 +23,11 @@ import NoImage from "@/assets/images/noImage.webp";
 const allOption = { label: "All", value: "" };
 
 const actionLinks = [
+    {
+        label: "Upload Images",
+        href: "/instructors/bulk-image-upload",
+        icon: CloudArrowUpIcon,
+    },
     {
         label: "Single Registration",
         href: "/instructors/single-registration",
@@ -134,8 +140,8 @@ export default function Instructors() {
             const response = await api.get("/instructors", {
                 headers: token
                     ? {
-                          Authorization: `Bearer ${token}`,
-                      }
+                        Authorization: `Bearer ${token}`,
+                    }
                     : {},
             });
 
@@ -185,15 +191,15 @@ export default function Instructors() {
                 : true;
             const matchesSearch = needle
                 ? [
-                      instructor.userId,
-                      instructor.fullName,
-                      instructor.departmentName,
-                      instructor.departmentCode,
-                      instructor.sex,
-                  ]
-                      .join(" ")
-                      .toLowerCase()
-                      .includes(needle)
+                    instructor.userId,
+                    instructor.fullName,
+                    instructor.departmentName,
+                    instructor.departmentCode,
+                    instructor.sex,
+                ]
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(needle)
                 : true;
 
             return matchesTab && matchesDepartment && matchesSearch;
@@ -237,16 +243,6 @@ export default function Instructors() {
             ),
         },
         {
-            key: "sex",
-            header: "Sex",
-            minWidth: "90px",
-            render: (instructor) => (
-                <span className="font-medium text-gray-700">
-                    {instructor.sex}
-                </span>
-            ),
-        },
-        {
             key: "departmentName",
             header: "Department",
             minWidth: "180px",
@@ -261,16 +257,6 @@ export default function Instructors() {
                         </p>
                     )}
                 </div>
-            ),
-        },
-        {
-            key: "status",
-            header: "Status",
-            minWidth: "110px",
-            render: (instructor) => (
-                <Badge variant={instructor.isActive ? "success" : "secondary"}>
-                    {instructor.status}
-                </Badge>
             ),
         },
         {
@@ -322,118 +308,117 @@ export default function Instructors() {
         <>
             <Head title="Instructors" />
             <div className="space-y-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                    <Breadcrumbs
-                        crumbs={[
-                            { label: "Dashboard", href: "/dashboard" },
-                            { label: "Instructors" },
-                        ]}
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <Breadcrumbs
+                            crumbs={[
+                                { label: "Dashboard", href: "/dashboard" },
+                                { label: "Instructors" },
+                            ]}
+                        />
+                    </div>
+
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                        {actionLinks.map(({ label, href, icon: Icon }) => (
+                            <Link
+                                key={href}
+                                href={href}
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700"
+                            >
+                                <Icon className="h-4 w-4" />
+                                <span className="hidden sm:inline">{label}</span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+
+                {isError && (
+                    <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                        {errorMessage}
+                    </div>
+                )}
+
+                <div className="grid gap-4 md:grid-cols-3">
+                    <StatCard
+                        icon={UserGroupIcon}
+                        label="Total Instructors"
+                        value={counts.total}
+                    />
+                    <StatCard
+                        icon={UsersIcon}
+                        label="Active"
+                        value={counts.active}
+                        tone="green"
+                    />
+                    <StatCard
+                        icon={ArchiveBoxIcon}
+                        label="Inactive"
+                        value={counts.inactive}
+                        tone="gray"
                     />
                 </div>
 
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                    {actionLinks.map(({ label, href, icon: Icon }) => (
-                        <Link
-                            key={href}
-                            href={href}
-                            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700"
-                        >
-                            <Icon className="h-4 w-4" />
-                            <span className="hidden sm:inline">{label}</span>
-                        </Link>
-                    ))}
-                </div>
-            </div>
-
-            {isError && (
-                <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-                    {errorMessage}
-                </div>
-            )}
-
-            <div className="grid gap-4 md:grid-cols-3">
-                <StatCard
-                    icon={UserGroupIcon}
-                    label="Total Instructors"
-                    value={counts.total}
-                />
-                <StatCard
-                    icon={UsersIcon}
-                    label="Active"
-                    value={counts.active}
-                    tone="green"
-                />
-                <StatCard
-                    icon={ArchiveBoxIcon}
-                    label="Inactive"
-                    value={counts.inactive}
-                    tone="gray"
-                />
-            </div>
-
-            <section className="rounded-xl bg-white p-4 shadow-sm shadow-blue-950/5">
-                <div className="mb-4 flex gap-2 overflow-x-auto">
-                    {[
-                        { label: "Active", value: "active" },
-                        { label: "Inactive", value: "inactive" },
-                    ].map((tab) => (
-                        <button
-                            key={tab.value}
-                            type="button"
-                            onClick={() => setActiveTab(tab.value)}
-                            className={`h-10 rounded-lg px-4 text-sm font-semibold transition ${
-                                activeTab === tab.value
+                <section className="rounded-xl bg-white p-4 shadow-sm shadow-blue-950/5">
+                    <div className="mb-4 flex gap-2 overflow-x-auto">
+                        {[
+                            { label: "Active", value: "active" },
+                            { label: "Inactive", value: "inactive" },
+                        ].map((tab) => (
+                            <button
+                                key={tab.value}
+                                type="button"
+                                onClick={() => setActiveTab(tab.value)}
+                                className={`h-10 rounded-lg px-4 text-sm font-semibold transition ${activeTab === tab.value
                                     ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
                                     : "bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-blue-700"
-                            }`}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
+                                    }`}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
 
-                <div className="flex items-end gap-3">
-                    <div className="flex-1">
-                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
-                            Search
-                        </label>
-                        <div className="relative">
-                            <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-                            <input
-                                type="search"
-                                value={search}
-                                onChange={(event) =>
-                                    setSearch(event.target.value)
-                                }
-                                placeholder="Search instructors..."
-                                className="h-11 w-full rounded-xl bg-gray-50 pl-11 pr-4 text-sm text-gray-700 shadow-sm shadow-blue-950/5 outline-none transition placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                    <div className="flex items-end gap-3">
+                        <div className="flex-1">
+                            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                Search
+                            </label>
+                            <div className="relative">
+                                <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                                <input
+                                    type="search"
+                                    value={search}
+                                    onChange={(event) =>
+                                        setSearch(event.target.value)
+                                    }
+                                    placeholder="Search instructors..."
+                                    className="h-11 w-full rounded-xl bg-gray-50 pl-11 pr-4 text-sm text-gray-700 shadow-sm shadow-blue-950/5 outline-none transition placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="w-48 sm:w-60 shrink-0">
+                            <SelectDropdown
+                                label="Department"
+                                options={departmentOptions}
+                                value={department}
+                                onChange={setDepartment}
                             />
                         </div>
                     </div>
+                </section>
 
-                    <div className="w-48 sm:w-60 shrink-0">
-                        <SelectDropdown
-                            label="Department"
-                            options={departmentOptions}
-                            value={department}
-                            onChange={setDepartment}
-                        />
-                    </div>
-                </div>
-            </section>
-
-            <DataTable
-                columns={columns}
-                data={filteredInstructors}
-                loading={loading}
-                rowKey="userId"
-                sortOptions={sortOptions}
-                defaultSort="name_asc"
-                pageSizeOptions={[10, 25, 50]}
-                emptyMessage="No instructors match the current filters."
-            />
-        </div>
+                <DataTable
+                    columns={columns}
+                    data={filteredInstructors}
+                    loading={loading}
+                    rowKey="userId"
+                    sortOptions={sortOptions}
+                    defaultSort="name_asc"
+                    pageSizeOptions={[10, 25, 50]}
+                    emptyMessage="No instructors match the current filters."
+                />
+            </div>
         </>
     );
 }

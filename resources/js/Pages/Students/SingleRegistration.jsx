@@ -12,6 +12,7 @@ import StudentTypeStep from "@/Components/Students/Register/StudentTypeStep";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import DiscardRegistrationModal from "@/Components/UI/DiscardRegistrationModal";
 import api from "@/Services/api";
+import { getAuthToken } from "@/Services/auth";
 import {
     activeStudentsQueryKey,
     departmentsQueryKey,
@@ -88,7 +89,7 @@ export default function SingleRegistration() {
     );
 
     const getAuthHeaders = () => {
-        const token = sessionStorage.getItem("token");
+        const token = getAuthToken();
         return token ? { Authorization: `Bearer ${token}` } : {};
     };
 
@@ -452,7 +453,42 @@ export default function SingleRegistration() {
         return Object.keys(nextErrors).length === 0;
     };
 
-    const continueToReview = (event) => {
+    const handleUserIdBlur = async () => {
+        if (
+            registrationType !== "new" ||
+            !form.user_id ||
+            form.user_id.length < 11
+        ) {
+            return;
+        }
+
+        try {
+            const response = await api.get(
+                `/student/check-user/${form.user_id}`,
+                {
+                    headers: getAuthHeaders(),
+                },
+            );
+
+            if (response.data?.exists) {
+                setFieldErrors((current) => ({
+                    ...current,
+                    user_id: [
+                        "This student number is already registered in the system. If this is a returning student, please select 'Existing Student' on step 1.",
+                    ],
+                }));
+                showToast(
+                    "warning",
+                    "Student Number Already Exists",
+                    `Student number ${form.user_id} is already registered in the system.`,
+                );
+            }
+        } catch {
+            // Not found (422) is expected and valid for a new student registration
+        }
+    };
+
+    const continueToReview = async (event) => {
         event.preventDefault();
 
         if (!validate()) {
@@ -462,6 +498,34 @@ export default function SingleRegistration() {
                 "Please fill in the highlighted fields before reviewing.",
             );
             return;
+        }
+
+        if (registrationType === "new" && form.user_id) {
+            try {
+                const response = await api.get(
+                    `/student/check-user/${form.user_id}`,
+                    {
+                        headers: getAuthHeaders(),
+                    },
+                );
+
+                if (response.data?.exists) {
+                    setFieldErrors((current) => ({
+                        ...current,
+                        user_id: [
+                            "This student number is already registered in the system. If this is a returning student, please select 'Existing Student' on step 1.",
+                        ],
+                    }));
+                    showToast(
+                        "error",
+                        "Student Number Already Registered",
+                        `Student number ${form.user_id} is already registered in the system.`,
+                    );
+                    return;
+                }
+            } catch {
+                // Not found is valid for new registration
+            }
         }
 
         setCurrentStep(3);
@@ -519,12 +583,20 @@ export default function SingleRegistration() {
             });
         } catch (requestError) {
             if (requestError.response?.status === 422) {
-                setFieldErrors(requestError.response.data.errors || {});
+                const errors = requestError.response.data.errors || {};
+                setFieldErrors(errors);
                 setCurrentStep(2);
+
+                const errorList = Object.values(errors).flat();
+                const specificMessage =
+                    errorList[0] ||
+                    requestError.response.data.message ||
+                    "Some fields need your attention before this can be submitted.";
+
                 showToast(
-                    "warning",
-                    "Please check the form",
-                    "Some fields need your attention before this can be submitted.",
+                    "error",
+                    "Validation Error",
+                    specificMessage,
                 );
             } else {
                 showToast(
@@ -623,6 +695,7 @@ export default function SingleRegistration() {
                         registrationType={registrationType}
                         onSubmit={continueToReview}
                         onTextChange={handleChange}
+                        onUserIdBlur={handleUserIdBlur}
                         onSelectChange={updateSelect}
                         onImageChange={handleImageChange}
                         onRemoveImage={() => setImage(null)}

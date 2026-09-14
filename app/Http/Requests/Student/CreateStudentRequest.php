@@ -40,4 +40,36 @@ class CreateStudentRequest extends FormRequest
             'block' => 'required|string|max:50',
         ];
     }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'user_id' => 'student number',
+            'first_name' => 'first name',
+            'last_name' => 'last name',
+            'sex' => 'sex',
+            'program_id' => 'program',
+            'year' => 'year level',
+            'block' => 'block',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'user_id.unique' => 'This student number is already registered in the system.',
+            'user_id.exists' => 'No account found with this student number.',
+            'user_id.required' => 'Student number is required.',
+        ];
+    }
 }

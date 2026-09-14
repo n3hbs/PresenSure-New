@@ -11,6 +11,11 @@ import {
 
 import api from "@/Services/api";
 import {
+    getStoredUser,
+    getAuthToken,
+    clearAuthSession,
+} from "@/Services/auth";
+import {
     activeSemesterQueryKey,
     activeSemesterStorageKey,
 } from "@/Services/queryKeys";
@@ -30,14 +35,7 @@ const pageTitles = [
     { path: "/audit-logs", title: "Audit Logs" },
 ];
 
-const getStoredUser = () => {
-    try {
-        const user = sessionStorage.getItem("user");
-        return user ? JSON.parse(user) : null;
-    } catch {
-        return null;
-    }
-};
+
 
 const getUserName = (user) => {
     if (!user) return "User";
@@ -73,7 +71,7 @@ const getRole = (user) => {
 };
 
 const getAuthHeaders = () => {
-    const token = sessionStorage.getItem("token");
+    const token = getAuthToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
@@ -167,9 +165,7 @@ export default function TopNavbar({ onMenu }) {
     }, []);
 
     const handleLogout = () => {
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("user");
-        sessionStorage.removeItem(activeSemesterStorageKey);
+        clearAuthSession();
         queryClient.clear();
         setDropdownOpen(false);
         router.visit("/signin");

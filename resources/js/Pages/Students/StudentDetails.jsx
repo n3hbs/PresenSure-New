@@ -8,6 +8,7 @@ import Button from "@/Components/UI/Button";
 import StudentDetailsContent from "@/Components/Students/Details/StudentDetailsContent";
 import StudentDetailsSkeleton from "@/Components/Students/Details/StudentDetailsSkeleton";
 import api from "@/Services/api";
+import { getAuthToken } from "@/Services/auth";
 
 export default function StudentDetails() {
     const params = new URLSearchParams(window.location.search);
@@ -21,7 +22,7 @@ export default function StudentDetails() {
     } = useQuery({
         queryKey: ["student-details", userId],
         queryFn: async () => {
-            const token = sessionStorage.getItem("token");
+            const token = getAuthToken();
             const response = await api.get(`student/${userId}`, {
                 headers: token
                     ? {

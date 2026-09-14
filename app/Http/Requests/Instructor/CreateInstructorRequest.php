@@ -33,4 +33,33 @@ class CreateInstructorRequest extends FormRequest
             'department_id' => 'required',
         ];
     }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'user_id' => 'instructor ID',
+            'first_name' => 'first name',
+            'last_name' => 'last name',
+            'sex' => 'sex',
+            'department_id' => 'department',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'user_id.unique' => 'This instructor ID is already registered in the system.',
+            'user_id.required' => 'Instructor ID is required.',
+        ];
+    }
 }

@@ -53,14 +53,23 @@ const getCollection = (response) => {
 };
 
 const normalizeStudent = (record) => {
-    const user = record.user || record;
-    const student = Array.isArray(record.student)
-        ? record.student[0]
-        : record.student || {};
+    const user = record.user || record || {};
+    const student =
+        (Array.isArray(record.student)
+            ? record.student[0]
+            : record.student) || {};
     const program = student.program || record.program || {};
     const department = program.department || record.department || {};
     const profile = record.profile || user.profile || {};
-    const status = student.status || record.status || "enrolled";
+    const rawStatus = student.status || record.status;
+    const isEnrolled =
+        Boolean(student.student_id) &&
+        (!rawStatus ||
+            ["active", "enrolled", "registered"].includes(
+                String(rawStatus).toLowerCase(),
+            ));
+
+    const status = rawStatus || (isEnrolled ? "Active" : "Inactive");
 
     const fullName = [
         user.last_name,
@@ -87,11 +96,7 @@ const normalizeStudent = (record) => {
         programName: program.program_name || "",
         departmentName: department.department_name || "N/A",
         image: profile.imagelink || profile.image_link || "",
-        enrolled:
-            !status ||
-            ["active", "enrolled", "registered"].includes(
-                String(status).toLowerCase(),
-            ),
+        enrolled: isEnrolled,
     };
 };
 
@@ -495,7 +500,11 @@ export default function Students() {
                 sortOptions={sortOptions}
                 defaultSort="default"
                 pageSizeOptions={[10, 25, 50]}
-                emptyMessage="No students match the current filters."
+                emptyMessage={
+                    activeTab === "inactive"
+                        ? "No inactive students found."
+                        : "No students match the current filters."
+                }
             />
         </div>
         </>

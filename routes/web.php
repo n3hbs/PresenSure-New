@@ -33,6 +33,10 @@ Route::get('/students/bulk-registration', function () {
     return Inertia::render('Students/BulkRegistration');
 })->name('students.bulk-registration');
 
+Route::get('/students/bulk-image-upload', function () {
+    return Inertia::render('Students/BulkImageUpload');
+})->name('students.bulk-image-upload');
+
 Route::get('/students/student-details', function () {
     return Inertia::render('Students/StudentDetails');
 })->name('student.student-details');
@@ -45,4 +49,8 @@ Route::get('/instructors', function () {
 Route::get('/instructors/single-registration', function () {
     return Inertia::render('Instructors/SingleRegistration');
 })->name('instructors.single-registration');
+
+Route::get('/instructors/bulk-image-upload', function () {
+    return Inertia::render('Instructors/BulkImageUpload');
+})->name('instructors.bulk-image-upload');
 

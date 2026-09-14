@@ -19,6 +19,7 @@ export default function SingleRegistrationForm({
     registrationType = "new",
     onSubmit,
     onTextChange,
+    onUserIdBlur,
     onSelectChange,
     onImageChange,
     onRemoveImage,
@@ -70,12 +71,13 @@ export default function SingleRegistrationForm({
                                 name="user_id"
                                 value={form.user_id}
                                 onChange={onTextChange}
+                                onBlur={onUserIdBlur}
                                 required
                                 maxLength={11}
                                 placeholder="C-0000-0000"
                                 disabled={existingStudent}
+                                error={fieldErrors.user_id?.[0]}
                             />
-                            {renderError("user_id")}
                         </div>
                         <div>
                             {existingStudent ? (
@@ -85,20 +87,27 @@ export default function SingleRegistrationForm({
                                     value={form.sex}
                                     onChange={onTextChange}
                                     disabled
+                                    error={fieldErrors.sex?.[0]}
                                 />
                             ) : (
-                                <SelectDropdown
-                                    label="Sex"
-                                    options={sexOptions}
-                                    value={form.sex}
-                                    onChange={(value) =>
-                                        onSelectChange("sex", value)
-                                    }
-                                    placeholder="Select sex"
-                                    buttonClassName="bg-white"
-                                />
+                                <>
+                                    <SelectDropdown
+                                        label="Sex"
+                                        options={sexOptions}
+                                        value={form.sex}
+                                        onChange={(value) =>
+                                            onSelectChange("sex", value)
+                                        }
+                                        placeholder="Select sex"
+                                        buttonClassName={
+                                            fieldErrors.sex?.[0]
+                                                ? "border border-red-500 bg-red-50/20"
+                                                : "border border-gray-200/80 bg-white"
+                                        }
+                                    />
+                                    {renderError("sex")}
+                                </>
                             )}
-                            {renderError("sex")}
                         </div>
                         <div>
                             <StudentRegistrationField
@@ -108,8 +117,8 @@ export default function SingleRegistrationForm({
                                 onChange={onTextChange}
                                 required={!existingStudent}
                                 disabled={existingStudent}
+                                error={fieldErrors.first_name?.[0]}
                             />
-                            {renderError("first_name")}
                         </div>
                         <div>
                             <StudentRegistrationField
@@ -119,8 +128,8 @@ export default function SingleRegistrationForm({
                                 onChange={onTextChange}
                                 required={!existingStudent}
                                 disabled={existingStudent}
+                                error={fieldErrors.last_name?.[0]}
                             />
-                            {renderError("last_name")}
                         </div>
                         <div>
                             <StudentRegistrationField
@@ -130,8 +139,8 @@ export default function SingleRegistrationForm({
                                 onChange={onTextChange}
                                 maxLength={5}
                                 disabled={existingStudent}
+                                error={fieldErrors.middle_initial?.[0]}
                             />
-                            {renderError("middle_initial")}
                         </div>
                         <div>
                             <StudentRegistrationField
@@ -141,8 +150,8 @@ export default function SingleRegistrationForm({
                                 onChange={onTextChange}
                                 maxLength={10}
                                 disabled={existingStudent}
+                                error={fieldErrors.suffix?.[0]}
                             />
-                            {renderError("suffix")}
                         </div>
                     </div>
                 </div>
@@ -165,7 +174,11 @@ export default function SingleRegistrationForm({
                                         ? "Loading..."
                                         : "Select department"
                                 }
-                                buttonClassName="bg-white"
+                                buttonClassName={
+                                    fieldErrors.department_id?.[0]
+                                        ? "border border-red-500 bg-red-50/20"
+                                        : "border border-gray-200/80 bg-white"
+                                }
                             />
                             {renderError("department_id")}
                         </div>
@@ -178,7 +191,11 @@ export default function SingleRegistrationForm({
                                     onSelectChange("program_id", value)
                                 }
                                 placeholder="Select program"
-                                buttonClassName="bg-white"
+                                buttonClassName={
+                                    fieldErrors.program_id?.[0]
+                                        ? "border border-red-500 bg-red-50/20"
+                                        : "border border-gray-200/80 bg-white"
+                                }
                             />
                             {renderError("program_id")}
                         </div>
@@ -191,7 +208,11 @@ export default function SingleRegistrationForm({
                                     onSelectChange("year", value)
                                 }
                                 placeholder="Select year"
-                                buttonClassName="bg-white"
+                                buttonClassName={
+                                    fieldErrors.year?.[0]
+                                        ? "border border-red-500 bg-red-50/20"
+                                        : "border border-gray-200/80 bg-white"
+                                }
                             />
                             {renderError("year")}
                         </div>
@@ -204,7 +225,11 @@ export default function SingleRegistrationForm({
                                     onSelectChange("block", value)
                                 }
                                 placeholder="Select block"
-                                buttonClassName="bg-white"
+                                buttonClassName={
+                                    fieldErrors.block?.[0]
+                                        ? "border border-red-500 bg-red-50/20"
+                                        : "border border-gray-200/80 bg-white"
+                                }
                             />
                             {renderError("block")}
                         </div>
