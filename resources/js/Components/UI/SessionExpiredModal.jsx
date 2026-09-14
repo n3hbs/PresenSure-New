@@ -3,14 +3,12 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import Modal from "@/Components/UI/Modal";
 import Button from "@/Components/UI/Button";
 import queryClient from "@/Services/queryClient";
-import { activeSemesterStorageKey } from "@/Services/queryKeys";
+import { clearAuthSession } from "@/Services/auth";
 
 export default function SessionExpiredModal({ isOpen }) {
     const handleReLogin = () => {
         try {
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("user");
-            sessionStorage.removeItem(activeSemesterStorageKey);
+            clearAuthSession();
             queryClient.clear();
         } catch (e) {
             console.error("Error clearing session storage:", e);

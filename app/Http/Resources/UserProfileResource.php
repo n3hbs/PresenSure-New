@@ -15,7 +15,7 @@ class UserProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'imagelink' => $this->imagelink,
+            'imagelink' => $this->resource?->imagelink,
         ];
     }
 }

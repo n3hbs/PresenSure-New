@@ -5,6 +5,7 @@ use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\AttendanceSessionController;
 use App\Http\Controllers\BleDetectionController;
 use App\Http\Controllers\BuildingController;
+use App\Http\Controllers\BulkImageUploadController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\InstructorController;
@@ -23,7 +24,7 @@ Route::get('student/bulk-template', [StudentController::class, 'downloadTemplate
 // Sanctum resolves the bearer token into $request->user(). Requests without a
 // valid access token are rejected before any route in this group is executed.
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('user/auth-check', [AuthController::class, 'check']);
+    Route::post('user-profile/bulk-upload', [BulkImageUploadController::class, 'upload']);
     Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
     // students

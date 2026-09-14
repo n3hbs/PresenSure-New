@@ -241,10 +241,6 @@ export default function BulkRegistration() {
                                 Download our standard template with required columns:
                                 <strong className="text-gray-700"> Student ID, Full Name, Gender, Program, Year Level, Block</strong>.
                             </p>
-                            <div className="mt-4 rounded-lg bg-gray-50 p-3 text-xs text-gray-600 space-y-1 font-mono">
-                                <div>Format: Dela Cruz, Juan A. Jr.</div>
-                                <div>Columns: Student ID, Full Name, Gender, Program, Year Level, Block</div>
-                            </div>
                         </div>
 
                         <div className="mt-6">
@@ -274,11 +270,10 @@ export default function BulkRegistration() {
                             onDragLeave={() => setIsDragging(false)}
                             onDrop={handleDrop}
                             onClick={() => fileInputRef.current?.click()}
-                            className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center ${
-                                isDragging
-                                    ? "border-blue-500 bg-blue-50/50"
-                                    : "border-gray-200 bg-gray-50/50 hover:bg-gray-50 hover:border-blue-300"
-                            }`}
+                            className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center ${isDragging
+                                ? "border-blue-500 bg-blue-50/50"
+                                : "border-gray-200 bg-gray-50/50 hover:bg-gray-50 hover:border-blue-300"
+                                }`}
                         >
                             <input
                                 ref={fileInputRef}
@@ -345,11 +340,10 @@ export default function BulkRegistration() {
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab("to_enroll")}
-                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${
-                                        activeTab === "to_enroll"
-                                            ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
-                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === "to_enroll"
+                                        ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
+                                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                        }`}
                                 >
                                     <span>To Enroll</span>
                                     <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
@@ -360,11 +354,10 @@ export default function BulkRegistration() {
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab("already_enrolled")}
-                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${
-                                        activeTab === "already_enrolled"
-                                            ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
-                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === "already_enrolled"
+                                        ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
+                                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                        }`}
                                 >
                                     <span>Already Enrolled</span>
                                     <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
@@ -376,11 +369,10 @@ export default function BulkRegistration() {
                                     <button
                                         type="button"
                                         onClick={() => setActiveTab("invalid")}
-                                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${
-                                            activeTab === "invalid"
-                                                ? "bg-amber-600 text-white shadow-sm shadow-amber-200"
-                                                : "bg-amber-50 text-amber-700 hover:bg-amber-100"
-                                        }`}
+                                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === "invalid"
+                                            ? "bg-amber-600 text-white shadow-sm shadow-amber-200"
+                                            : "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                                            }`}
                                     >
                                         <span>Invalid Rows</span>
                                         <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">

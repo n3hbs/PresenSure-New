@@ -11,6 +11,7 @@ import StudentRegistrationToast from "@/Components/Students/Register/StudentRegi
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import DiscardRegistrationModal from "@/Components/UI/DiscardRegistrationModal";
 import api from "@/Services/api";
+import { getAuthToken } from "@/Services/auth";
 import {
     departmentsQueryKey,
     instructorsQueryKey,
@@ -74,7 +75,7 @@ export default function SingleRegistration() {
     );
 
     const getAuthHeaders = () => {
-        const token = sessionStorage.getItem("token");
+        const token = getAuthToken();
         return token ? { Authorization: `Bearer ${token}` } : {};
     };
 
@@ -320,12 +321,20 @@ export default function SingleRegistration() {
             });
         } catch (requestError) {
             if (requestError.response?.status === 422) {
-                setFieldErrors(requestError.response.data.errors || {});
+                const errors = requestError.response.data.errors || {};
+                setFieldErrors(errors);
                 setCurrentStep(1);
+
+                const errorList = Object.values(errors).flat();
+                const specificMessage =
+                    errorList[0] ||
+                    requestError.response.data.message ||
+                    "Some fields need your attention before this can be submitted.";
+
                 showToast(
-                    "warning",
-                    "Please check the form",
-                    "Some fields need your attention before this can be submitted.",
+                    "error",
+                    "Validation Error",
+                    specificMessage,
                 );
             } else {
                 showToast(

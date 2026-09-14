@@ -1,4 +1,9 @@
 import axios from "axios";
+import {
+    getAuthToken,
+    recordUserActivity,
+    dispatchAuthExpired,
+} from "@/Services/auth";
 
 const appUrl = import.meta.env.VITE_APP_URL?.replace(/\/$/, "") || "";
 
@@ -9,11 +14,12 @@ const api = axios.create({
     },
 });
 
-// Automatically attach Bearer token if present in sessionStorage
+// Automatically attach Bearer token if present
 api.interceptors.request.use(
     (config) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = getAuthToken();
+
             if (token && !config.headers.Authorization) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -25,15 +31,18 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Intercept 401 responses to trigger session expiration modal across the app
+// Intercept responses: record activity on success or trigger session expiration modal on 401
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        recordUserActivity();
+        return response;
+    },
     (error) => {
         if (
             error.response?.status === 401 &&
             !error.config?.url?.includes("/user/signin")
         ) {
-            window.dispatchEvent(new CustomEvent("ps:auth-expired"));
+            dispatchAuthExpired();
         }
         return Promise.reject(error);
     }
