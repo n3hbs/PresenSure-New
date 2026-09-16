@@ -10,7 +10,7 @@ export default function DiscardRegistrationModal({
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-90 flex items-center justify-center bg-gray-950/50 p-4">
+        <div className="fixed inset-0 z-90 flex items-center justify-center bg-gray-950/60 backdrop-blur-sm p-4">
             <div
                 className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl shadow-blue-950/20"
                 role="dialog"

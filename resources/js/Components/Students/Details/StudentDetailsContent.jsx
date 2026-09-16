@@ -1,10 +1,8 @@
 import {
-    AcademicCapIcon,
     BookOpenIcon,
     CalendarDaysIcon,
     ClockIcon,
     MapPinIcon,
-    UserCircleIcon,
 } from "@heroicons/react/24/outline";
 
 import NoImage from "@/assets/images/noImage.webp";
@@ -24,68 +22,31 @@ const formatTime = (timeStr) => {
     }
 };
 
-const formatStudentName = (user = {}) =>
-    [
-        user.last_name,
+const formatStudentName = (user = {}) => {
+    if (!user.last_name && !user.first_name) return fieldFallback;
+    const lastName = user.last_name || "";
+    const firstAndMiddle = [
         user.first_name,
-        user.suffix,
         user.middle_initial ? `${user.middle_initial}.` : "",
+        user.suffix,
     ]
         .filter(Boolean)
-        .join(" ") || fieldFallback;
+        .join(" ");
+
+    return lastName && firstAndMiddle
+        ? `${lastName}, ${firstAndMiddle}`
+        : lastName || firstAndMiddle;
+};
 
 const formatDisplayName = (user = {}) =>
-    [user.first_name, user.middle_initial, user.last_name, user.suffix]
+    [user.first_name, user.middle_initial ? `${user.middle_initial}.` : "", user.last_name, user.suffix]
         .filter(Boolean)
         .join(" ") || fieldFallback;
 
-const MetaBadge = ({ children, tone = "blue" }) => {
-    const tones = {
-        blue: "border-blue-100 bg-blue-50 text-blue-700",
-        green: "border-green-100 bg-green-50 text-green-700",
-        gray: "border-gray-200 bg-gray-50 text-gray-600",
-    };
-
-    return (
-        <span
-            className={`inline-flex min-h-9 items-center rounded-lg border px-3 text-sm font-semibold ${tones[tone]}`}
-        >
-            {children}
-        </span>
-    );
+const formatSex = (sex) => {
+    if (!sex) return fieldFallback;
+    return sex.charAt(0).toUpperCase() + sex.slice(1).toLowerCase();
 };
-
-const SummaryTile = ({ label, value, icon: Icon }) => (
-    <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
-        <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm shadow-blue-950/5">
-                <Icon className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
-                    {label}
-                </p>
-                <p
-                    className="mt-1 truncate text-sm font-bold text-gray-900"
-                    title={value || fieldFallback}
-                >
-                    {value || fieldFallback}
-                </p>
-            </div>
-        </div>
-    </div>
-);
-
-const InfoItem = ({ label, value }) => (
-    <div className="rounded-lg bg-gray-50 px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-            {label}
-        </p>
-        <p className="mt-1 wrap-break-words text-sm font-semibold text-gray-900">
-            {value || fieldFallback}
-        </p>
-    </div>
-);
 
 export default function StudentDetailsContent({
     user = {},
@@ -97,96 +58,110 @@ export default function StudentDetailsContent({
     const program = student.program || {};
     const department = program.department || {};
     const profileImage = profile.imagelink || NoImage;
+    const isActive = student.status?.toLowerCase() === "active";
 
     return (
-        <>
-            <section className="rounded-xl bg-white p-6 shadow-sm shadow-blue-950/5">
-                <div className="flex flex-col gap-6 md:flex-row md:items-start">
-                    <div className="mx-auto flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-50 ring-4 ring-blue-50 md:mx-0">
-                        <img
-                            src={profileImage}
-                            alt={formatDisplayName(user)}
-                            className="h-full w-full object-cover"
-                        />
+        <div className="space-y-6">
+            {/* Main Student Profile Card */}
+            <section className="rounded-2xl border border-gray-200/80 bg-white p-6 sm:p-8 shadow-sm shadow-blue-950/5">
+                <div className="flex flex-col gap-6 md:flex-row md:items-center">
+                    {/* Circle Avatar */}
+                    <div className="mx-auto shrink-0 md:mx-0">
+                        <div className="h-28 w-28 sm:h-32 sm:w-32 overflow-hidden rounded-full bg-blue-50 ring-4 ring-blue-100 shadow-sm">
+                            <img
+                                src={profileImage}
+                                alt={formatDisplayName(user)}
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
                     </div>
 
-                    <div className="min-w-0 flex-1">
-                        <div className="text-center md:text-left">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
-                                Student Profile
-                            </p>
-                            <h1 className="mt-1 wrap-break-words text-2xl font-bold text-gray-900">
+                    {/* Student Details */}
+                    <div className="min-w-0 flex-1 space-y-4">
+                        {/* Status & Sex Badges */}
+                        <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
+                            {student.status && (
+                                <span
+                                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+                                        isActive
+                                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200/70"
+                                            : "bg-gray-100 text-gray-600 border border-gray-200"
+                                    }`}
+                                >
+                                    <span
+                                        className={`h-1.5 w-1.5 rounded-full ${
+                                            isActive ? "bg-emerald-500" : "bg-gray-400"
+                                        }`}
+                                    />
+                                    {student.status}
+                                </span>
+                            )}
+                            {user.sex && (
+                                <span className="inline-flex items-center rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 text-xs font-semibold">
+                                    {formatSex(user.sex)}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Row 1: Student ID | Name */}
+                        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center md:justify-start md:text-left">
+                            <span className="font-mono text-base font-bold text-blue-700 sm:text-lg">
+                                {user.user_id || fieldFallback}
+                            </span>
+                            <span
+                                className="text-gray-300 select-none font-light"
+                                aria-hidden="true"
+                            >
+                                |
+                            </span>
+                            <h1 className="text-lg font-bold tracking-tight text-gray-900 sm:text-xl">
                                 {formatStudentName(user)}
                             </h1>
-                            <div className="mt-3 flex flex-wrap justify-center gap-2 md:justify-start">
-                                {role.role_name && (
-                                    <MetaBadge tone="gray">
-                                        {role.role_name}
-                                    </MetaBadge>
-                                )}
-                                <MetaBadge
-                                    tone={
-                                        student.status === "Active"
-                                            ? "green"
-                                            : "gray"
-                                    }
-                                >
-                                    {student.status || "Inactive"}
-                                </MetaBadge>
-                            </div>
                         </div>
 
-                        <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                            <SummaryTile
-                                icon={AcademicCapIcon}
-                                label="Program"
-                                value={
-                                    program.program_code ||
-                                    program.program_name
-                                }
-                            />
-                            <SummaryTile
-                                icon={BookOpenIcon}
-                                label="Year Level"
-                                value={student.year}
-                            />
-                            <SummaryTile
-                                icon={UserCircleIcon}
-                                label="Block"
-                                value={student.block}
-                            />
+                        {/* Row 2: Department | Program | Year */}
+                        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-gray-600 md:justify-start md:text-left">
+                            <span className="font-medium text-gray-900">
+                                {department.department_name || fieldFallback}
+                            </span>
+                            <span
+                                className="text-gray-300 select-none font-light"
+                                aria-hidden="true"
+                            >
+                                |
+                            </span>
+                            <span className="font-medium text-gray-700">
+                                {program.program_name
+                                    ? `${program.program_name}${program.program_code ? ` (${program.program_code})` : ""}`
+                                    : program.program_code || fieldFallback}
+                            </span>
+                            <span
+                                className="text-gray-300 select-none font-light"
+                                aria-hidden="true"
+                            >
+                                |
+                            </span>
+                            <span className="font-medium text-gray-700">
+                                {student.year
+                                    ? `${student.year}${student.block ? ` - Block ${student.block}` : ""}`
+                                    : student.block
+                                    ? `Block ${student.block}`
+                                    : fieldFallback}
+                            </span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section className="rounded-xl bg-white p-6 shadow-sm shadow-blue-950/5">
-                <h2 className="text-lg font-semibold text-gray-900">
-                    Student Information
-                </h2>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    <InfoItem label="Student ID" value={user.user_id} />
-                    <InfoItem label="Sex" value={user.sex} />
-                    <InfoItem
-                        label="Program Name"
-                        value={program.program_name}
-                    />
-                    <InfoItem
-                        label="Department"
-                        value={department.department_name}
-                    />
-                </div>
-            </section>
-
-            <section className="rounded-xl bg-white p-6 shadow-sm shadow-blue-950/5">
+            {/* 3. Enrolled Courses Section */}
+            <section className="rounded-2xl border border-gray-200/80 bg-white p-6 shadow-sm shadow-blue-950/5">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
                             <BookOpenIcon className="h-5 w-5" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-gray-900">
+                            <h2 className="text-base font-bold text-gray-900">
                                 Enrolled Courses
                             </h2>
                             <p className="text-xs text-gray-400">
@@ -290,6 +265,6 @@ export default function StudentDetailsContent({
                     </div>
                 )}
             </section>
-        </>
+        </div>
     );
 }

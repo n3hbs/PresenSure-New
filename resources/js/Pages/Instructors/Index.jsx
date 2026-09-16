@@ -17,6 +17,7 @@ import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import DataTable from "@/Components/UI/DataTable";
 import SelectDropdown from "@/Components/UI/SelectDropdown";
 import api from "@/Services/api";
+import { getAuthToken } from "@/Services/auth";
 import { instructorsQueryKey } from "@/Services/queryKeys";
 import NoImage from "@/assets/images/noImage.webp";
 
@@ -135,6 +136,7 @@ export default function Instructors() {
         error,
     } = useQuery({
         queryKey: instructorsQueryKey,
+        enabled: Boolean(getAuthToken()),
         queryFn: async () => {
             const token = sessionStorage.getItem("token");
             const response = await api.get("/instructors", {
@@ -155,8 +157,10 @@ export default function Instructors() {
         });
     };
 
-    const errorMessage =
-        error?.response?.data?.message || "Unable to load instructors right now.";
+    const isUnauthenticated = error?.response?.status === 401;
+    const errorMessage = isUnauthenticated
+        ? ""
+        : error?.response?.data?.message || "Unable to load instructors right now.";
 
     const counts = useMemo(() => {
         const active = instructors.filter(
@@ -332,7 +336,7 @@ export default function Instructors() {
                     </div>
                 </div>
 
-                {isError && (
+                {isError && !isUnauthenticated && (
                     <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                         {errorMessage}
                     </div>

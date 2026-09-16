@@ -33,7 +33,7 @@ export default function StudentDetails() {
 
             return response.data.data;
         },
-        enabled: Boolean(userId),
+        enabled: Boolean(userId) && Boolean(getAuthToken()),
     });
 
     const user = data?.user || {};
@@ -41,8 +41,10 @@ export default function StudentDetails() {
     const role = data?.role || {};
     const profile = data?.profile || {};
     const courses = data?.courses || [];
-    const errorMessage =
-        error?.response?.data?.message || "Unable to load student details.";
+    const isUnauthenticated = error?.response?.status === 401;
+    const errorMessage = isUnauthenticated
+        ? ""
+        : error?.response?.data?.message || "Unable to load student details.";
 
     return (
         <div className="space-y-6">
@@ -71,7 +73,7 @@ export default function StudentDetails() {
                 </div>
             )}
 
-            {isError && (
+            {isError && !isUnauthenticated && (
                 <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                     {errorMessage}
                 </div>

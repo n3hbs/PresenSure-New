@@ -100,6 +100,7 @@ export default function SingleRegistration() {
         error: departmentRequestError,
     } = useQuery({
         queryKey: departmentsQueryKey,
+        enabled: Boolean(getAuthToken()),
         queryFn: async () => {
             const response = await api.get("/departments", {
                 headers: getAuthHeaders(),
@@ -116,6 +117,7 @@ export default function SingleRegistration() {
         error: programRequestError,
     } = useQuery({
         queryKey: programsQueryKey,
+        enabled: Boolean(getAuthToken()),
         queryFn: async () => {
             const response = await api.get("/programs", {
                 headers: getAuthHeaders(),
@@ -187,7 +189,12 @@ export default function SingleRegistration() {
     }, [isDirty]);
 
     useEffect(() => {
-        if (!departmentsError) return;
+        if (
+            !departmentsError ||
+            departmentRequestError?.response?.status === 401
+        ) {
+            return;
+        }
 
         showToast(
             "error",
@@ -198,7 +205,12 @@ export default function SingleRegistration() {
     }, [departmentRequestError, departmentsError, showToast]);
 
     useEffect(() => {
-        if (!programsError) return;
+        if (
+            !programsError ||
+            programRequestError?.response?.status === 401
+        ) {
+            return;
+        }
 
         showToast(
             "error",
@@ -358,6 +370,8 @@ export default function SingleRegistration() {
             setCurrentStep(2);
             showToast("success", "Student found", result.message);
         } catch (requestError) {
+            if (requestError.response?.status === 401) return;
+
             showToast(
                 "error",
                 "Unable to check student",
@@ -582,6 +596,8 @@ export default function SingleRegistration() {
                 queryKey: activeStudentsQueryKey,
             });
         } catch (requestError) {
+            if (requestError.response?.status === 401) return;
+
             if (requestError.response?.status === 422) {
                 const errors = requestError.response.data.errors || {};
                 setFieldErrors(errors);

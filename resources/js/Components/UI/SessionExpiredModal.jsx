@@ -22,6 +22,7 @@ export default function SessionExpiredModal({ isOpen }) {
             isOpen={isOpen}
             preventClose={true}
             zIndex="z-90"
+            backdropClassName="backdrop-blur-md bg-gray-950/60"
             icon={<ExclamationTriangleIcon className="h-6 w-6" />}
             iconBg="bg-amber-50 text-amber-600"
             title="Session ended"

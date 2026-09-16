@@ -43,14 +43,21 @@ export default function Login() {
                         break;
 
                     case 401:
-                        alert(error.response.data.message);
+                        setErrors({
+                            general:
+                                error.response.data.message ||
+                                "Invalid credentials.",
+                        });
                         break;
 
                     default:
-                        alert(error.response.data.message ?? "Server error.");
+                        setErrors({
+                            general:
+                                error.response.data.message ?? "Server error.",
+                        });
                 }
             } else {
-                alert("Unable to connect to the server.");
+                setErrors({ general: "Unable to connect to the server." });
             }
         } finally {
             setLoading(false);
@@ -97,6 +104,12 @@ export default function Login() {
                             autoComplete="off"
                             className="space-y-5"
                         >
+                            {errors.general && (
+                                <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm text-red-600">
+                                    {errors.general}
+                                </div>
+                            )}
+
                             {/* User ID */}
                             <div>
                                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
