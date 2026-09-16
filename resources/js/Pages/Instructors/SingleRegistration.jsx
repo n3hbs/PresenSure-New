@@ -86,6 +86,7 @@ export default function SingleRegistration() {
         error: departmentRequestError,
     } = useQuery({
         queryKey: departmentsQueryKey,
+        enabled: Boolean(getAuthToken()),
         queryFn: async () => {
             const response = await api.get("/departments", {
                 headers: getAuthHeaders(),
@@ -155,7 +156,12 @@ export default function SingleRegistration() {
     }, [isDirty]);
 
     useEffect(() => {
-        if (!departmentsError) return;
+        if (
+            !departmentsError ||
+            departmentRequestError?.response?.status === 401
+        ) {
+            return;
+        }
 
         showToast(
             "error",
@@ -320,6 +326,8 @@ export default function SingleRegistration() {
                 queryKey: instructorsQueryKey,
             });
         } catch (requestError) {
+            if (requestError.response?.status === 401) return;
+
             if (requestError.response?.status === 422) {
                 const errors = requestError.response.data.errors || {};
                 setFieldErrors(errors);

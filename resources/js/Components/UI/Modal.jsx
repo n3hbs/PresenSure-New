@@ -16,6 +16,7 @@ export default function Modal({
     showCloseButton,
     zIndex = "z-90",
     className = "",
+    backdropClassName = "",
 }) {
     const isVisible = isOpen ?? open ?? false;
 
@@ -47,7 +48,7 @@ export default function Modal({
 
     return (
         <div
-            className={`fixed inset-0 ${zIndex} flex items-center justify-center bg-gray-950/50 p-4`}
+            className={`fixed inset-0 ${zIndex} flex items-center justify-center bg-gray-950/60 backdrop-blur-sm p-4 ${backdropClassName}`}
             onClick={(e) => {
                 if (e.target === e.currentTarget && !preventClose && onClose) {
                     onClose();

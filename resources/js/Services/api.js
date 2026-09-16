@@ -1,8 +1,10 @@
 import axios from "axios";
+import { router } from "@inertiajs/react";
 import {
     getAuthToken,
     recordUserActivity,
     dispatchAuthExpired,
+    clearAuthSession,
 } from "@/Services/auth";
 
 const appUrl = import.meta.env.VITE_APP_URL?.replace(/\/$/, "") || "";
@@ -42,7 +44,13 @@ api.interceptors.response.use(
             error.response?.status === 401 &&
             !error.config?.url?.includes("/user/signin")
         ) {
-            dispatchAuthExpired();
+            const token = getAuthToken();
+            clearAuthSession();
+            if (token) {
+                dispatchAuthExpired();
+            } else {
+                router.visit("/signin");
+            }
         }
         return Promise.reject(error);
     }

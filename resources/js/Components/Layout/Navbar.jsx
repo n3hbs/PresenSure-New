@@ -144,6 +144,7 @@ export default function TopNavbar({ onMenu }) {
             return semester;
         },
         initialData: getStoredActiveSemester,
+        enabled: Boolean(getAuthToken()),
         staleTime: Infinity,
         gcTime: Infinity,
         retry: 1,

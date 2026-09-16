@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { router } from "@inertiajs/react";
 import Sidebar from "./Sidebar";
 import TopNavbar from "./Navbar";
 import SessionExpiredModal from "@/Components/UI/SessionExpiredModal";
@@ -12,12 +13,12 @@ export default function MainLayout({ children }) {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [isSessionExpired, setIsSessionExpired] = useState(false);
+    const token = getAuthToken();
 
     useEffect(() => {
         // Initial session check
-        const token = getAuthToken();
         if (!token) {
-            setIsSessionExpired(true);
+            router.visit("/signin");
             return;
         }
 
@@ -83,6 +84,10 @@ export default function MainLayout({ children }) {
 
         setMobileOpen(true);
     };
+
+    if (!token) {
+        return null;
+    }
 
     return (
         <div className="flex h-screen bg-gray-100">

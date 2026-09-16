@@ -109,6 +109,8 @@ export default function BulkRegistration() {
                 setActiveTab("invalid");
             }
         } catch (error) {
+            if (error.response?.status === 401) return;
+
             const msg =
                 error.response?.data?.message ||
                 error.response?.data?.data?.message ||
@@ -152,6 +154,8 @@ export default function BulkRegistration() {
                 queryKey: activeStudentsQueryKey,
             });
         } catch (error) {
+            if (error.response?.status === 401) return;
+
             const msg =
                 error.response?.data?.message ||
                 "Failed to save students to database.";

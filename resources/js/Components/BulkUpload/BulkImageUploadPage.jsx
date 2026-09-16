@@ -168,6 +168,8 @@ export default function BulkImageUploadPage({ type = "student" }) {
             queryClient.invalidateQueries({ queryKey: activeStudentsQueryKey });
             queryClient.invalidateQueries({ queryKey: instructorsQueryKey });
         } catch (err) {
+            if (err.response?.status === 401) return;
+
             console.error("Bulk upload error:", err);
             const msg =
                 err.response?.data?.message ||
