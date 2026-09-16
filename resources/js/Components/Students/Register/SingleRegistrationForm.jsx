@@ -1,4 +1,4 @@
-import { UserPlusIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, UserPlusIcon } from "@heroicons/react/24/outline";
 
 import Button from "@/Components/UI/Button";
 import SelectDropdown from "@/Components/UI/SelectDropdown";
@@ -15,6 +15,7 @@ export default function SingleRegistrationForm({
     programOptions,
     yearOptions,
     blockOptions,
+    statusOptions,
     loadingOptions,
     registrationType = "new",
     onSubmit,
@@ -46,14 +47,22 @@ export default function SingleRegistrationForm({
             <section className="space-y-4 rounded-xl bg-white p-5 shadow-sm shadow-blue-950/5">
                 <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                        <UserPlusIcon className="h-6 w-6" />
+                        {registrationType === "edit" ? (
+                            <PencilSquareIcon className="h-6 w-6" />
+                        ) : (
+                            <UserPlusIcon className="h-6 w-6" />
+                        )}
                     </div>
                     <div>
                         <h1 className="text-lg font-bold text-gray-900">
-                            Student Registration
+                            {registrationType === "edit"
+                                ? "Edit Student Information"
+                                : "Student Registration"}
                         </h1>
                         <p className="text-sm text-gray-400">
-                            {existingStudent
+                            {registrationType === "edit"
+                                ? "Update the student personal and academic details."
+                                : existingStudent
                                 ? "Confirm the existing account and add academic details."
                                 : "Register one student for the active semester."}
                         </p>
@@ -75,10 +84,11 @@ export default function SingleRegistrationForm({
                                 required
                                 maxLength={11}
                                 placeholder="C-0000-0000"
-                                disabled={existingStudent}
+                                disabled={existingStudent || registrationType === "edit"}
                                 error={fieldErrors.user_id?.[0]}
                             />
                         </div>
+
                         <div>
                             {existingStudent ? (
                                 <StudentRegistrationField
@@ -233,19 +243,41 @@ export default function SingleRegistrationForm({
                             />
                             {renderError("block")}
                         </div>
+                        {statusOptions && (
+                            <div>
+                                <SelectDropdown
+                                    label="Status"
+                                    options={statusOptions}
+                                    value={form.status}
+                                    onChange={(value) =>
+                                        onSelectChange("status", value)
+                                    }
+                                    placeholder="Select status"
+                                    buttonClassName={
+                                        fieldErrors.status?.[0]
+                                            ? "border border-red-500 bg-red-50/20"
+                                            : "border border-gray-200/80 bg-white"
+                                    }
+                                />
+                                {renderError("status")}
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
-                    <Button type="button" variant="outline" onClick={onBack}>
-                        Back
-                    </Button>
+                    {onBack && (
+                        <Button type="button" variant="outline" onClick={onBack}>
+                            Back
+                        </Button>
+                    )}
                     <Button type="button" variant="outline" onClick={onCancel}>
                         Cancel
                     </Button>
                     <Button type="submit">Review</Button>
                 </div>
             </section>
+
 
             {!existingStudent && (
                 <StudentProfileImageUpload

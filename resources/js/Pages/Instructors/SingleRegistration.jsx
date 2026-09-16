@@ -395,14 +395,16 @@ export default function SingleRegistration() {
             />
 
             <div className="space-y-6">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <Breadcrumbs
-                        crumbs={[
-                            { label: "Dashboard", href: "/dashboard" },
-                            { label: "Instructors", href: "/instructors" },
-                            { label: "Single Registration" },
-                        ]}
-                    />
+                <div className="flex min-h-10 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <Breadcrumbs
+                            crumbs={[
+                                { label: "Dashboard", href: "/dashboard" },
+                                { label: "Instructors", href: "/instructors" },
+                                { label: "Single Registration" },
+                            ]}
+                        />
+                    </div>
 
                     <button
                         type="button"

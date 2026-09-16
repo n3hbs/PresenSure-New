@@ -18,6 +18,8 @@ import {
 import {
     activeSemesterQueryKey,
     activeSemesterStorageKey,
+    activePeriodQueryKey,
+    activePeriodStorageKey,
 } from "@/Services/queryKeys";
 
 const pageTitles = [
@@ -34,8 +36,6 @@ const pageTitles = [
     { path: "/records", title: "Records" },
     { path: "/audit-logs", title: "Audit Logs" },
 ];
-
-
 
 const getUserName = (user) => {
     if (!user) return "User";
@@ -89,6 +89,25 @@ const storeActiveSemester = (semester) => {
     sessionStorage.setItem(activeSemesterStorageKey, JSON.stringify(semester));
 };
 
+const getStoredActivePeriod = () => {
+    try {
+        const period = sessionStorage.getItem(activePeriodStorageKey);
+        return period ? JSON.parse(period) : undefined;
+    } catch {
+        sessionStorage.removeItem(activePeriodStorageKey);
+        return undefined;
+    }
+};
+
+const storeActivePeriod = (period) => {
+    sessionStorage.setItem(activePeriodStorageKey, JSON.stringify(period));
+};
+
+const formatPeriodName = (name) => {
+    if (!name) return "";
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+
 const getSchoolYearLabel = (schoolYear) => {
     if (!schoolYear) return "";
 
@@ -98,14 +117,6 @@ const getSchoolYearLabel = (schoolYear) => {
     if (!start || !end) return "";
 
     return `S.Y. ${start}-${end}`;
-};
-
-const getTermLabel = (semester) => {
-    if (!semester) return "No active semester";
-
-    return [semester.term, getSchoolYearLabel(semester.school_year)]
-        .filter(Boolean)
-        .join(" - ");
 };
 
 export default function TopNavbar({ onMenu }) {
@@ -150,6 +161,40 @@ export default function TopNavbar({ onMenu }) {
         retry: 1,
     });
 
+    const { data: activePeriod, isLoading: periodLoading } = useQuery({
+        queryKey: activePeriodQueryKey,
+        queryFn: async () => {
+            const storedPeriod = getStoredActivePeriod();
+
+            if (storedPeriod !== undefined) {
+                return storedPeriod;
+            }
+
+            const response = await api.get("/period/active", {
+                headers: getAuthHeaders(),
+            });
+
+            const period = response.data?.data || null;
+            storeActivePeriod(period);
+
+            return period;
+        },
+        initialData: getStoredActivePeriod,
+        enabled: Boolean(getAuthToken()),
+        staleTime: 1000 * 60 * 5,
+        retry: 1,
+    });
+
+    const periodName = formatPeriodName(activePeriod?.name);
+    const currentSemester = activePeriod?.semester || activeSemester;
+    const semesterTerm = currentSemester?.term || "";
+    const schoolYearLabel = getSchoolYearLabel(currentSemester?.school_year);
+    const semesterAndPeriod = [semesterTerm, periodName]
+        .filter(Boolean)
+        .join(" - ");
+    const isAcademicLoading =
+        periodLoading && semesterLoading && !activePeriod && !activeSemester;
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -191,19 +236,35 @@ export default function TopNavbar({ onMenu }) {
                 </div>
             </div>
 
-            <div className="flex items-center gap-3 md:gap-5">
-                <div className="hidden text-right lg:block">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                        Current Term
-                    </p>
-                    <p className="text-sm font-medium text-gray-700">
-                        {semesterLoading
-                            ? "Loading semester..."
-                            : getTermLabel(activeSemester)}
-                    </p>
+            <div className="flex items-center">
+                {/* Active Period, School Year & Semester Display */}
+                <div className="hidden text-right sm:block sm:pr-4">
+                    {isAcademicLoading ? (
+                        <div className="flex flex-col items-end gap-1 animate-pulse">
+                            <div className="h-3.5 w-24 rounded bg-gray-100" />
+                            <div className="h-4 w-36 rounded bg-gray-100" />
+                        </div>
+                    ) : (
+                        <div>
+                            {schoolYearLabel && (
+                                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                                    {schoolYearLabel}
+                                </p>
+                            )}
+                            <p className="text-sm font-semibold text-gray-800">
+                                {semesterAndPeriod || "No active semester"}
+                            </p>
+                        </div>
+                    )}
                 </div>
 
-                <div className="relative" ref={dropdownRef}>
+                {/* Vertical Separator between Academic Info and Profile */}
+                <div
+                    className="hidden h-8 w-px bg-gray-200 sm:block"
+                    aria-hidden="true"
+                />
+
+                <div className="relative sm:pl-2" ref={dropdownRef}>
                     <button
                         type="button"
                         onClick={() => setDropdownOpen((open) => !open)}
@@ -240,6 +301,20 @@ export default function TopNavbar({ onMenu }) {
                                     {role}
                                 </p>
                             </div>
+
+                            {/* Academic Period & School Year on Mobile */}
+                            {(semesterAndPeriod || schoolYearLabel) && (
+                                <div className="border-y border-gray-100 px-3 py-2.5 sm:hidden">
+                                    {schoolYearLabel && (
+                                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                                            {schoolYearLabel}
+                                        </p>
+                                    )}
+                                    <p className="mt-0.5 text-xs font-semibold text-gray-800">
+                                        {semesterAndPeriod}
+                                    </p>
+                                </div>
+                            )}
 
                             <button
                                 type="button"

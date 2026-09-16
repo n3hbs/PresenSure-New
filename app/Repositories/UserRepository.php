@@ -20,6 +20,11 @@ class UserRepository implements UserRepositoryInterface
             ->first();
     }
 
+    public function update(string $userId, array $data): bool
+    {
+        return (bool) User::where('user_id', $userId)->update($data);
+    }
+
     public function isInstructor(string $userId): bool
     {
         return UserRole::where('user_id', $userId)

@@ -41,6 +41,15 @@ Route::get('/students/student-details', function () {
     return Inertia::render('Students/StudentDetails');
 })->name('student.student-details');
 
+Route::get('/students/archives', function () {
+    return Inertia::render('Students/Archives');
+})->name('students.archives');
+
+Route::get('/students/edit', function () {
+    return Inertia::render('Students/Edit');
+})->name('students.edit');
+
+
 //instructor
 Route::get('/instructors', function () {
     return Inertia::render('Instructors/Index');
@@ -53,4 +62,18 @@ Route::get('/instructors/single-registration', function () {
 Route::get('/instructors/bulk-image-upload', function () {
     return Inertia::render('Instructors/BulkImageUpload');
 })->name('instructors.bulk-image-upload');
+
+Route::get('/instructors/instructor-details', function () {
+    return Inertia::render('Instructors/InstructorDetails');
+})->name('instructors.instructor-details');
+
+Route::get('/instructors/archives', function () {
+    return Inertia::render('Instructors/Archives');
+})->name('instructors.archives');
+
+Route::get('/instructors/edit', function () {
+    return Inertia::render('Instructors/Edit');
+})->name('instructors.edit');
+
+
 

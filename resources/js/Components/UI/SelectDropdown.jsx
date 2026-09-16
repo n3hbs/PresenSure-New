@@ -12,7 +12,9 @@ export default function SelectDropdown({
 }) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const selectedOption = options.find((option) => option.value === value);
+    const selectedOption = options.find(
+        (option) => String(option.value) === String(value),
+    );
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -65,12 +67,12 @@ export default function SelectDropdown({
                                         setOpen(false);
                                     }}
                                     className={`w-full rounded-xl px-3 py-2 text-left text-sm transition ${
-                                        option.value === value
+                                        String(option.value) === String(value)
                                             ? "bg-blue-50 font-semibold text-blue-700"
                                             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                                     }`}
                                     role="option"
-                                    aria-selected={option.value === value}
+                                    aria-selected={String(option.value) === String(value)}
                                 >
                                     {option.label}
                                 </button>

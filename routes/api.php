@@ -30,7 +30,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // students
     Route::post('student', [StudentController::class, 'create']);
     Route::get('student/getByActiveSemester', [StudentController::class, 'getStudentByActiveSemester']);
+    Route::get('student/archives', [StudentController::class, 'getArchivedStudents']);
     Route::get('student/{user_id}', [StudentController::class, 'getstudentDetails']);
+    Route::patch('student/{user_id?}', [StudentController::class, 'update']);
+    Route::delete('student/{user_id}', [StudentController::class, 'delete']);
+    Route::post('student/{user_id}/archive', [StudentController::class, 'archive']);
+    Route::post('student/{user_id}/restore', [StudentController::class, 'restore']);
     Route::get('student/check-user/{user_id}', [StudentController::class, 'checkStudent']);
     Route::post('student/bulk-extract', [StudentController::class, 'extractBulk']);
     Route::post('student/bulk-store', [StudentController::class, 'storeBulk']);
@@ -38,6 +43,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // instructor
     Route::post('instructor', [InstructorController::class, 'create']);
     Route::get('instructors', [InstructorController::class, 'getAll']);
+    Route::get('instructor/archives', [InstructorController::class, 'getArchivedInstructors']);
+    Route::get('instructor/{user_id}', [InstructorController::class, 'getInstructorDetails']);
+    Route::patch('instructor/{user_id?}', [InstructorController::class, 'update']);
+    Route::post('instructor/{user_id}', [InstructorController::class, 'update']);
+    Route::delete('instructor/{user_id}', [InstructorController::class, 'delete']);
+    Route::post('instructor/{user_id}/archive', [InstructorController::class, 'archive']);
+    Route::post('instructor/{user_id}/restore', [InstructorController::class, 'restore']);
 
     // course
     Route::post('course', [CourseController::class, 'create']);
@@ -51,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // period
     Route::post('period', [PeriodController::class, 'create']);
+    Route::get('period/active', [PeriodController::class, 'getActivePeriod']);
 
     // building
     Route::post('building', [BuildingController::class, 'create']);

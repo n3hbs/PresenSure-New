@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Student\CreateStudentRequest;
 use App\Http\Requests\Student\ExtractBulkStudentRequest;
 use App\Http\Requests\Student\StoreBulkStudentRequest;
+use App\Http\Requests\Student\UpdateStudentRequest;
 use App\Services\StudentService;
 use App\Http\Resources\Student\ActiveSemesterStudentListResource;
 use App\Http\Resources\Student\CheckStudentResource;
 use App\Http\Resources\Student\StudentDetailsResource;
 use App\Http\Resources\StudentResource;
+use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
@@ -97,4 +99,64 @@ class StudentController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function update(UpdateStudentRequest $request, ?string $user_id = null)
+    {
+        $userId = $user_id ?? $request->input('user_id');
+        if (!$userId) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'user_id' => ['The student ID (user_id) is required.'],
+            ]);
+        }
+
+        $student = $this->studentService->updateStudent($userId, $request->validated());
+
+        return (new StudentDetailsResource($student))
+            ->message('Student updated successfully.')
+            ->status(200);
+    }
+
+    public function archive(string $user_id)
+    {
+        $this->studentService->archiveStudent($user_id);
+
+        return $this->successResponse(
+            null,
+            'Student archived successfully.',
+            200
+        );
+    }
+
+    public function delete(Request $request, string $user_id)
+    {
+        $permanent = filter_var($request->query('permanent', false), FILTER_VALIDATE_BOOLEAN);
+        $this->studentService->deleteStudent($user_id, $permanent);
+
+        return $this->successResponse(
+            null,
+            $permanent ? 'Student deleted successfully.' : 'Student archived successfully.',
+            200
+        );
+    }
+
+    public function getArchivedStudents()
+    {
+        $students = $this->studentService->getArchivedStudents();
+        return ActiveSemesterStudentListResource::collection($students)
+            ->message('Archived Students Retrieved Successfully.')
+            ->status(200);
+    }
+
+    public function restore(string $user_id)
+    {
+        $this->studentService->restoreStudent($user_id);
+
+        return $this->successResponse(
+            null,
+            'Student restored successfully.',
+            200
+        );
+    }
 }
+
+

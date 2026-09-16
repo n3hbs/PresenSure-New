@@ -3,6 +3,7 @@ import { router } from "@inertiajs/react";
 import Sidebar from "./Sidebar";
 import TopNavbar from "./Navbar";
 import SessionExpiredModal from "@/Components/UI/SessionExpiredModal";
+import Toast from "@/Components/UI/Toast";
 import {
     getAuthToken,
     isSessionInactive,
@@ -13,6 +14,7 @@ export default function MainLayout({ children }) {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [isSessionExpired, setIsSessionExpired] = useState(false);
+    const [toast, setToast] = useState(null);
     const token = getAuthToken();
 
     useEffect(() => {
@@ -65,6 +67,14 @@ export default function MainLayout({ children }) {
         const handleAuthExpired = () => setIsSessionExpired(true);
         window.addEventListener("ps:auth-expired", handleAuthExpired);
 
+        // Listen for global toast notifications
+        const handleToast = (e) => {
+            if (e.detail) {
+                setToast(e.detail);
+            }
+        };
+        window.addEventListener("ps:toast", handleToast);
+
         return () => {
             activityEvents.forEach((event) => {
                 window.removeEventListener(event, handleUserActivity);
@@ -73,8 +83,15 @@ export default function MainLayout({ children }) {
             window.removeEventListener("focus", handleVisibilityChange);
             document.removeEventListener("visibilitychange", handleVisibilityChange);
             window.removeEventListener("ps:auth-expired", handleAuthExpired);
+            window.removeEventListener("ps:toast", handleToast);
         };
     }, []);
+
+    useEffect(() => {
+        if (!toast) return undefined;
+        const timer = window.setTimeout(() => setToast(null), 5000);
+        return () => window.clearTimeout(timer);
+    }, [toast]);
 
     const handleMenu = () => {
         if (window.innerWidth >= 1024) {
@@ -91,6 +108,9 @@ export default function MainLayout({ children }) {
 
     return (
         <div className="flex h-screen bg-gray-100">
+            {/* Global Toast Pop Message */}
+            <Toast toast={toast} onClose={() => setToast(null)} />
+
             {/* Session Expired / Re-login Modal */}
             <SessionExpiredModal isOpen={isSessionExpired} />
 

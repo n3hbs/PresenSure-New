@@ -15,12 +15,21 @@ final class PeriodRepository implements PeriodRepositoryInterface
     }
 
     /**
-     * Return the first period whose inclusive start/end dates contain today.
+     * Return the active period containing today, or fallback to the latest period.
      */
     public function getActivePeriod()
     {
-        return Period::whereDate('period_start', '<=', now()->toDateString())
+        $period = Period::with(['semester.schoolYear'])
+            ->whereDate('period_start', '<=', now()->toDateString())
             ->whereDate('period_end', '>=', now()->toDateString())
             ->first();
+
+        if (! $period) {
+            $period = Period::with(['semester.schoolYear'])
+                ->orderBy('period_end', 'desc')
+                ->first();
+        }
+
+        return $period;
     }
 }
