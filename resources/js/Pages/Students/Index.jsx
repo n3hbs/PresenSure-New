@@ -19,6 +19,7 @@ import SelectDropdown from "@/Components/UI/SelectDropdown";
 import api from "@/Services/api";
 import { getAuthToken } from "@/Services/auth";
 import { activeStudentsQueryKey } from "@/Services/queryKeys";
+import { notify } from "@/Services/toast";
 import NoImage from "@/assets/images/noImage.webp";
 
 const allOption = { label: "All", value: "" };
@@ -155,7 +156,6 @@ export default function Students() {
     const [program, setProgram] = useState("");
     const [year, setYear] = useState("");
     const [block, setBlock] = useState("");
-    const [activeTab, setActiveTab] = useState("enrolled");
     const queryClient = useQueryClient();
 
     const {
@@ -194,16 +194,27 @@ export default function Students() {
         : error?.response?.data?.message || "Unable to load students right now.";
 
     useEffect(() => {
+        if (isError && !isUnauthenticated && errorMessage) {
+            notify.error("Unable to Load Students", errorMessage);
+        }
+    }, [isError, isUnauthenticated, errorMessage]);
+
+    useEffect(() => {
         setProgram("");
     }, [department]);
 
     const counts = useMemo(() => {
-        const enrolled = students.filter((student) => student.enrolled).length;
+        const male = students.filter(
+            (s) => String(s.sex).toLowerCase() === "male",
+        ).length;
+        const female = students.filter(
+            (s) => String(s.sex).toLowerCase() === "female",
+        ).length;
 
         return {
             total: students.length,
-            enrolled,
-            inactive: students.length - enrolled,
+            male,
+            female,
         };
     }, [students]);
 
@@ -236,8 +247,6 @@ export default function Students() {
         const needle = search.trim().toLowerCase();
 
         return students.filter((student) => {
-            const matchesTab =
-                activeTab === "enrolled" ? student.enrolled : !student.enrolled;
             const matchesDepartment = department
                 ? student.departmentName === department
                 : true;
@@ -259,7 +268,6 @@ export default function Students() {
                 : true;
 
             return (
-                matchesTab &&
                 matchesDepartment &&
                 matchesProgram &&
                 matchesYear &&
@@ -267,7 +275,7 @@ export default function Students() {
                 matchesSearch
             );
         });
-    }, [activeTab, block, department, program, search, students, year]);
+    }, [block, department, program, search, students, year]);
 
     const columns = [
         {
@@ -403,12 +411,6 @@ export default function Students() {
                 </div>
             </div>
 
-            {isError && !isUnauthenticated && (
-                <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-                    {errorMessage}
-                </div>
-            )}
-
             <div className="grid gap-4 md:grid-cols-3">
                 <StatCard
                     icon={UserGroupIcon}
@@ -417,39 +419,19 @@ export default function Students() {
                 />
                 <StatCard
                     icon={UsersIcon}
-                    label="Enrolled"
-                    value={counts.enrolled}
-                    tone="green"
+                    label="Male"
+                    value={counts.male}
+                    tone="blue"
                 />
                 <StatCard
-                    icon={ArchiveBoxIcon}
-                    label="Inactive"
-                    value={counts.inactive}
-                    tone="gray"
+                    icon={UsersIcon}
+                    label="Female"
+                    value={counts.female}
+                    tone="green"
                 />
             </div>
 
             <section className="rounded-xl bg-white p-4 shadow-sm shadow-blue-950/5">
-                <div className="mb-4 flex gap-2 overflow-x-auto">
-                    {[
-                        { label: "Enrolled", value: "enrolled" },
-                        { label: "Inactive", value: "inactive" },
-                    ].map((tab) => (
-                        <button
-                            key={tab.value}
-                            type="button"
-                            onClick={() => setActiveTab(tab.value)}
-                            className={`h-10 rounded-lg px-4 text-sm font-semibold transition ${
-                                activeTab === tab.value
-                                    ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
-                                    : "bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-blue-700"
-                            }`}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
-
                 <div className="grid gap-3 lg:grid-cols-[1.2fr_repeat(4,minmax(130px,180px))]">
                     <div>
                         <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
@@ -504,11 +486,7 @@ export default function Students() {
                 sortOptions={sortOptions}
                 defaultSort="default"
                 pageSizeOptions={[10, 25, 50]}
-                emptyMessage={
-                    activeTab === "inactive"
-                        ? "No inactive students found."
-                        : "No students match the current filters."
-                }
+                emptyMessage="No students match the current filters."
             />
         </div>
         </>

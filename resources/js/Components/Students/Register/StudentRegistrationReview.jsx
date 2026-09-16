@@ -54,29 +54,41 @@ export default function StudentRegistrationReview({
                 </div>
                 <div>
                     <h1 className="text-lg font-bold text-gray-900">
-                        Review Registration
+                        {registrationType === "edit"
+                            ? "Review Student Updates"
+                            : "Review Registration"}
                     </h1>
                     <p className="text-sm text-gray-400">
-                        Confirm the student information before submitting.
+                        {registrationType === "edit"
+                            ? "Confirm the updated student information before saving."
+                            : "Confirm the student information before submitting."}
                     </p>
                 </div>
             </div>
 
             <div className="mt-5 grid gap-6 xl:grid-cols-[minmax(0,1fr)_260px]">
                 <div className="space-y-4">
-                    <ReviewGroup title="Registration">
-                        <ReviewItem
-                            label="Student Type"
-                            value={
-                                isExisting
-                                    ? "Existing Student"
-                                    : "New Student"
-                            }
-                        />
+                    <ReviewGroup title={registrationType === "edit" ? "Account Details" : "Registration"}>
+                        {registrationType !== "edit" && (
+                            <ReviewItem
+                                label="Student Type"
+                                value={
+                                    isExisting
+                                        ? "Existing Student"
+                                        : "New Student"
+                                }
+                            />
+                        )}
                         <ReviewItem
                             label="Student Number"
                             value={form.user_id}
                         />
+                        {form.status && (
+                            <ReviewItem
+                                label="Status"
+                                value={form.status}
+                            />
+                        )}
                     </ReviewGroup>
 
                     <ReviewGroup title="Student Information">
@@ -123,10 +135,15 @@ export default function StudentRegistrationReview({
                     Back
                 </Button>
                 <Button type="button" disabled={submitting} onClick={onSubmit}>
-                    {submitting ? "Submitting..." : "Submit Registration"}
+                    {submitting
+                        ? "Saving..."
+                        : registrationType === "edit"
+                        ? "Save Changes"
+                        : "Submit Registration"}
                 </Button>
             </div>
         </section>
+
     );
 }
 

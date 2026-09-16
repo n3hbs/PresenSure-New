@@ -41,6 +41,15 @@ Route::get('/students/student-details', function () {
     return Inertia::render('Students/StudentDetails');
 })->name('student.student-details');
 
+Route::get('/students/archives', function () {
+    return Inertia::render('Students/Archives');
+})->name('students.archives');
+
+Route::get('/students/edit', function () {
+    return Inertia::render('Students/Edit');
+})->name('students.edit');
+
+
 //instructor
 Route::get('/instructors', function () {
     return Inertia::render('Instructors/Index');

@@ -19,6 +19,7 @@ import {
     activeStudentsQueryKey,
     instructorsQueryKey,
 } from "@/Services/queryKeys";
+import { notify } from "@/Services/toast";
 
 const VALID_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -33,7 +34,6 @@ export default function BulkImageUploadPage({ type = "student" }) {
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [overwrite, setOverwrite] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
     const [resultModalOpen, setResultModalOpen] = useState(false);
     const [uploadResults, setUploadResults] = useState(null);
 
@@ -53,7 +53,6 @@ export default function BulkImageUploadPage({ type = "student" }) {
     }, [selectedFiles]);
 
     const handleAddFiles = (incomingFiles) => {
-        setErrorMessage("");
         const fileList = Array.from(incomingFiles || []);
         if (fileList.length === 0) return;
 
@@ -82,7 +81,8 @@ export default function BulkImageUploadPage({ type = "student" }) {
         }
 
         if (rejectedNames.length > 0) {
-            setErrorMessage(
+            notify.warning(
+                "Files Skipped",
                 `Some files were skipped: ${rejectedNames.slice(0, 3).join(", ")}${
                     rejectedNames.length > 3 ? ` and ${rejectedNames.length - 3} more.` : ""
                 }`
@@ -115,7 +115,6 @@ export default function BulkImageUploadPage({ type = "student" }) {
 
     const handleClearAll = () => {
         setSelectedFiles([]);
-        setErrorMessage("");
     };
 
     const invalidFormatCount = useMemo(() => {
@@ -138,12 +137,11 @@ export default function BulkImageUploadPage({ type = "student" }) {
 
     const handleUpload = async () => {
         if (selectedFiles.length === 0) {
-            setErrorMessage("Please select at least one image to upload.");
+            notify.warning("No Images Selected", "Please select at least one image to upload.");
             return;
         }
 
         setIsUploading(true);
-        setErrorMessage("");
 
         const formData = new FormData();
         selectedFiles.forEach((file) => {
@@ -164,6 +162,11 @@ export default function BulkImageUploadPage({ type = "student" }) {
             setResultModalOpen(true);
             setSelectedFiles([]);
 
+            notify.success(
+                "Upload Complete",
+                "Bulk image processing completed successfully."
+            );
+
             // Invalidate both student and instructor queries so all tables stay updated
             queryClient.invalidateQueries({ queryKey: activeStudentsQueryKey });
             queryClient.invalidateQueries({ queryKey: instructorsQueryKey });
@@ -175,7 +178,7 @@ export default function BulkImageUploadPage({ type = "student" }) {
                 err.response?.data?.message ||
                 err.response?.data?.error ||
                 "Failed to upload images. Please check your network and try again.";
-            setErrorMessage(msg);
+            notify.error("Upload Failed", msg);
         } finally {
             setIsUploading(false);
         }
@@ -206,21 +209,6 @@ export default function BulkImageUploadPage({ type = "student" }) {
                         Back to {entityPlural}
                     </Link>
                 </div>
-
-                {/* Error Banner */}
-                {errorMessage && (
-                    <div className="flex items-start gap-3 rounded-xl bg-red-50 p-4 border border-red-200 text-sm text-red-700">
-                        <ExclamationTriangleIcon className="h-5 w-5 shrink-0 text-red-500" />
-                        <div className="flex-1">{errorMessage}</div>
-                        <button
-                            type="button"
-                            onClick={() => setErrorMessage("")}
-                            className="text-red-400 hover:text-red-600"
-                        >
-                            <XMarkIcon className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
 
                 {/* Guidelines & Options Card */}
                 <div className="rounded-xl bg-white p-5 shadow-sm shadow-blue-950/5 border border-gray-100">

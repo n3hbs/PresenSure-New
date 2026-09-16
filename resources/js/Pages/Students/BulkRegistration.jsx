@@ -19,6 +19,7 @@ import Button from "@/Components/UI/Button";
 import Modal from "@/Components/UI/Modal";
 import api from "@/Services/api";
 import { activeStudentsQueryKey } from "@/Services/queryKeys";
+import { notify } from "@/Services/toast";
 
 export default function BulkRegistration() {
     const queryClient = useQueryClient();
@@ -26,7 +27,6 @@ export default function BulkRegistration() {
     const [isDragging, setIsDragging] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
     const [activeTab, setActiveTab] = useState("to_enroll");
     const [searchQuery, setSearchQuery] = useState("");
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -44,17 +44,16 @@ export default function BulkRegistration() {
     const validExtensions = ["xlsx", "xls", "csv", "txt"];
 
     const handleFileValidation = (selectedFile) => {
-        setErrorMessage("");
         if (!selectedFile) return;
 
         const ext = selectedFile.name.split(".").pop()?.toLowerCase();
         if (!ext || !validExtensions.includes(ext)) {
-            setErrorMessage("Please upload an Excel (.xlsx, .xls) or CSV (.csv) file.");
+            notify.error("Invalid File Format", "Please upload an Excel (.xlsx, .xls) or CSV (.csv) file.");
             return;
         }
 
         if (selectedFile.size > 5 * 1024 * 1024) {
-            setErrorMessage("File size exceeds 5MB limit.");
+            notify.error("File Too Large", "File size exceeds 5MB limit.");
             return;
         }
 
@@ -77,12 +76,11 @@ export default function BulkRegistration() {
 
     const handleExtract = async () => {
         if (!file) {
-            setErrorMessage("Please select a file to extract.");
+            notify.warning("No File Selected", "Please select a file to extract.");
             return;
         }
 
         setIsExtracting(true);
-        setErrorMessage("");
 
         const formData = new FormData();
         formData.append("file", file);
@@ -101,12 +99,27 @@ export default function BulkRegistration() {
                 invalid: data.invalid || [],
             });
 
-            if ((data.to_enroll || []).length > 0) {
+            const enrolledCount = (data.to_enroll || []).length;
+            const invalidCount = (data.invalid || []).length;
+
+            if (enrolledCount > 0) {
                 setActiveTab("to_enroll");
+                notify.success(
+                    "Data Extracted",
+                    `Processed ${enrolledCount} student(s) ready to enroll${invalidCount > 0 ? ` (${invalidCount} invalid)` : ""}.`
+                );
             } else if ((data.already_enrolled || []).length > 0) {
                 setActiveTab("already_enrolled");
-            } else if ((data.invalid || []).length > 0) {
+                notify.warning(
+                    "Already Enrolled",
+                    "All students in this file are already enrolled."
+                );
+            } else if (invalidCount > 0) {
                 setActiveTab("invalid");
+                notify.error(
+                    "Invalid Entries",
+                    `Found ${invalidCount} invalid student record(s).`
+                );
             }
         } catch (error) {
             if (error.response?.status === 401) return;
@@ -115,7 +128,7 @@ export default function BulkRegistration() {
                 error.response?.data?.message ||
                 error.response?.data?.data?.message ||
                 "Failed to extract file. Please check format.";
-            setErrorMessage(msg);
+            notify.error("Extraction Failed", msg);
         } finally {
             setIsExtracting(false);
         }
@@ -133,7 +146,6 @@ export default function BulkRegistration() {
 
         setIsSaving(true);
         setConfirmModalOpen(false);
-        setErrorMessage("");
 
         try {
             const response = await api.post("/student/bulk-store", {
@@ -150,6 +162,11 @@ export default function BulkRegistration() {
             });
             setFile(null);
 
+            notify.success(
+                "Registration Successful",
+                "Students have been successfully saved to the database."
+            );
+
             queryClient.invalidateQueries({
                 queryKey: activeStudentsQueryKey,
             });
@@ -159,7 +176,7 @@ export default function BulkRegistration() {
             const msg =
                 error.response?.data?.message ||
                 "Failed to save students to database.";
-            setErrorMessage(msg);
+            notify.error("Save Failed", msg);
         } finally {
             setIsSaving(false);
         }
@@ -215,20 +232,6 @@ export default function BulkRegistration() {
                         Back to Students
                     </Link>
                 </div>
-
-                {errorMessage && (
-                    <div className="flex items-start gap-3 rounded-xl bg-red-50 p-4 border border-red-200 text-sm text-red-700">
-                        <ExclamationTriangleIcon className="h-5 w-5 shrink-0 text-red-500" />
-                        <div className="flex-1">{errorMessage}</div>
-                        <button
-                            type="button"
-                            onClick={() => setErrorMessage("")}
-                            className="text-red-400 hover:text-red-700"
-                        >
-                            <XMarkIcon className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
 
                 {/* Grid: Template Download & File Uploader */}
                 <div className="grid gap-6 lg:grid-cols-3">

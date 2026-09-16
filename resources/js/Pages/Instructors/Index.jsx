@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -19,6 +19,7 @@ import SelectDropdown from "@/Components/UI/SelectDropdown";
 import api from "@/Services/api";
 import { getAuthToken } from "@/Services/auth";
 import { instructorsQueryKey } from "@/Services/queryKeys";
+import { notify } from "@/Services/toast";
 import NoImage from "@/assets/images/noImage.webp";
 
 const allOption = { label: "All", value: "" };
@@ -161,6 +162,12 @@ export default function Instructors() {
     const errorMessage = isUnauthenticated
         ? ""
         : error?.response?.data?.message || "Unable to load instructors right now.";
+
+    useEffect(() => {
+        if (isError && !isUnauthenticated && errorMessage) {
+            notify.error("Unable to Load Instructors", errorMessage);
+        }
+    }, [isError, isUnauthenticated, errorMessage]);
 
     const counts = useMemo(() => {
         const active = instructors.filter(
@@ -335,12 +342,6 @@ export default function Instructors() {
                         ))}
                     </div>
                 </div>
-
-                {isError && !isUnauthenticated && (
-                    <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-                        {errorMessage}
-                    </div>
-                )}
 
                 <div className="grid gap-4 md:grid-cols-3">
                     <StatCard

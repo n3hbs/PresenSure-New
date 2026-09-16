@@ -1,13 +1,18 @@
-const steps = [
+const defaultSteps = [
     { number: 1, label: "Student Type" },
     { number: 2, label: "Information" },
     { number: 3, label: "Review" },
 ];
 
-export default function StudentRegistrationStepper({ currentStep }) {
+export default function StudentRegistrationStepper({
+    currentStep,
+    steps = defaultSteps,
+}) {
+    const gridCols = steps.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3";
+
     return (
         <section className="rounded-xl bg-white p-4 shadow-sm shadow-blue-950/5">
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className={`grid gap-3 ${gridCols}`}>
                 {steps.map((step) => {
                     const active = currentStep === step.number;
                     const complete = currentStep > step.number;
@@ -44,3 +49,4 @@ export default function StudentRegistrationStepper({ currentStep }) {
         </section>
     );
 }
+

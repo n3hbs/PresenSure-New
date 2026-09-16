@@ -103,6 +103,88 @@ class StudentService
         return $this->studentRepository->getStudentDetails($user_id, $semester->semester_id);
     }
 
+    public function updateStudent(string $userId, array $data)
+    {
+        return DB::transaction(function () use ($userId, $data) {
+            $user = $this->userRepository->findByUserId($userId);
+            if (!$user) {
+                throw ValidationException::withMessages([
+                    'user_id' => ['Student user account not found.'],
+                ]);
+            }
+
+            $userFields = [];
+            if (isset($data['first_name'])) $userFields['first_name'] = $data['first_name'];
+            if (isset($data['last_name'])) $userFields['last_name'] = ucfirst(strtolower($data['last_name']));
+            if (array_key_exists('middle_initial', $data)) $userFields['middle_initial'] = $data['middle_initial'];
+            if (array_key_exists('suffix', $data)) $userFields['suffix'] = $data['suffix'];
+            if (isset($data['sex'])) $userFields['sex'] = $data['sex'];
+
+            if (!empty($userFields)) {
+                $this->userRepository->update($userId, $userFields);
+            }
+
+            if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
+                $this->userProfileService->uploadProfile($data['image'], $userId);
+            }
+
+            $semester = $this->semesterService->getActiveSemester();
+            if (!$semester) {
+                throw ValidationException::withMessages([
+                    'semester_id' => ['No active semester found.'],
+                ]);
+            }
+
+            $studentFields = [];
+            if (isset($data['program_id'])) $studentFields['program_id'] = $data['program_id'];
+            if (isset($data['year'])) $studentFields['year'] = $data['year'];
+            if (isset($data['block'])) $studentFields['block'] = $data['block'];
+            if (isset($data['status'])) $studentFields['status'] = $data['status'];
+
+            if (!empty($studentFields)) {
+                $this->studentRepository->updateStudent($userId, $semester->semester_id, $studentFields);
+            }
+
+            return $this->getStudentDetails($userId);
+        });
+    }
+
+    public function archiveStudent(string $userId): bool
+    {
+        $semester = $this->semesterService->getActiveSemester();
+        $semesterId = $semester?->semester_id ?? 0;
+
+        return $this->studentRepository->archiveStudent($userId, $semesterId);
+    }
+
+    public function deleteStudent(string $userId, bool $permanent = false): bool
+    {
+        return DB::transaction(function () use ($userId, $permanent) {
+            $semester = $this->semesterService->getActiveSemester();
+            $semesterId = $semester?->semester_id ?? 0;
+
+            if ($permanent) {
+                return $this->studentRepository->deleteStudent($userId, $semesterId);
+            }
+
+            return $this->studentRepository->archiveStudent($userId, $semesterId);
+        });
+    }
+
+    public function getArchivedStudents()
+    {
+        $semester = $this->semesterService->getActiveSemester();
+        return $this->studentRepository->getArchivedStudents($semester?->semester_id);
+    }
+
+    public function restoreStudent(string $userId): bool
+    {
+        $semester = $this->semesterService->getActiveSemester();
+        return $this->studentRepository->restoreStudent($userId, $semester?->semester_id);
+    }
+
+
+
     public function checkStudent(string $user_id)
     {
         $semester = $this->semesterService->getActiveSemester();

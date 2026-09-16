@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import { IdCard, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 import Logo from "@/assets/images/MainLogo.webp";
 import Button from "@/Components/UI/Button";
+import Toast from "@/Components/UI/Toast";
 
 import api from "@/Services/api";
 import { setAuthSession } from "@/Services/auth";
@@ -15,6 +16,13 @@ export default function Login() {
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
+    const [toast, setToast] = useState(null);
+
+    useEffect(() => {
+        if (!toast) return undefined;
+        const timer = window.setTimeout(() => setToast(null), 5000);
+        return () => window.clearTimeout(timer);
+    }, [toast]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -40,24 +48,49 @@ export default function Login() {
                 switch (error.response.status) {
                     case 422:
                         setErrors(error.response.data.errors || {});
-                        break;
-
-                    case 401:
-                        setErrors({
-                            general:
-                                error.response.data.message ||
-                                "Invalid credentials.",
+                        setToast({
+                            type: "error",
+                            title: "Validation Error",
+                            message: "Please enter your User ID and password.",
+                            id: Date.now(),
                         });
                         break;
 
-                    default:
-                        setErrors({
-                            general:
-                                error.response.data.message ?? "Server error.",
+                    case 401: {
+                        const message =
+                            error.response.data.message ||
+                            "Invalid credentials.";
+                        setErrors({ general: message });
+                        setToast({
+                            type: "error",
+                            title: "Sign In Failed",
+                            message,
+                            id: Date.now(),
                         });
+                        break;
+                    }
+
+                    default: {
+                        const message =
+                            error.response.data.message ?? "Server error.";
+                        setErrors({ general: message });
+                        setToast({
+                            type: "error",
+                            title: "Sign In Error",
+                            message,
+                            id: Date.now(),
+                        });
+                    }
                 }
             } else {
-                setErrors({ general: "Unable to connect to the server." });
+                const message = "Unable to connect to the server.";
+                setErrors({ general: message });
+                setToast({
+                    type: "error",
+                    title: "Connection Error",
+                    message,
+                    id: Date.now(),
+                });
             }
         } finally {
             setLoading(false);
@@ -67,6 +100,9 @@ export default function Login() {
     return (
         <>
             <Head title="Sign In" />
+
+            {/* Pop Message (Toast) */}
+            <Toast toast={toast} onClose={() => setToast(null)} />
 
             <div className="min-h-screen bg-linear-to-t from-blue-500 to-blue-200 flex items-center justify-center p-4">
                 <div className="w-full max-w-sm">
@@ -104,11 +140,6 @@ export default function Login() {
                             autoComplete="off"
                             className="space-y-5"
                         >
-                            {errors.general && (
-                                <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm text-red-600">
-                                    {errors.general}
-                                </div>
-                            )}
 
                             {/* User ID */}
                             <div>
