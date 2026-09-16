@@ -4,33 +4,20 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 
 import MainLayout from "@/Components/Layout/MainLayout";
-import SingleRegistrationForm from "@/Components/Students/Register/SingleRegistrationForm";
-import StudentRegistrationReview from "@/Components/Students/Register/StudentRegistrationReview";
-import StudentRegistrationStepper from "@/Components/Students/Register/StudentRegistrationStepper";
+import InstructorRegistrationReview from "@/Components/Instructors/Register/InstructorRegistrationReview";
+import InstructorRegistrationStepper from "@/Components/Instructors/Register/InstructorRegistrationStepper";
+import SingleInstructorRegistrationForm from "@/Components/Instructors/Register/SingleInstructorRegistrationForm";
+import InstructorDetailsSkeleton from "@/Components/Instructors/Details/InstructorDetailsSkeleton";
 import StudentRegistrationToast from "@/Components/Students/Register/StudentRegistrationToast";
-import StudentDetailsSkeleton from "@/Components/Students/Details/StudentDetailsSkeleton";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import DiscardRegistrationModal from "@/Components/UI/DiscardRegistrationModal";
 import api from "@/Services/api";
 import { getAuthToken } from "@/Services/auth";
 import {
-    activeStudentsQueryKey,
     departmentsQueryKey,
-    programsQueryKey,
+    instructorsQueryKey,
 } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
-
-const yearOptions = [
-    { label: "First Year", value: "First Year" },
-    { label: "Second Year", value: "Second Year" },
-    { label: "Third Year", value: "Third Year" },
-    { label: "Fourth Year", value: "Fourth Year" },
-];
-
-const blockOptions = ["A", "B", "C", "D", "E"].map((block) => ({
-    label: block,
-    value: block,
-}));
 
 const sexOptions = [
     { label: "Male", value: "male" },
@@ -63,9 +50,6 @@ export default function Edit() {
         suffix: "",
         sex: "",
         department_id: "",
-        program_id: "",
-        year: "",
-        block: "",
     });
 
     const [image, setImage] = useState(null);
@@ -86,26 +70,75 @@ export default function Edit() {
         return token ? { Authorization: `Bearer ${token}` } : {};
     };
 
-    // Fetch student details
+    // Fetch instructor details
     const {
-        data: studentData,
-        isLoading: loadingStudent,
-        isError: studentError,
-        error: studentRequestError,
+        data: instructorData,
+        isLoading: loadingInstructor,
+        isError,
+        error,
     } = useQuery({
-        queryKey: ["student-details", userId],
-        enabled: Boolean(userId) && Boolean(getAuthToken()),
+        queryKey: ["instructor-details", userId],
         queryFn: async () => {
             const token = getAuthToken();
-            const response = await api.get(`student/${userId}`, {
+            const response = await api.get(`instructor/${userId}`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             return response.data.data;
         },
+        enabled: Boolean(userId) && Boolean(getAuthToken()),
     });
 
-    // Load departments
-    const { data: departments = [], isLoading: loadingDepartments } = useQuery({
+    // Populate form with existing data
+    useEffect(() => {
+        if (!instructorData) return;
+        const user = instructorData.user || {};
+        const instructor = instructorData.instructor || {};
+        const profile = instructorData.profile || {};
+
+        setForm({
+            user_id: user.user_id || "",
+            first_name: user.first_name || "",
+            middle_initial: user.middle_initial || "",
+            last_name: user.last_name || "",
+            suffix: user.suffix || "",
+            sex: (user.sex || "").toLowerCase(),
+            department_id: instructor.department?.department_id
+                ? String(instructor.department.department_id)
+                : "",
+        });
+
+        if (profile.imagelink) {
+            setImagePreview(profile.imagelink);
+        }
+
+        setIsFormInitialized(true);
+    }, [instructorData]);
+
+    const isUnauthenticated = error?.response?.status === 401;
+    const errorMessage = isUnauthenticated
+        ? ""
+        : error?.response?.data?.message || "Unable to load instructor details.";
+
+    useEffect(() => {
+        if (!userId) {
+            notify.warning(
+                "Missing Instructor ID",
+                "Please open an instructor from the instructors list.",
+            );
+        }
+    }, [userId]);
+
+    useEffect(() => {
+        if (isError && !isUnauthenticated && errorMessage) {
+            notify.error("Unable to Load Instructor", errorMessage);
+        }
+    }, [isError, isUnauthenticated, errorMessage]);
+
+    // Fetch departments
+    const {
+        data: departments = [],
+        isLoading: loadingDepartments,
+    } = useQuery({
         queryKey: departmentsQueryKey,
         enabled: Boolean(getAuthToken()),
         queryFn: async () => {
@@ -116,84 +149,6 @@ export default function Edit() {
         },
     });
 
-    // Load programs
-    const { data: programs = [], isLoading: loadingPrograms } = useQuery({
-        queryKey: programsQueryKey,
-        enabled: Boolean(getAuthToken()),
-        queryFn: async () => {
-            const response = await api.get("/programs", {
-                headers: getAuthHeaders(),
-            });
-            return getCollection(response);
-        },
-    });
-
-    const loadingOptions = loadingDepartments || loadingPrograms;
-
-    // Populate initial form state from studentData
-    useEffect(() => {
-        if (!studentData) return;
-
-        const user = studentData.user || {};
-        const student = studentData.student?.[0] || {};
-        const profile = studentData.profile || {};
-
-        const deptId =
-            student.program?.department_id ||
-            student.program?.department?.department_id ||
-            "";
-        const progId = student.program_id || student.program?.program_id || "";
-
-        setForm({
-            user_id: user.user_id || "",
-            first_name: user.first_name || "",
-            middle_initial: user.middle_initial || "",
-            last_name: user.last_name || "",
-            suffix: user.suffix || "",
-            sex: user.sex?.toLowerCase() || "",
-            department_id: deptId ? String(deptId) : "",
-            program_id: progId ? String(progId) : "",
-            year: student.year || "",
-            block: student.block || "",
-        });
-
-        setImagePreview(profile.imagelink || profile.image_link || "");
-        setIsFormInitialized(true);
-    }, [studentData]);
-
-    // Handle image preview cleanup
-    useEffect(() => {
-        if (!image) return;
-        const previewUrl = URL.createObjectURL(image);
-        setImagePreview(previewUrl);
-        return () => URL.revokeObjectURL(previewUrl);
-    }, [image]);
-
-    // Toast auto-dismiss
-    useEffect(() => {
-        if (!toast) return undefined;
-        const timeout = window.setTimeout(() => setToast(null), 5000);
-        return () => window.clearTimeout(timeout);
-    }, [toast]);
-
-    const isDirty = useMemo(() => {
-        if (!isFormInitialized) return false;
-        return currentStep > 1 || Boolean(image);
-    }, [currentStep, image, isFormInitialized]);
-
-    useEffect(() => {
-        const handleBeforeUnload = (event) => {
-            if (!isDirty) return;
-            event.preventDefault();
-            event.returnValue = "";
-        };
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
-        return () =>
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-    }, [isDirty]);
-
-    // Department options
     const departmentOptions = useMemo(
         () =>
             departments.map((dept) => ({
@@ -203,64 +158,75 @@ export default function Edit() {
         [departments],
     );
 
-    const selectedDepartment = useMemo(
-        () =>
-            departmentOptions.find(
-                (dept) => dept.value === String(form.department_id),
-            ),
-        [departmentOptions, form.department_id],
-    );
-
-    // Filtered programs based on selected department
-    const filteredPrograms = useMemo(() => {
-        if (!form.department_id) return programs;
-        return programs.filter(
-            (prog) =>
-                String(prog.department?.department_id || prog.department_id) ===
-                String(form.department_id),
+    const selectedDepartment = useMemo(() => {
+        const currentDeptId = form.department_id;
+        if (!currentDeptId) {
+            return {
+                label:
+                    instructorData?.instructor?.department?.department_name ||
+                    "N/A",
+                value: "",
+            };
+        }
+        const found = departments.find(
+            (dept) => String(dept.department_id) === String(currentDeptId),
         );
-    }, [form.department_id, programs]);
-
-    const programOptions = useMemo(
-        () =>
-            filteredPrograms.map((prog) => ({
-                label: prog.program_code
-                    ? `${prog.program_code} - ${prog.program_name}`
-                    : prog.program_name,
-                value: String(prog.program_id),
-            })),
-        [filteredPrograms],
-    );
-
-    const selectedProgramOption = useMemo(() => {
-        const found = programs.find(
-            (prog) => String(prog.program_id) === String(form.program_id),
-        );
-        if (!found) return null;
+        if (found) {
+            return {
+                label: found.department_name,
+                value: String(found.department_id),
+            };
+        }
         return {
-            label: found.program_code
-                ? `${found.program_code} - ${found.program_name}`
-                : found.program_name,
-            value: String(found.program_id),
+            label:
+                instructorData?.instructor?.department?.department_name ||
+                "N/A",
+            value: String(currentDeptId),
         };
-    }, [form.program_id, programs]);
+    }, [departments, form.department_id, instructorData]);
+
+    const isDirty = useMemo(() => {
+        if (!isFormInitialized || !instructorData) return false;
+        const user = instructorData.user || {};
+        const instructor = instructorData.instructor || {};
+
+        return (
+            form.first_name !== (user.first_name || "") ||
+            form.last_name !== (user.last_name || "") ||
+            form.middle_initial !== (user.middle_initial || "") ||
+            form.suffix !== (user.suffix || "") ||
+            form.sex !== ((user.sex || "").toLowerCase()) ||
+            String(form.department_id) !== String(instructor.department?.department_id || "") ||
+            image !== null
+        );
+    }, [form, image, isFormInitialized, instructorData]);
+
+    // Warn before unload
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            if (isDirty && !allowNavigationRef.current) {
+                event.preventDefault();
+                event.returnValue = "";
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () =>
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [isDirty]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
+
         if (fieldErrors[name]) {
             setFieldErrors((prev) => ({ ...prev, [name]: null }));
         }
     };
 
     const updateSelect = (name, value) => {
-        setForm((prev) => {
-            const next = { ...prev, [name]: value };
-            if (name === "department_id") {
-                next.program_id = "";
-            }
-            return next;
-        });
+        setForm((prev) => ({ ...prev, [name]: value }));
+
         if (fieldErrors[name]) {
             setFieldErrors((prev) => ({ ...prev, [name]: null }));
         }
@@ -281,6 +247,7 @@ export default function Edit() {
         }
 
         setImage(file);
+        setImagePreview(URL.createObjectURL(file));
         if (fieldErrors.image) {
             setFieldErrors((prev) => ({ ...prev, image: null }));
         }
@@ -290,10 +257,8 @@ export default function Edit() {
         const errors = {};
         if (!form.first_name?.trim()) errors.first_name = ["First name is required."];
         if (!form.last_name?.trim()) errors.last_name = ["Last name is required."];
-        if (!form.sex) errors.sex = ["Please select student sex."];
-        if (!form.program_id) errors.program_id = ["Please select a program."];
-        if (!form.year) errors.year = ["Please select year level."];
-        if (!form.block?.trim()) errors.block = ["Block is required."];
+        if (!form.sex) errors.sex = ["Please select sex."];
+        if (!form.department_id) errors.department_id = ["Please select a department."];
 
         setFieldErrors(errors);
         return Object.keys(errors).length === 0;
@@ -328,15 +293,13 @@ export default function Edit() {
             if (form.middle_initial) payload.append("middle_initial", form.middle_initial);
             if (form.suffix) payload.append("suffix", form.suffix);
             payload.append("sex", form.sex);
-            payload.append("program_id", form.program_id);
-            payload.append("year", form.year);
-            payload.append("block", form.block);
+            payload.append("department_id", form.department_id);
 
             if (image) {
                 payload.append("image", image);
             }
 
-            const response = await api.post("student", payload, {
+            const response = await api.post(`instructor/${userId}`, payload, {
                 headers: {
                     ...getAuthHeaders(),
                     "Content-Type": "multipart/form-data",
@@ -344,19 +307,19 @@ export default function Edit() {
             });
 
             notify.success(
-                "Student Updated",
-                response.data?.message || "Student details updated successfully.",
+                "Instructor Updated",
+                response.data?.message || "Instructor details updated successfully.",
             );
 
             queryClient.invalidateQueries({
-                queryKey: ["student-details", userId],
+                queryKey: ["instructor-details", userId],
             });
             queryClient.invalidateQueries({
-                queryKey: activeStudentsQueryKey,
+                queryKey: instructorsQueryKey,
             });
 
             allowNavigationRef.current = true;
-            router.visit(`/students/student-details?user_id=${userId}`);
+            router.visit(`/instructors/instructor-details?user_id=${userId}`);
         } catch (error) {
             if (error.response?.status === 422) {
                 const errors = error.response.data?.errors || {};
@@ -365,14 +328,13 @@ export default function Edit() {
                 showToast(
                     "error",
                     "Validation Error",
-                    error.response.data?.message || "Please check the form inputs.",
+                    "Please check highlighted fields and try again.",
                 );
             } else {
-                showToast(
-                    "error",
-                    "Update Failed",
-                    error.response?.data?.message || "Failed to update student details.",
-                );
+                const message =
+                    error.response?.data?.message ||
+                    "Failed to update instructor. Please try again.";
+                showToast("error", "Update Failed", message);
             }
         } finally {
             setSubmitting(false);
@@ -391,14 +353,14 @@ export default function Edit() {
     const discardAndLeave = () => {
         const targetUrl =
             pendingNavigationUrl ||
-            `/students/student-details?user_id=${userId}`;
+            `/instructors/instructor-details?user_id=${userId}`;
         setConfirmDiscardOpen(false);
         setPendingNavigationUrl(null);
         allowNavigationRef.current = true;
         router.visit(targetUrl);
     };
 
-    const user = studentData?.user || {};
+    const user = instructorData?.user || {};
     const fullName = [
         user.first_name,
         user.middle_initial,
@@ -410,7 +372,7 @@ export default function Edit() {
 
     return (
         <>
-            <Head title={fullName ? `Edit Student - ${fullName}` : "Edit Student"} />
+            <Head title={fullName ? `Edit Instructor - ${fullName}` : "Edit Instructor"} />
             <StudentRegistrationToast
                 toast={toast}
                 onClose={() => setToast(null)}
@@ -427,12 +389,12 @@ export default function Edit() {
                         <Breadcrumbs
                             crumbs={[
                                 { label: "Dashboard", href: "/dashboard" },
-                                { label: "Students", href: "/students" },
+                                { label: "Instructors", href: "/instructors" },
                                 {
-                                    label: userId || "Student Details",
-                                    href: `/students/student-details?user_id=${userId}`,
+                                    label: userId || "Instructor Details",
+                                    href: `/instructors/instructor-details?user_id=${userId}`,
                                 },
-                                { label: "Edit Student" },
+                                { label: "Edit Instructor" },
                             ]}
                         />
                     </div>
@@ -441,51 +403,48 @@ export default function Edit() {
                         type="button"
                         onClick={() =>
                             requestPage(
-                                `/students/student-details?user_id=${userId}`,
+                                `/instructors/instructor-details?user_id=${userId}`,
                             )
                         }
                         className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-white px-3 text-sm font-semibold text-gray-600 shadow-sm shadow-blue-950/5 transition hover:bg-blue-50 hover:text-blue-700"
                     >
                         <ArrowLeftIcon className="h-4 w-4" />
-                        Back to Student Details
+                        Back to Instructor Details
                     </button>
                 </div>
 
-                {loadingStudent ? (
-                    <StudentDetailsSkeleton />
-                ) : !studentData ? (
+                {loadingInstructor ? (
+                    <InstructorDetailsSkeleton />
+                ) : !instructorData ? (
                     <section className="rounded-xl bg-white p-8 text-center shadow-sm shadow-blue-950/5">
                         <UserCircleIcon className="mx-auto h-12 w-12 text-gray-300" />
                         <p className="mt-3 text-sm font-semibold text-gray-700">
-                            Student not found.
+                            Instructor not found.
                         </p>
                         <button
                             type="button"
-                            onClick={() => router.visit("/students")}
+                            onClick={() => router.visit("/instructors")}
                             className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
                         >
-                            Return to Students
+                            Return to Instructors
                         </button>
                     </section>
                 ) : (
                     <>
-                        <StudentRegistrationStepper
+                        <InstructorRegistrationStepper
                             currentStep={currentStep}
                             steps={editSteps}
                         />
 
                         {currentStep === 1 && (
-                            <SingleRegistrationForm
+                            <SingleInstructorRegistrationForm
                                 form={form}
                                 image={image}
                                 imagePreview={imagePreview}
                                 fieldErrors={fieldErrors}
                                 sexOptions={sexOptions}
                                 departmentOptions={departmentOptions}
-                                programOptions={programOptions}
-                                yearOptions={yearOptions}
-                                blockOptions={blockOptions}
-                                loadingOptions={loadingOptions}
+                                loadingDepartments={loadingDepartments}
                                 registrationType="edit"
                                 onSubmit={continueToReview}
                                 onTextChange={handleChange}
@@ -497,19 +456,17 @@ export default function Edit() {
                                 }}
                                 onCancel={() =>
                                     requestPage(
-                                        `/students/student-details?user_id=${userId}`,
+                                        `/instructors/instructor-details?user_id=${userId}`,
                                     )
                                 }
                             />
                         )}
 
                         {currentStep === 2 && (
-                            <StudentRegistrationReview
+                            <InstructorRegistrationReview
                                 form={form}
                                 imagePreview={imagePreview}
-                                registrationType="edit"
                                 selectedDepartment={selectedDepartment}
-                                selectedProgram={selectedProgramOption}
                                 submitting={submitting}
                                 onBack={() => setCurrentStep(1)}
                                 onSubmit={submitEdit}

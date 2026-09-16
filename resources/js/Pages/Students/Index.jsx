@@ -387,7 +387,7 @@ export default function Students() {
         <>
             <Head title="Students" />
             <div className="space-y-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex min-h-10 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <Breadcrumbs
                         crumbs={[
@@ -397,7 +397,7 @@ export default function Students() {
                     />
                 </div>
 
-                <div className="flex gap-2 overflow-x-auto pb-1">
+                <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
                     {actionLinks.map(({ label, href, icon: Icon }) => (
                         <Link
                             key={href}

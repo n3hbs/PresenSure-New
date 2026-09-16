@@ -1,6 +1,7 @@
 export const activeStudentsQueryKey = ["students", "active-semester"];
 export const archivedStudentsQueryKey = ["students", "archived"];
 export const instructorsQueryKey = ["instructors"];
+export const archivedInstructorsQueryKey = ["instructors", "archived"];
 export const activeSemesterQueryKey = ["semester", "active", "v2"];
 export const activeSemesterStorageKey = "activeSemester";
 export const activePeriodQueryKey = ["period", "active", "v1"];

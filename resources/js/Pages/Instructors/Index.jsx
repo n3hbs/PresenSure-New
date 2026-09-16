@@ -2,17 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+    AcademicCapIcon,
     ArchiveBoxIcon,
     ArrowRightIcon,
+    BuildingOffice2Icon,
     CloudArrowUpIcon,
     MagnifyingGlassIcon,
     UserGroupIcon,
     UserPlusIcon,
-    UsersIcon,
 } from "@heroicons/react/24/outline";
 
 import MainLayout from "@/Components/Layout/MainLayout";
-import Badge from "@/Components/UI/Badge";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import DataTable from "@/Components/UI/DataTable";
 import SelectDropdown from "@/Components/UI/SelectDropdown";
@@ -79,6 +79,7 @@ const normalizeInstructor = (record) => {
         departmentName: department.department_name || "N/A",
         departmentCode: department.department_code || "N/A",
         image: profile.imagelink || profile.image_link || "",
+        createdAt: user.created_at || record.created_at || null,
         isActive:
             !status ||
             ["active", "enrolled", "registered"].includes(
@@ -127,7 +128,6 @@ const StatCard = ({ icon: Icon, label, value, tone = "blue" }) => {
 export default function Instructors() {
     const [search, setSearch] = useState("");
     const [department, setDepartment] = useState("");
-    const [activeTab, setActiveTab] = useState("active");
     const queryClient = useQueryClient();
 
     const {
@@ -170,14 +170,21 @@ export default function Instructors() {
     }, [isError, isUnauthenticated, errorMessage]);
 
     const counts = useMemo(() => {
-        const active = instructors.filter(
-            (instructor) => instructor.isActive,
+        const uniqueDepartments = new Set(
+            instructors
+                .map((instructor) => instructor.departmentName)
+                .filter((dept) => dept && dept !== "N/A"),
+        );
+        const assigned = instructors.filter(
+            (instructor) =>
+                instructor.departmentName &&
+                instructor.departmentName !== "N/A",
         ).length;
 
         return {
             total: instructors.length,
-            active,
-            inactive: instructors.length - active,
+            departments: uniqueDepartments.size,
+            assigned,
         };
     }, [instructors]);
 
@@ -193,10 +200,6 @@ export default function Instructors() {
         const needle = search.trim().toLowerCase();
 
         return instructors.filter((instructor) => {
-            const matchesTab =
-                activeTab === "active"
-                    ? instructor.isActive
-                    : !instructor.isActive;
             const matchesDepartment = department
                 ? instructor.departmentName === department
                 : true;
@@ -213,9 +216,9 @@ export default function Instructors() {
                     .includes(needle)
                 : true;
 
-            return matchesTab && matchesDepartment && matchesSearch;
+            return matchesDepartment && matchesSearch;
         });
-    }, [activeTab, department, search, instructors]);
+    }, [department, search, instructors]);
 
     const columns = [
         {
@@ -293,6 +296,12 @@ export default function Instructors() {
 
     const sortOptions = [
         {
+            label: "Default",
+            value: "default",
+            sorter: (a, b) =>
+                new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
+        },
+        {
             label: "Name A-Z",
             value: "name_asc",
             sorter: (a, b) => a.fullName.localeCompare(b.fullName),
@@ -319,7 +328,7 @@ export default function Instructors() {
         <>
             <Head title="Instructors" />
             <div className="space-y-6">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div className="flex min-h-10 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <Breadcrumbs
                             crumbs={[
@@ -329,7 +338,7 @@ export default function Instructors() {
                         />
                     </div>
 
-                    <div className="flex gap-2 overflow-x-auto pb-1">
+                    <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
                         {actionLinks.map(({ label, href, icon: Icon }) => (
                             <Link
                                 key={href}
@@ -350,39 +359,20 @@ export default function Instructors() {
                         value={counts.total}
                     />
                     <StatCard
-                        icon={UsersIcon}
-                        label="Active"
-                        value={counts.active}
-                        tone="green"
+                        icon={BuildingOffice2Icon}
+                        label="Departments"
+                        value={counts.departments}
+                        tone="blue"
                     />
                     <StatCard
-                        icon={ArchiveBoxIcon}
-                        label="Inactive"
-                        value={counts.inactive}
-                        tone="gray"
+                        icon={AcademicCapIcon}
+                        label="Assigned"
+                        value={counts.assigned}
+                        tone="green"
                     />
                 </div>
 
                 <section className="rounded-xl bg-white p-4 shadow-sm shadow-blue-950/5">
-                    <div className="mb-4 flex gap-2 overflow-x-auto">
-                        {[
-                            { label: "Active", value: "active" },
-                            { label: "Inactive", value: "inactive" },
-                        ].map((tab) => (
-                            <button
-                                key={tab.value}
-                                type="button"
-                                onClick={() => setActiveTab(tab.value)}
-                                className={`h-10 rounded-lg px-4 text-sm font-semibold transition ${activeTab === tab.value
-                                    ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
-                                    : "bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-blue-700"
-                                    }`}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-
                     <div className="flex items-end gap-3">
                         <div className="flex-1">
                             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
@@ -419,7 +409,7 @@ export default function Instructors() {
                     loading={loading}
                     rowKey="userId"
                     sortOptions={sortOptions}
-                    defaultSort="name_asc"
+                    defaultSort="default"
                     pageSizeOptions={[10, 25, 50]}
                     emptyMessage="No instructors match the current filters."
                 />

@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Head } from "@inertiajs/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+    AcademicCapIcon,
     ArchiveBoxIcon,
     ArrowPathIcon,
+    BuildingOffice2Icon,
     MagnifyingGlassIcon,
-    UsersIcon,
 } from "@heroicons/react/24/outline";
 
 import MainLayout from "@/Components/Layout/MainLayout";
@@ -15,8 +16,8 @@ import Modal from "@/Components/UI/Modal";
 import api from "@/Services/api";
 import { getAuthToken } from "@/Services/auth";
 import {
-    activeStudentsQueryKey,
-    archivedStudentsQueryKey,
+    archivedInstructorsQueryKey,
+    instructorsQueryKey,
 } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
 import NoImage from "@/assets/images/noImage.webp";
@@ -27,8 +28,12 @@ const getCollection = (response) => {
     return [];
 };
 
-const normalizeStudent = (record) => {
+const normalizeInstructor = (record) => {
     const user = record.user || record || {};
+    const instructor = Array.isArray(record.instructor)
+        ? record.instructor[0]
+        : record.instructor || {};
+    const department = instructor.department || record.department || {};
     const profile = record.profile || user.profile || {};
 
     const fullName = [
@@ -49,7 +54,10 @@ const normalizeStudent = (record) => {
         suffix: user.suffix || "",
         fullName: fullName || "N/A",
         sex: user.sex || "N/A",
+        departmentName: department.department_name || "N/A",
+        departmentCode: department.department_code || "N/A",
         image: profile.imagelink || profile.image_link || "",
+        createdAt: user.created_at || record.created_at || null,
     };
 };
 
@@ -88,17 +96,17 @@ export default function Archives() {
     const queryClient = useQueryClient();
 
     const {
-        data: archivedStudents = [],
+        data: archivedInstructors = [],
         isLoading: loading,
         isError,
         error,
     } = useQuery({
-        queryKey: archivedStudentsQueryKey,
+        queryKey: archivedInstructorsQueryKey,
         enabled: Boolean(getAuthToken()),
         refetchOnMount: "always",
         queryFn: async () => {
             const token = sessionStorage.getItem("token");
-            const response = await api.get("/student/archives", {
+            const response = await api.get("/instructor/archives", {
                 headers: token
                     ? {
                           Authorization: `Bearer ${token}`,
@@ -106,14 +114,14 @@ export default function Archives() {
                     : {},
             });
 
-            return getCollection(response).map(normalizeStudent);
+            return getCollection(response).map(normalizeInstructor);
         },
     });
 
     const isUnauthenticated = error?.response?.status === 401;
     const errorMessage = isUnauthenticated
         ? ""
-        : error?.response?.data?.message || "Unable to load archived students right now.";
+        : error?.response?.data?.message || "Unable to load archived instructors right now.";
 
     useEffect(() => {
         if (isError && !isUnauthenticated && errorMessage) {
@@ -122,31 +130,40 @@ export default function Archives() {
     }, [isError, isUnauthenticated, errorMessage]);
 
     const counts = useMemo(() => {
-        const male = archivedStudents.filter(
-            (s) => String(s.sex).toLowerCase() === "male",
-        ).length;
-        const female = archivedStudents.filter(
-            (s) => String(s.sex).toLowerCase() === "female",
+        const uniqueDepartments = new Set(
+            archivedInstructors
+                .map((instructor) => instructor.departmentName)
+                .filter((dept) => dept && dept !== "N/A"),
+        );
+        const assigned = archivedInstructors.filter(
+            (instructor) =>
+                instructor.departmentName &&
+                instructor.departmentName !== "N/A",
         ).length;
 
         return {
-            total: archivedStudents.length,
-            male,
-            female,
+            total: archivedInstructors.length,
+            departments: uniqueDepartments.size,
+            assigned,
         };
-    }, [archivedStudents]);
+    }, [archivedInstructors]);
 
-    const filteredStudents = useMemo(() => {
+    const filteredInstructors = useMemo(() => {
         const needle = search.trim().toLowerCase();
-        if (!needle) return archivedStudents;
+        if (!needle) return archivedInstructors;
 
-        return archivedStudents.filter((student) => {
-            return [student.userId, student.fullName]
+        return archivedInstructors.filter((instructor) => {
+            return [
+                instructor.userId,
+                instructor.fullName,
+                instructor.departmentName,
+                instructor.departmentCode,
+            ]
                 .join(" ")
                 .toLowerCase()
                 .includes(needle);
         });
-    }, [archivedStudents, search]);
+    }, [archivedInstructors, search]);
 
     const handleRestore = async () => {
         if (!restoreTarget?.userId) return;
@@ -154,7 +171,7 @@ export default function Archives() {
         try {
             const token = sessionStorage.getItem("token");
             await api.post(
-                `/student/${restoreTarget.userId}/restore`,
+                `/instructor/${restoreTarget.userId}/restore`,
                 {},
                 {
                     headers: token
@@ -166,21 +183,21 @@ export default function Archives() {
             );
 
             notify.success(
-                "Student Restored",
-                `${restoreTarget.fullName} has been restored to active students.`,
+                "Instructor Restored",
+                `${restoreTarget.fullName} has been restored to active instructors.`,
             );
 
             queryClient.invalidateQueries({
-                queryKey: archivedStudentsQueryKey,
+                queryKey: archivedInstructorsQueryKey,
             });
             queryClient.invalidateQueries({
-                queryKey: activeStudentsQueryKey,
+                queryKey: instructorsQueryKey,
             });
             setRestoreTarget(null);
         } catch (err) {
             const message =
                 err.response?.data?.message ||
-                "Failed to restore student. Please try again.";
+                "Failed to restore instructor. Please try again.";
             notify.error("Restore Failed", message);
         } finally {
             setRestoring(false);
@@ -192,18 +209,18 @@ export default function Archives() {
             key: "profile",
             header: "Profile",
             width: "86px",
-            render: (student) => (
+            render: (instructor) => (
                 <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-blue-50 text-sm font-bold text-blue-700">
-                    {student.image ? (
+                    {instructor.image ? (
                         <img
-                            src={student.image}
-                            alt={student.fullName}
+                            src={instructor.image}
+                            alt={instructor.fullName}
                             className="h-full w-full object-cover"
                         />
                     ) : (
                         <img
                             src={NoImage}
-                            alt={student.fullName}
+                            alt={instructor.fullName}
                             className="h-full w-full object-cover"
                         />
                     )}
@@ -212,11 +229,11 @@ export default function Archives() {
         },
         {
             key: "userId",
-            header: "Student ID",
+            header: "Instructor ID",
             minWidth: "180px",
-            render: (student) => (
+            render: (instructor) => (
                 <span className="font-semibold text-gray-900">
-                    {student.userId}
+                    {instructor.userId}
                 </span>
             ),
         },
@@ -224,24 +241,31 @@ export default function Archives() {
             key: "fullName",
             header: "Full Name",
             minWidth: "260px",
-            render: (student) => (
-                <span className="font-semibold text-gray-900">
-                    {student.fullName}
-                </span>
+            render: (instructor) => (
+                <div>
+                    <span className="font-semibold text-gray-900">
+                        {instructor.fullName}
+                    </span>
+                    {instructor.departmentName !== "N/A" && (
+                        <p className="text-xs text-gray-400">
+                            {instructor.departmentName}
+                        </p>
+                    )}
+                </div>
             ),
         },
         {
             key: "action",
             header: "Action",
             width: "160px",
-            render: (student) => (
+            render: (instructor) => (
                 <button
                     type="button"
-                    onClick={() => setRestoreTarget(student)}
+                    onClick={() => setRestoreTarget(instructor)}
                     className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 active:scale-[0.98]"
                 >
                     <ArrowPathIcon className="h-4 w-4" />
-                    Restore Student
+                    Restore Instructor
                 </button>
             ),
         },
@@ -251,6 +275,8 @@ export default function Archives() {
         {
             label: "Default",
             value: "default",
+            sorter: (a, b) =>
+                new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
         },
         {
             label: "Name A-Z",
@@ -263,7 +289,7 @@ export default function Archives() {
             sorter: (a, b) => b.fullName.localeCompare(a.fullName),
         },
         {
-            label: "Student ID",
+            label: "Instructor ID",
             value: "id_asc",
             sorter: (a, b) => a.userId.localeCompare(b.userId),
         },
@@ -271,15 +297,15 @@ export default function Archives() {
 
     return (
         <>
-            <Head title="Archived Students" />
+            <Head title="Archived Instructors" />
             <div className="space-y-6">
                 <div className="flex min-h-10 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <Breadcrumbs
                             crumbs={[
                                 { label: "Dashboard", href: "/dashboard" },
-                                { label: "Students", href: "/students" },
-                                { label: "Archived Students" },
+                                { label: "Instructors", href: "/instructors" },
+                                { label: "Archived Instructors" },
                             ]}
                         />
                     </div>
@@ -293,15 +319,15 @@ export default function Archives() {
                         tone="gray"
                     />
                     <StatCard
-                        icon={UsersIcon}
-                        label="Male"
-                        value={counts.male}
+                        icon={BuildingOffice2Icon}
+                        label="Departments"
+                        value={counts.departments}
                         tone="blue"
                     />
                     <StatCard
-                        icon={UsersIcon}
-                        label="Female"
-                        value={counts.female}
+                        icon={AcademicCapIcon}
+                        label="Assigned"
+                        value={counts.assigned}
                         tone="green"
                     />
                 </div>
@@ -319,7 +345,7 @@ export default function Archives() {
                                 onChange={(event) =>
                                     setSearch(event.target.value)
                                 }
-                                placeholder="Search archived students by ID or name..."
+                                placeholder="Search archived instructors by ID, name, or department..."
                                 className="h-11 w-full rounded-xl bg-gray-50 pl-11 pr-4 text-sm text-gray-700 shadow-sm shadow-blue-950/5 outline-none transition placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
                             />
                         </div>
@@ -328,13 +354,13 @@ export default function Archives() {
 
                 <DataTable
                     columns={columns}
-                    data={filteredStudents}
+                    data={filteredInstructors}
                     loading={loading}
                     rowKey="userId"
                     sortOptions={sortOptions}
                     defaultSort="default"
                     pageSizeOptions={[10, 25, 50]}
-                    emptyMessage="No archived students found."
+                    emptyMessage="No archived instructors found."
                 />
 
                 <Modal
@@ -342,8 +368,8 @@ export default function Archives() {
                     onClose={() => {
                         if (!restoring) setRestoreTarget(null);
                     }}
-                    title="Restore Student"
-                    description="Are you sure you want to restore this student to active status?"
+                    title="Restore Instructor"
+                    description="Are you sure you want to restore this instructor to active status?"
                     icon={<ArrowPathIcon className="h-6 w-6" />}
                     iconBg="bg-blue-50 text-blue-600"
                     maxWidth="md"
@@ -371,7 +397,7 @@ export default function Archives() {
                                 ) : (
                                     <>
                                         <ArrowPathIcon className="h-4 w-4" />
-                                        Restore Student
+                                        Restore Instructor
                                     </>
                                 )}
                             </button>
@@ -385,7 +411,7 @@ export default function Archives() {
                         </span>{" "}
                         ({restoreTarget?.userId}) as{" "}
                         <span className="font-semibold text-emerald-600">Active</span> and
-                        return them to the active student roster for the semester.
+                        return them to the active instructor list.
                     </p>
                 </Modal>
             </div>

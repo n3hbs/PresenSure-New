@@ -43,6 +43,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // instructor
     Route::post('instructor', [InstructorController::class, 'create']);
     Route::get('instructors', [InstructorController::class, 'getAll']);
+    Route::get('instructor/archives', [InstructorController::class, 'getArchivedInstructors']);
+    Route::get('instructor/{user_id}', [InstructorController::class, 'getInstructorDetails']);
+    Route::patch('instructor/{user_id?}', [InstructorController::class, 'update']);
+    Route::post('instructor/{user_id}', [InstructorController::class, 'update']);
+    Route::delete('instructor/{user_id}', [InstructorController::class, 'delete']);
+    Route::post('instructor/{user_id}/archive', [InstructorController::class, 'archive']);
+    Route::post('instructor/{user_id}/restore', [InstructorController::class, 'restore']);
 
     // course
     Route::post('course', [CourseController::class, 'create']);

@@ -73,7 +73,13 @@ export default function InstructorRegistrationReview({
                     <ReviewGroup title="Department Assignment">
                         <ReviewItem
                             label="Department"
-                            value={selectedDepartment?.label}
+                            value={
+                                selectedDepartment?.label ||
+                                (typeof selectedDepartment === "string" &&
+                                selectedDepartment !== "N/A"
+                                    ? selectedDepartment
+                                    : fallback)
+                            }
                         />
                     </ReviewGroup>
                 </div>

@@ -1,4 +1,4 @@
-import { UserPlusIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, UserPlusIcon } from "@heroicons/react/24/outline";
 
 import Button from "@/Components/UI/Button";
 import SelectDropdown from "@/Components/UI/SelectDropdown";
@@ -13,6 +13,7 @@ export default function SingleInstructorRegistrationForm({
     sexOptions,
     departmentOptions,
     loadingDepartments,
+    registrationType = "create",
     onSubmit,
     onTextChange,
     onSelectChange,
@@ -20,6 +21,8 @@ export default function SingleInstructorRegistrationForm({
     onRemoveImage,
     onCancel,
 }) {
+    const isEdit = registrationType === "edit";
+
     const renderError = (name) =>
         fieldErrors[name]?.[0] ? (
             <p className="mt-1 text-xs font-medium text-red-500">
@@ -35,14 +38,20 @@ export default function SingleInstructorRegistrationForm({
             <section className="space-y-6 rounded-xl bg-white p-5 shadow-sm shadow-blue-950/5">
                 <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                        <UserPlusIcon className="h-6 w-6" />
+                        {isEdit ? (
+                            <PencilSquareIcon className="h-6 w-6" />
+                        ) : (
+                            <UserPlusIcon className="h-6 w-6" />
+                        )}
                     </div>
                     <div>
                         <h1 className="text-lg font-bold text-gray-900">
-                            Instructor Registration
+                            {isEdit ? "Edit Instructor" : "Instructor Registration"}
                         </h1>
                         <p className="text-sm text-gray-400">
-                            Register a new instructor profile in the system.
+                            {isEdit
+                                ? "Update instructor personal and department details."
+                                : "Register a new instructor profile in the system."}
                         </p>
                     </div>
                 </div>
@@ -61,6 +70,7 @@ export default function SingleInstructorRegistrationForm({
                                 required
                                 maxLength={9}
                                 placeholder="0000-0000"
+                                disabled={isEdit}
                             />
                             {renderError("user_id")}
                         </div>
