@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasPermissions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -9,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasPermissions;
     protected $primaryKey = 'user_id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -26,6 +27,21 @@ class User extends Authenticatable
     protected $hidden = [
         'password'
     ];
+
+    protected $appends = [
+        'role_name',
+        'permissions',
+    ];
+
+    public function getRoleNameAttribute(): ?string
+    {
+        return $this->roleAssignment?->role?->role_name;
+    }
+
+    public function getPermissionsAttribute()
+    {
+        return $this->getPermissions();
+    }
 
     public function userProfile() 
     {
@@ -74,5 +90,11 @@ class User extends Authenticatable
     public function attendanceRecords()
     {
         return $this->hasMany(AttendanceRecord::class, 'student_id', 'user_id');
+    }
+
+    public function directPermissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions', 'user_id', 'permission_id')
+            ->withPivot('is_granted', 'assigned_at');
     }
 }

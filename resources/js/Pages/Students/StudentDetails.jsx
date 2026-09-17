@@ -3,9 +3,14 @@ import { Head, Link, router } from "@inertiajs/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     ArchiveBoxIcon,
+    LockClosedIcon,
     PencilSquareIcon,
+    ShieldCheckIcon,
     UserCircleIcon,
 } from "@heroicons/react/24/outline";
+
+import usePermission from "@/Hooks/usePermission";
+import UserPermissionsModal from "@/Components/Roles/UserPermissionsModal";
 
 import MainLayout from "@/Components/Layout/MainLayout";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
@@ -13,6 +18,7 @@ import Button from "@/Components/UI/Button";
 import StudentDetailsContent from "@/Components/Students/Details/StudentDetailsContent";
 import StudentDetailsSkeleton from "@/Components/Students/Details/StudentDetailsSkeleton";
 import ArchiveStudentModal from "@/Components/Students/Details/ArchiveStudentModal";
+import ResetPasswordModal from "@/Components/UI/ResetPasswordModal";
 import api from "@/Services/api";
 import { getAuthToken } from "@/Services/auth";
 import { activeStudentsQueryKey } from "@/Services/queryKeys";
@@ -22,8 +28,12 @@ export default function StudentDetails() {
     const queryClient = useQueryClient();
     const params = new URLSearchParams(window.location.search);
     const userId = params.get("user_id");
+    const { can, hasRole } = usePermission();
 
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+    const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
+    const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+
 
     const {
         data,
@@ -35,11 +45,7 @@ export default function StudentDetails() {
         queryFn: async () => {
             const token = getAuthToken();
             const response = await api.get(`student/${userId}`, {
-                headers: token
-                    ? {
-                          Authorization: `Bearer ${token}`,
-                      }
-                    : {},
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
 
             return response.data.data;
@@ -88,22 +94,49 @@ export default function StudentDetails() {
 
                 {data && (
                     <div className="flex flex-wrap items-center gap-2">
-                        <Link
-                            href={`/students/edit?user_id=${userId}`}
-                            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
-                        >
-                            <PencilSquareIcon className="h-4 w-4" />
-                            <span>Edit Student</span>
-                        </Link>
+                        {can("students.edit") && (
+                            <Link
+                                href={`/students/edit?user_id=${userId}`}
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+                            >
+                                <PencilSquareIcon className="h-4 w-4" />
+                                <span>Edit Student</span>
+                            </Link>
+                        )}
 
-                        <button
-                            type="button"
-                            onClick={() => setIsArchiveModalOpen(true)}
-                            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3.5 text-sm font-semibold text-rose-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 active:scale-[0.98]"
-                        >
-                            <ArchiveBoxIcon className="h-4 w-4" />
-                            <span>Archive Student</span>
-                        </button>
+                        {can("students.reset_password") && (
+                            <button
+                                type="button"
+                                onClick={() => setIsResetPasswordModalOpen(true)}
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+                            >
+                                <LockClosedIcon className="h-4 w-4" />
+                                <span>Reset Password</span>
+                            </button>
+                        )}
+
+                        {hasRole("administrator") && (
+                            <button
+                                type="button"
+                                onClick={() => setIsPermissionsModalOpen(true)}
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+                                title="Manage custom permissions for this student"
+                            >
+                                <ShieldCheckIcon className="h-4 w-4" />
+                                <span>Custom Access</span>
+                            </button>
+                        )}
+
+                        {can("students.archive") && (
+                            <button
+                                type="button"
+                                onClick={() => setIsArchiveModalOpen(true)}
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-red-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-red-200 transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:scale-[0.98]"
+                            >
+                                <ArchiveBoxIcon className="h-4 w-4" />
+                                <span>Archive Student</span>
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
@@ -128,6 +161,19 @@ export default function StudentDetails() {
                 />
             )}
 
+            {/* Reset Password Modal */}
+            <ResetPasswordModal
+                isOpen={isResetPasswordModalOpen}
+                onClose={() => setIsResetPasswordModalOpen(false)}
+                user={user}
+                role="Student"
+                onSuccess={() => {
+                    queryClient.invalidateQueries({
+                        queryKey: ["student-details", userId],
+                    });
+                }}
+            />
+
             {/* Archive Student Modal */}
             <ArchiveStudentModal
                 isOpen={isArchiveModalOpen}
@@ -143,6 +189,13 @@ export default function StudentDetails() {
                     });
                     router.visit("/students");
                 }}
+            />
+
+            {/* Custom Permissions Modal */}
+            <UserPermissionsModal
+                isOpen={isPermissionsModalOpen}
+                onClose={() => setIsPermissionsModalOpen(false)}
+                userId={userId}
             />
         </div>
     );

@@ -21,6 +21,7 @@ import { getAuthToken } from "@/Services/auth";
 import { instructorsQueryKey } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
 import NoImage from "@/assets/images/noImage.webp";
+import usePermission from "@/Hooks/usePermission";
 
 const allOption = { label: "All", value: "" };
 
@@ -29,16 +30,19 @@ const actionLinks = [
         label: "Upload Images",
         href: "/instructors/bulk-image-upload",
         icon: CloudArrowUpIcon,
+        permission: "instructors.create",
     },
     {
         label: "Single Registration",
         href: "/instructors/single-registration",
         icon: UserPlusIcon,
+        permission: "instructors.create",
     },
     {
         label: "View Archives",
         href: "/instructors/archives",
         icon: ArchiveBoxIcon,
+        permission: "instructors.archive",
     },
 ];
 
@@ -126,9 +130,15 @@ const StatCard = ({ icon: Icon, label, value, tone = "blue" }) => {
 };
 
 export default function Instructors() {
+    const { can } = usePermission();
     const [search, setSearch] = useState("");
     const [department, setDepartment] = useState("");
     const queryClient = useQueryClient();
+
+    const visibleActionLinks = useMemo(
+        () => actionLinks.filter((a) => !a.permission || can(a.permission)),
+        [can]
+    );
 
     const {
         data: instructors = [],
@@ -339,7 +349,7 @@ export default function Instructors() {
                     </div>
 
                     <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
-                        {actionLinks.map(({ label, href, icon: Icon }) => (
+                        {visibleActionLinks.map(({ label, href, icon: Icon }) => (
                             <Link
                                 key={href}
                                 href={href}

@@ -2,64 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Http\Resources\UserResource;
+use App\Services\UserPermissionService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected UserService $userService,
+        protected UserPermissionService $userPermissionService
+    ) {}
+
+    public function me(Request $request)
     {
-        //
+        $user = $request->user();
+        $user->load(['roleAssignment.role', 'userProfile']);
+
+        return $this->successResponse(
+            new UserResource($user),
+            'Authenticated user retrieved successfully.',
+            200
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function search(Request $request)
     {
-        //
+        $query = trim($request->input('query', ''));
+        if (strlen($query) < 1) {
+            return $this->successResponse([], 'No search query provided.', 200);
+        }
+
+        $users = $this->userPermissionService->searchUsers($query);
+
+        return $this->successResponse(
+            UserResource::collection($users),
+            'Users found.',
+            200
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function resetPassword(string $user_id)
     {
-        //
-    }
+        $this->userService->resetPassword($user_id);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
+        return $this->successResponse(
+            null,
+            'Password has been reset to default (last name) successfully.',
+            200
+        );
     }
 }

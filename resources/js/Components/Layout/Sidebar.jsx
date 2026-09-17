@@ -18,29 +18,39 @@ import {
 } from "@heroicons/react/24/outline";
 
 import Logo from "@/assets/images/MainLogo.webp";
+import usePermission from "@/Hooks/usePermission";
 
 const mainLinks = [
     { label: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { label: "Role", href: "/roles", icon: IdentificationIcon },
-    { label: "Semesters", href: "/semesters", icon: CalendarDaysIcon },
-    { label: "Department", href: "/departments", icon: BuildingOffice2Icon },
-    { label: "Programs", href: "/programs", icon: AcademicCapIcon },
-    { label: "Courses", href: "/courses", icon: BookOpenIcon },
-    { label: "Facilities", href: "/facilities", icon: ClipboardDocumentListIcon },
-    { label: "Schedules", href: "/schedules", icon: ClipboardDocumentListIcon },
+    { label: "Role", href: "/roles", icon: IdentificationIcon, permission: "roles.view" },
+    { label: "Semesters", href: "/semesters", icon: CalendarDaysIcon, permission: "semesters.manage" },
+    { label: "Department", href: "/departments", icon: BuildingOffice2Icon, permission: "departments.manage" },
+    { label: "Programs", href: "/programs", icon: AcademicCapIcon, permission: "programs.manage" },
+    { label: "Courses", href: "/courses", icon: BookOpenIcon, permission: "courses.manage" },
+    { label: "Facilities", href: "/facilities", icon: ClipboardDocumentListIcon, permission: "facilities.manage" },
+    { label: "Schedules", href: "/schedules", icon: ClipboardDocumentListIcon, permission: "schedules.manage" },
     { label: "My Schedules", href: "/my-schedules", icon: ClockIcon },
-    { label: "Records", href: "/records", icon: DocumentTextIcon },
-    { label: "Audit Logs", href: "/audit-logs", icon: ShieldCheckIcon },
+    { label: "Records", href: "/records", icon: DocumentTextIcon, permission: "attendance.records.view" },
+    { label: "Audit Logs", href: "/audit-logs", icon: ShieldCheckIcon, permission: "audit.view" },
 ];
 
 const userLinks = [
-    { label: "Students", href: "/students", icon: AcademicCapIcon },
-    { label: "Instructors", href: "/instructors", icon: UsersIcon },
+    { label: "Students", href: "/students", icon: AcademicCapIcon, permission: "students.view" },
+    { label: "Instructors", href: "/instructors", icon: UsersIcon, permission: "instructors.view" },
 ];
 
 export default function Sidebar({ collapsed = false, mobile = false, onClose }) {
     const { url } = usePage();
-    const usersActive = userLinks.some((item) => url?.startsWith(item.href));
+    const { can } = usePermission();
+
+    const visibleMainLinks = mainLinks.filter(
+        (item) => !item.permission || can(item.permission)
+    );
+    const visibleUserLinks = userLinks.filter(
+        (item) => !item.permission || can(item.permission)
+    );
+
+    const usersActive = visibleUserLinks.some((item) => url?.startsWith(item.href));
     const [usersOpen, setUsersOpen] = useState(usersActive);
     const showText = mobile || !collapsed;
 
@@ -128,44 +138,48 @@ export default function Sidebar({ collapsed = false, mobile = false, onClose }) 
                     {showText && <span>Dashboard</span>}
                 </Link>
 
-                <button
-                    type="button"
-                    onClick={() => setUsersOpen((open) => !open)}
-                    className={navClass(usersActive)}
-                    title={!showText ? "Users" : undefined}
-                >
-                    <UserGroupIcon className="h-5 w-5 shrink-0" />
-                    {showText && (
-                        <>
-                            <span className="flex-1 text-left">Users</span>
-                            <ChevronDownIcon
-                                className={`h-4 w-4 transition-transform ${
-                                    usersOpen ? "rotate-180" : ""
-                                }`}
-                            />
-                        </>
-                    )}
-                </button>
+                {visibleUserLinks.length > 0 && (
+                    <>
+                        <button
+                            type="button"
+                            onClick={() => setUsersOpen((open) => !open)}
+                            className={navClass(usersActive)}
+                            title={!showText ? "Users" : undefined}
+                        >
+                            <UserGroupIcon className="h-5 w-5 shrink-0" />
+                            {showText && (
+                                <>
+                                    <span className="flex-1 text-left">Users</span>
+                                    <ChevronDownIcon
+                                        className={`h-4 w-4 transition-transform ${
+                                            usersOpen ? "rotate-180" : ""
+                                        }`}
+                                    />
+                                </>
+                            )}
+                        </button>
 
-                {usersOpen && (
-                    <div className={`space-y-1 ${showText ? "pl-6" : ""}`}>
-                        {userLinks.map(({ label, href, icon: Icon }) => (
-                            <Link
-                                key={href}
-                                href={href}
-                                className={subNavClass(isActive(href))}
-                                onClick={handleLinkClick}
-                                title={!showText ? label : undefined}
-                            >
-                                <Icon className="h-4 w-4 shrink-0" />
-                                {showText && <span>{label}</span>}
-                            </Link>
-                        ))}
-                    </div>
+                        {usersOpen && (
+                            <div className={`space-y-1 ${showText ? "pl-6" : ""}`}>
+                                {visibleUserLinks.map(({ label, href, icon: Icon }) => (
+                                    <Link
+                                        key={href}
+                                        href={href}
+                                        className={subNavClass(isActive(href))}
+                                        onClick={handleLinkClick}
+                                        title={!showText ? label : undefined}
+                                    >
+                                        <Icon className="h-4 w-4 shrink-0" />
+                                        {showText && <span>{label}</span>}
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </>
                 )}
 
                 <div className="pt-2">
-                    {mainLinks.slice(1).map(({ label, href, icon: Icon }) => (
+                    {visibleMainLinks.slice(1).map(({ label, href, icon: Icon }) => (
                         <Link
                             key={href}
                             href={href}

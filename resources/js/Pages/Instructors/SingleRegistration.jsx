@@ -16,6 +16,8 @@ import {
     departmentsQueryKey,
     instructorsQueryKey,
 } from "@/Services/queryKeys";
+import { notify } from "@/Services/toast";
+import usePermission from "@/Hooks/usePermission";
 
 const emptyForm = {
     user_id: "",
@@ -50,9 +52,21 @@ const getCollection = (response) => {
 };
 
 export default function SingleRegistration() {
+    const { can } = usePermission();
     const queryClient = useQueryClient();
     const allowNavigationRef = useRef(false);
     const [currentStep, setCurrentStep] = useState(1);
+
+    useEffect(() => {
+        if (!can("instructors.create")) {
+            notify.error(
+                "Access Denied",
+                "You do not have permission to register instructors."
+            );
+            router.visit("/instructors");
+        }
+    }, [can]);
+
     const [form, setForm] = useState(emptyForm);
     const [image, setImage] = useState(null);
     const [imagePreview, setImagePreview] = useState("");
@@ -223,7 +237,7 @@ export default function SingleRegistration() {
         if (name === "middle_initial") {
             setForm((current) => ({
                 ...current,
-                middle_initial: value.toUpperCase().slice(0, 5),
+                middle_initial: value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 5),
             }));
             return;
         }

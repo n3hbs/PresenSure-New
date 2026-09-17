@@ -14,6 +14,10 @@ export default function Button({
         outline:
             "border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 focus:ring-blue-500",
         ghost: "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 focus:ring-blue-500",
+        danger:
+            "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] focus:ring-red-500 shadow-sm hover:shadow-red-200 dark:hover:shadow-red-900",
+        "danger-outline":
+            "border border-red-600 text-red-600 dark:text-red-400 dark:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 focus:ring-red-500",
     };
 
     const sizes = {

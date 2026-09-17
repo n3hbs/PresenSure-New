@@ -89,16 +89,14 @@ export default function InstructorDetailsContent({
                         <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
                             {status && (
                                 <span
-                                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
-                                        isActive
+                                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${isActive
                                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200/70"
                                             : "bg-gray-100 text-gray-600 border border-gray-200"
-                                    }`}
+                                        }`}
                                 >
                                     <span
-                                        className={`h-1.5 w-1.5 rounded-full ${
-                                            isActive ? "bg-emerald-500" : "bg-gray-400"
-                                        }`}
+                                        className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-gray-400"
+                                            }`}
                                     />
                                     {status}
                                 </span>
@@ -132,7 +130,6 @@ export default function InstructorDetailsContent({
                         {/* Row 2: Department */}
                         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-gray-600 md:justify-start md:text-left">
                             <div className="flex items-center gap-1.5 font-medium text-gray-900">
-                                <BuildingOffice2Icon className="h-4 w-4 text-gray-400" />
                                 <span>{department.department_name || "Unassigned Department"}</span>
                             </div>
                             {department.department_code && (

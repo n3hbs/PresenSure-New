@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -20,9 +20,22 @@ import Modal from "@/Components/UI/Modal";
 import api from "@/Services/api";
 import { activeStudentsQueryKey } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
+import usePermission from "@/Hooks/usePermission";
 
 export default function BulkRegistration() {
+    const { can } = usePermission();
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        if (!can("students.create")) {
+            notify.error(
+                "Access Denied",
+                "You do not have permission to perform bulk student registration."
+            );
+            router.visit("/students");
+        }
+    }, [can]);
+
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
@@ -377,8 +390,8 @@ export default function BulkRegistration() {
                                         type="button"
                                         onClick={() => setActiveTab("invalid")}
                                         className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === "invalid"
-                                            ? "bg-amber-600 text-white shadow-sm shadow-amber-200"
-                                            : "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                                            ? "bg-red-600 text-white shadow-sm shadow-red-200"
+                                            : "bg-red-50 text-red-700 hover:bg-red-100"
                                             }`}
                                     >
                                         <span>Invalid Rows</span>
@@ -403,7 +416,7 @@ export default function BulkRegistration() {
                                         type="button"
                                         onClick={() => setConfirmModalOpen(true)}
                                         disabled={isSaving}
-                                        className="h-9 px-4 text-xs font-semibold whitespace-nowrap bg-green-600 hover:bg-green-700 text-white"
+                                        className="h-9 px-4 text-xs font-semibold whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-200"
                                     >
                                         <CheckCircleIcon className="h-4 w-4 mr-1" />
                                         Save ({extractedData.to_enroll.length}) to Database

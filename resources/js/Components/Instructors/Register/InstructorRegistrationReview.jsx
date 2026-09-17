@@ -9,7 +9,7 @@ const ReviewItem = ({ label, value }) => (
         <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
             {label}
         </p>
-        <p className="mt-1 break-words text-sm font-semibold text-gray-900">
+        <p className="mt-1 wrap-break-word text-sm font-semibold text-gray-900">
             {value || fallback}
         </p>
     </div>

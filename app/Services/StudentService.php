@@ -116,7 +116,11 @@ class StudentService
             $userFields = [];
             if (isset($data['first_name'])) $userFields['first_name'] = $data['first_name'];
             if (isset($data['last_name'])) $userFields['last_name'] = ucfirst(strtolower($data['last_name']));
-            if (array_key_exists('middle_initial', $data)) $userFields['middle_initial'] = $data['middle_initial'];
+            if (array_key_exists('middle_initial', $data)) {
+                $userFields['middle_initial'] = !empty($data['middle_initial'])
+                    ? strtoupper(preg_replace('/[^a-zA-Z]/', '', $data['middle_initial']))
+                    : null;
+            }
             if (array_key_exists('suffix', $data)) $userFields['suffix'] = $data['suffix'];
             if (isset($data['sex'])) $userFields['sex'] = $data['sex'];
 

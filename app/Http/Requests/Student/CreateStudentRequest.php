@@ -17,6 +17,18 @@ class CreateStudentRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('middle_initial') && is_string($this->middle_initial)) {
+            $cleaned = preg_replace('/[^a-zA-Z]/', '', $this->middle_initial);
+            $this->merge([
+                'middle_initial' => $cleaned !== '' ? strtoupper($cleaned) : null,
+            ]);
+        }
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -32,7 +44,7 @@ class CreateStudentRequest extends FormRequest
                 : 'required|string|unique:users,user_id',
             'first_name' => $isExisting ? 'nullable|string|max:255' : 'required|string|max:255',
             'last_name' => $isExisting ? 'nullable|string|max:255' : 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:5',
+            'middle_initial' => ['nullable', 'string', 'max:5', 'regex:/^[a-zA-Z]+$/'],
             'suffix' => 'nullable|string|max:10',
             'sex' => $isExisting ? 'nullable|in:male,female' : 'required|in:male,female',
             'program_id' => 'required',
@@ -52,6 +64,7 @@ class CreateStudentRequest extends FormRequest
             'user_id' => 'student number',
             'first_name' => 'first name',
             'last_name' => 'last name',
+            'middle_initial' => 'middle initial',
             'sex' => 'sex',
             'program_id' => 'program',
             'year' => 'year level',
@@ -70,6 +83,7 @@ class CreateStudentRequest extends FormRequest
             'user_id.unique' => 'This student number is already registered in the system.',
             'user_id.exists' => 'No account found with this student number.',
             'user_id.required' => 'Student number is required.',
+            'middle_initial.regex' => 'The middle initial must not contain any special characters or periods.',
         ];
     }
 }

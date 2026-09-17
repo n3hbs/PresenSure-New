@@ -218,7 +218,7 @@ export default function TopNavbar({ onMenu }) {
     };
 
     return (
-        <header className="flex h-20 items-center justify-between bg-white/95 px-4 shadow-sm shadow-blue-950/5 backdrop-blur md:px-6">
+        <header className="relative z-40 flex h-20 items-center justify-between bg-white/95 px-4 shadow-sm shadow-blue-950/5 backdrop-blur md:px-6">
             <div className="flex min-w-0 items-center gap-3">
                 <button
                     type="button"
@@ -260,18 +260,22 @@ export default function TopNavbar({ onMenu }) {
 
                 {/* Vertical Separator between Academic Info and Profile */}
                 <div
-                    className="hidden h-8 w-px bg-gray-200 sm:block"
+                    className="hidden h-8 w-px bg-gray-200 sm:block sm:mx-3"
                     aria-hidden="true"
                 />
 
-                <div className="relative sm:pl-2" ref={dropdownRef}>
+                <div className="relative shrink-0" ref={dropdownRef}>
                     <button
                         type="button"
                         onClick={() => setDropdownOpen((open) => !open)}
-                        className="flex items-center gap-2 rounded-2xl px-2 py-1.5 transition hover:bg-blue-50"
+                        className={`flex items-center gap-2.5 rounded-2xl p-1.5 pr-3 transition-all ${
+                            dropdownOpen
+                                ? "bg-blue-50/90 ring-1 ring-blue-200 shadow-2xs"
+                                : "hover:bg-blue-50/60"
+                        }`}
                         aria-expanded={dropdownOpen}
                     >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm shadow-blue-200">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm shadow-blue-200">
                             {getInitials(userName)}
                         </div>
 
@@ -292,14 +296,19 @@ export default function TopNavbar({ onMenu }) {
                     </button>
 
                     {dropdownOpen && (
-                        <div className="absolute right-0 z-50 mt-3 w-60 rounded-2xl bg-white p-2 shadow-2xl shadow-blue-950/10">
-                            <div className="px-3 py-3">
-                                <p className="truncate text-sm font-semibold text-gray-900">
-                                    {userName}
-                                </p>
-                                <p className="truncate text-xs capitalize text-gray-400">
-                                    {role}
-                                </p>
+                        <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl bg-white p-2 shadow-2xl shadow-blue-950/15 border border-gray-100 ring-1 ring-black/5 animate-in fade-in slide-in-from-top-1 duration-150">
+                            <div className="flex items-center gap-3 rounded-xl bg-blue-50/60 px-3 py-2.5 mb-1.5 border border-blue-100/60">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm shadow-blue-200">
+                                    {getInitials(userName)}
+                                </div>
+                                <div className="min-w-0 flex-1 text-left">
+                                    <p className="truncate text-sm font-bold text-gray-900">
+                                        {userName}
+                                    </p>
+                                    <p className="truncate text-xs font-semibold text-blue-600 capitalize">
+                                        {role}
+                                    </p>
+                                </div>
                             </div>
 
                             {/* Academic Period & School Year on Mobile */}
@@ -318,26 +327,28 @@ export default function TopNavbar({ onMenu }) {
 
                             <button
                                 type="button"
-                                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+                                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition hover:bg-blue-50 hover:text-blue-700"
                             >
-                                <LockClosedIcon className="h-4 w-4" />
+                                <LockClosedIcon className="h-4 w-4 text-gray-400" />
                                 Change Password
                             </button>
 
                             <button
                                 type="button"
-                                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+                                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition hover:bg-blue-50 hover:text-blue-700"
                             >
-                                <DocumentCheckIcon className="h-4 w-4" />
+                                <DocumentCheckIcon className="h-4 w-4 text-gray-400" />
                                 Policy
                             </button>
+
+                            <div className="my-1 border-t border-gray-100" />
 
                             <button
                                 type="button"
                                 onClick={handleLogout}
-                                className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
                             >
-                                <PowerIcon className="h-4 w-4" />
+                                <PowerIcon className="h-4 w-4 text-red-500" />
                                 Log Out
                             </button>
                         </div>

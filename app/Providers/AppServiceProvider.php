@@ -14,6 +14,10 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
 use App\Repositories\Interfaces\SemesterRepositoryInterface;
 use App\Repositories\Interfaces\UserProfileRepositoryInterface;
+use App\Repositories\Interfaces\RoleRepositoryInterface;
+use App\Repositories\Interfaces\UserPermissionRepositoryInterface;
+use App\Repositories\RoleRepository;
+use App\Repositories\UserPermissionRepository;
 use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
@@ -41,6 +45,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             UserProfileRepositoryInterface::class,
             UserProfileRepository::class
+        );
+
+        $this->app->bind(
+            RoleRepositoryInterface::class,
+            RoleRepository::class
+        );
+
+        $this->app->bind(
+            UserPermissionRepositoryInterface::class,
+            UserPermissionRepository::class
         );
     }
 
