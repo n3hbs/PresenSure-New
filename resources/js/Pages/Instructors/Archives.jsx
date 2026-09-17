@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     AcademicCapIcon,
@@ -21,6 +21,7 @@ import {
 } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
 import NoImage from "@/assets/images/noImage.webp";
+import usePermission from "@/Hooks/usePermission";
 
 const getCollection = (response) => {
     if (Array.isArray(response?.data?.data)) return response.data.data;
@@ -90,10 +91,21 @@ const StatCard = ({ icon: Icon, label, value, tone = "blue" }) => {
 };
 
 export default function Archives() {
+    const { can } = usePermission();
     const [search, setSearch] = useState("");
     const [restoreTarget, setRestoreTarget] = useState(null);
     const [restoring, setRestoring] = useState(false);
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        if (!can("instructors.archive")) {
+            notify.error(
+                "Access Denied",
+                "You do not have permission to access archived instructors."
+            );
+            router.visit("/instructors");
+        }
+    }, [can]);
 
     const {
         data: archivedInstructors = [],
@@ -102,7 +114,7 @@ export default function Archives() {
         error,
     } = useQuery({
         queryKey: archivedInstructorsQueryKey,
-        enabled: Boolean(getAuthToken()),
+        enabled: Boolean(getAuthToken()) && can("instructors.archive"),
         refetchOnMount: "always",
         queryFn: async () => {
             const token = sessionStorage.getItem("token");

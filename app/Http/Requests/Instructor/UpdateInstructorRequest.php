@@ -15,6 +15,16 @@ class UpdateInstructorRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('middle_initial') && is_string($this->middle_initial)) {
+            $cleaned = preg_replace('/[^a-zA-Z]/', '', $this->middle_initial);
+            $this->merge([
+                'middle_initial' => $cleaned !== '' ? strtoupper($cleaned) : null,
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,7 +36,7 @@ class UpdateInstructorRequest extends FormRequest
             'user_id' => 'sometimes|nullable|string|exists:users,user_id',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:5',
+            'middle_initial' => ['nullable', 'string', 'max:5', 'regex:/^[a-zA-Z]+$/'],
             'suffix' => 'nullable|string|max:10',
             'sex' => 'required|in:male,female',
             'department_id' => 'required|exists:departments,department_id',
@@ -64,6 +74,7 @@ class UpdateInstructorRequest extends FormRequest
         return [
             'first_name.required' => 'Please enter the first name.',
             'last_name.required' => 'Please enter the last name.',
+            'middle_initial.regex' => 'The middle initial must not contain any special characters or periods.',
             'sex.required' => 'Please select a gender.',
             'department_id.required' => 'Please select a department.',
             'department_id.exists' => 'The selected department does not exist.',

@@ -19,6 +19,12 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard/Index');
 })->name('Dashboard.index');
 
+// roles & permissions page
+Route::get('/roles', function () {
+    return Inertia::render('Roles/Index');
+})->name('roles.index');
+
+
 
 //student page
 Route::get('/students', function () {

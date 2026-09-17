@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
     ArrowLeftIcon,
@@ -20,27 +20,34 @@ import {
     instructorsQueryKey,
 } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
+import usePermission from "@/Hooks/usePermission";
 
 const VALID_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const USER_ID_REGEX = /^(?:[A-Za-z]-)?\d{4}-\d{4}$/;
 
 export default function BulkImageUploadPage({ type = "student" }) {
+    const { can } = usePermission();
     const queryClient = useQueryClient();
     const fileInputRef = useRef(null);
-
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const [previews, setPreviews] = useState([]);
-    const [isDragging, setIsDragging] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
-    const [overwrite, setOverwrite] = useState(false);
-    const [resultModalOpen, setResultModalOpen] = useState(false);
-    const [uploadResults, setUploadResults] = useState(null);
 
     const isStudent = type === "student";
     const entityLabel = isStudent ? "Student" : "Instructor";
     const entityPlural = isStudent ? "Students" : "Instructors";
     const basePath = isStudent ? "/students" : "/instructors";
+    const requiredPermission = isStudent ? "students.create" : "instructors.create";
+
+    useEffect(() => {
+        if (!can(requiredPermission)) {
+            notify.error(
+                "Access Denied",
+                `You do not have permission to upload ${entityPlural.toLowerCase()} images.`
+            );
+            router.visit(basePath);
+        }
+    }, [can, requiredPermission, entityPlural, basePath]);
+
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     // Manage object URLs for memory safety
     useEffect(() => {
@@ -320,10 +327,9 @@ export default function BulkImageUploadPage({ type = "student" }) {
 
                                 <Button
                                     type="button"
-                                    variant="outline"
+                                    variant="danger-outline"
                                     size="sm"
                                     onClick={handleClearAll}
-                                    className="text-gray-500 hover:text-red-600"
                                 >
                                     <TrashIcon className="h-4 w-4 mr-1 text-red-500" />
                                     Clear All

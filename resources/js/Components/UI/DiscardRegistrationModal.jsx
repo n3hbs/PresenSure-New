@@ -40,7 +40,7 @@ export default function DiscardRegistrationModal({
 
                 {/* Footer (Buttons) */}
                 <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4 sm:flex-row sm:justify-end">
-                    <Button type="button" variant="outline" onClick={onDiscard}>
+                    <Button type="button" variant="danger-outline" onClick={onDiscard}>
                         Discard
                     </Button>
                     <Button type="button" onClick={onKeepEditing}>

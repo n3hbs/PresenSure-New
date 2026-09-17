@@ -15,6 +15,16 @@ class UpdateStudentRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('middle_initial') && is_string($this->middle_initial)) {
+            $cleaned = preg_replace('/[^a-zA-Z]/', '', $this->middle_initial);
+            $this->merge([
+                'middle_initial' => $cleaned !== '' ? strtoupper($cleaned) : null,
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,7 +36,7 @@ class UpdateStudentRequest extends FormRequest
             'user_id' => 'sometimes|nullable|string|exists:users,user_id',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:5',
+            'middle_initial' => ['nullable', 'string', 'max:5', 'regex:/^[a-zA-Z]+$/'],
             'suffix' => 'nullable|string|max:10',
             'sex' => 'required|in:male,female',
             'program_id' => 'required|exists:programs,program_id',
@@ -69,6 +79,7 @@ class UpdateStudentRequest extends FormRequest
         return [
             'first_name.required' => 'First name is required.',
             'last_name.required' => 'Last name is required.',
+            'middle_initial.regex' => 'The middle initial must not contain any special characters or periods.',
             'sex.required' => 'Please select the student sex.',
             'program_id.required' => 'Please select a program.',
             'program_id.exists' => 'The selected program does not exist.',

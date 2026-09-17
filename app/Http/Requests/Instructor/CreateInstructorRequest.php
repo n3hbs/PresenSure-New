@@ -15,6 +15,16 @@ class CreateInstructorRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('middle_initial') && is_string($this->middle_initial)) {
+            $cleaned = preg_replace('/[^a-zA-Z]/', '', $this->middle_initial);
+            $this->merge([
+                'middle_initial' => $cleaned !== '' ? strtoupper($cleaned) : null,
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -27,7 +37,7 @@ class CreateInstructorRequest extends FormRequest
             'user_id' => 'required|string|unique:users,user_id',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:5',
+            'middle_initial' => ['nullable', 'string', 'max:5', 'regex:/^[a-zA-Z]+$/'],
             'suffix' => 'nullable|string|max:10',
             'sex' => 'required|in:male,female',
             'department_id' => 'required',
@@ -45,6 +55,7 @@ class CreateInstructorRequest extends FormRequest
             'user_id' => 'instructor ID',
             'first_name' => 'first name',
             'last_name' => 'last name',
+            'middle_initial' => 'middle initial',
             'sex' => 'sex',
             'department_id' => 'department',
         ];
@@ -60,6 +71,7 @@ class CreateInstructorRequest extends FormRequest
         return [
             'user_id.unique' => 'This instructor ID is already registered in the system.',
             'user_id.required' => 'Instructor ID is required.',
+            'middle_initial.regex' => 'The middle initial must not contain any special characters or periods.',
         ];
     }
 }

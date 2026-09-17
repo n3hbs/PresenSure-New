@@ -4,9 +4,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     ArchiveBoxIcon,
     ArrowPathIcon,
+    LockClosedIcon,
     PencilSquareIcon,
+    ShieldCheckIcon,
     UserCircleIcon,
 } from "@heroicons/react/24/outline";
+
+import usePermission from "@/Hooks/usePermission";
+import UserPermissionsModal from "@/Components/Roles/UserPermissionsModal";
 
 import MainLayout from "@/Components/Layout/MainLayout";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
@@ -14,6 +19,7 @@ import InstructorDetailsContent from "@/Components/Instructors/Details/Instructo
 import InstructorDetailsSkeleton from "@/Components/Instructors/Details/InstructorDetailsSkeleton";
 import ArchiveInstructorModal from "@/Components/Instructors/Details/ArchiveInstructorModal";
 import RestoreInstructorModal from "@/Components/Instructors/Details/RestoreInstructorModal";
+import ResetPasswordModal from "@/Components/UI/ResetPasswordModal";
 import api from "@/Services/api";
 import { getAuthToken } from "@/Services/auth";
 import {
@@ -26,9 +32,13 @@ export default function InstructorDetails() {
     const queryClient = useQueryClient();
     const params = new URLSearchParams(window.location.search);
     const userId = params.get("user_id");
+    const { can, hasRole } = usePermission();
 
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
     const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+    const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
+    const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+
 
     const {
         data,
@@ -93,15 +103,40 @@ export default function InstructorDetails() {
 
                 {data && (
                     <div className="flex flex-wrap items-center gap-2">
-                        <Link
-                            href={`/instructors/edit?user_id=${userId}`}
-                            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
-                        >
-                            <PencilSquareIcon className="h-4 w-4" />
-                            <span>Edit Instructor</span>
-                        </Link>
+                        {can("instructors.edit") && (
+                            <Link
+                                href={`/instructors/edit?user_id=${userId}`}
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+                            >
+                                <PencilSquareIcon className="h-4 w-4" />
+                                <span>Edit Instructor</span>
+                            </Link>
+                        )}
 
-                        {instructor.status === "Inactive" ? (
+                        {can("instructors.reset_password") && (
+                            <button
+                                type="button"
+                                onClick={() => setIsResetPasswordModalOpen(true)}
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+                            >
+                                <LockClosedIcon className="h-4 w-4" />
+                                <span>Reset Password</span>
+                            </button>
+                        )}
+
+                        {hasRole("administrator") && (
+                            <button
+                                type="button"
+                                onClick={() => setIsPermissionsModalOpen(true)}
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+                                title="Manage custom permissions for this instructor"
+                            >
+                                <ShieldCheckIcon className="h-4 w-4" />
+                                <span>Custom Access</span>
+                            </button>
+                        )}
+
+                        {can("instructors.archive") && instructor.status === "Inactive" && (
                             <button
                                 type="button"
                                 onClick={() => setIsRestoreModalOpen(true)}
@@ -110,11 +145,13 @@ export default function InstructorDetails() {
                                 <ArrowPathIcon className="h-4 w-4" />
                                 <span>Restore Instructor</span>
                             </button>
-                        ) : (
+                        )}
+
+                        {can("instructors.archive") && instructor.status !== "Inactive" && (
                             <button
                                 type="button"
                                 onClick={() => setIsArchiveModalOpen(true)}
-                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3.5 text-sm font-semibold text-rose-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 active:scale-[0.98]"
+                                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-red-600 px-3.5 text-sm font-semibold text-white shadow-sm shadow-red-200 transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:scale-[0.98]"
                             >
                                 <ArchiveBoxIcon className="h-4 w-4" />
                                 <span>Archive Instructor</span>
@@ -142,6 +179,19 @@ export default function InstructorDetails() {
                     courses={courses}
                 />
             )}
+
+            {/* Reset Password Modal */}
+            <ResetPasswordModal
+                isOpen={isResetPasswordModalOpen}
+                onClose={() => setIsResetPasswordModalOpen(false)}
+                user={user}
+                role="Instructor"
+                onSuccess={() => {
+                    queryClient.invalidateQueries({
+                        queryKey: ["instructor-details", userId],
+                    });
+                }}
+            />
 
             {/* Archive Instructor Modal */}
             <ArchiveInstructorModal
@@ -178,6 +228,13 @@ export default function InstructorDetails() {
                         queryKey: archivedInstructorsQueryKey,
                     });
                 }}
+            />
+
+            {/* Custom Permissions Modal */}
+            <UserPermissionsModal
+                isOpen={isPermissionsModalOpen}
+                onClose={() => setIsPermissionsModalOpen(false)}
+                userId={userId}
             />
         </div>
     );

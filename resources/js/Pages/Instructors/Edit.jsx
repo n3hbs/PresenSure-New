@@ -18,6 +18,7 @@ import {
     instructorsQueryKey,
 } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
+import usePermission from "@/Hooks/usePermission";
 
 const sexOptions = [
     { label: "Male", value: "male" },
@@ -36,9 +37,20 @@ const getCollection = (response) => {
 };
 
 export default function Edit() {
+    const { can } = usePermission();
     const queryClient = useQueryClient();
     const params = new URLSearchParams(window.location.search);
     const userId = params.get("user_id");
+
+    useEffect(() => {
+        if (!can("instructors.edit")) {
+            notify.error(
+                "Access Denied",
+                "You do not have permission to edit instructor records."
+            );
+            router.visit("/instructors");
+        }
+    }, [can]);
 
     const allowNavigationRef = useRef(false);
     const [currentStep, setCurrentStep] = useState(1);
@@ -217,7 +229,11 @@ export default function Edit() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        const finalValue =
+            name === "middle_initial"
+                ? value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 5)
+                : value;
+        setForm((prev) => ({ ...prev, [name]: finalValue }));
 
         if (fieldErrors[name]) {
             setFieldErrors((prev) => ({ ...prev, [name]: null }));

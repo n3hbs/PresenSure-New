@@ -191,7 +191,12 @@ class StudentBulkImport implements ToCollection
         }
     }
 
-    protected function getValue($row, string $key): string
+    /**
+     * @param array|\ArrayAccess $row
+     * @param string $key
+     * @return string
+     */
+    protected function getValue(array|\ArrayAccess $row, string $key): string
     {
         if (!isset($this->headerMap[$key])) {
             return '';
@@ -227,7 +232,7 @@ class StudentBulkImport implements ToCollection
             if (!empty($names)) {
                 $lastToken = end($names);
                 if (preg_match('/^[a-zA-Z]\.?$/', $lastToken)) {
-                    $middleInitial = strtoupper(substr($lastToken, 0, 1)) . '.';
+                    $middleInitial = strtoupper(substr($lastToken, 0, 1));
                     array_pop($names);
                 }
             }
@@ -249,7 +254,7 @@ class StudentBulkImport implements ToCollection
                 if (!empty($names)) {
                     $lastToken = end($names);
                     if (preg_match('/^[a-zA-Z]\.?$/', $lastToken)) {
-                        $middleInitial = strtoupper(substr($lastToken, 0, 1)) . '.';
+                        $middleInitial = strtoupper(substr($lastToken, 0, 1));
                         array_pop($names);
                     }
                 }
@@ -261,12 +266,12 @@ class StudentBulkImport implements ToCollection
             }
         }
 
-        $formatted = trim($lastName . ($firstName ? ", {$firstName}" : '') . ($middleInitial ? " {$middleInitial}" : '') . ($suffix ? " {$suffix}" : ''));
+        $formatted = trim($lastName . ($firstName ? ", {$firstName}" : '') . ($middleInitial ? " {$middleInitial}." : '') . ($suffix ? " {$suffix}" : ''));
 
         return [
             'first_name' => $firstName ?: $fullName,
             'last_name' => $lastName ?: $fullName,
-            'middle_initial' => $middleInitial,
+            'middle_initial' => $middleInitial ?: null,
             'suffix' => $suffix,
             'formatted_full_name' => $formatted ?: $fullName,
         ];

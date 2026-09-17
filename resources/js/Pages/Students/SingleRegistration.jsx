@@ -18,6 +18,8 @@ import {
     departmentsQueryKey,
     programsQueryKey,
 } from "@/Services/queryKeys";
+import { notify } from "@/Services/toast";
+import usePermission from "@/Hooks/usePermission";
 
 const emptyForm = {
     user_id: "",
@@ -60,9 +62,21 @@ const makeStudentId = (value) => {
 };
 
 export default function SingleRegistration() {
+    const { can } = usePermission();
     const queryClient = useQueryClient();
     const allowNavigationRef = useRef(false);
     const [currentStep, setCurrentStep] = useState(1);
+
+    useEffect(() => {
+        if (!can("students.create")) {
+            notify.error(
+                "Access Denied",
+                "You do not have permission to register students."
+            );
+            router.visit("/students");
+        }
+    }, [can]);
+
     const [registrationType, setRegistrationType] = useState("");
     const [existingUserId, setExistingUserId] = useState("");
     const [checkingStudent, setCheckingStudent] = useState(false);
@@ -401,7 +415,7 @@ export default function SingleRegistration() {
         if (name === "middle_initial") {
             setForm((current) => ({
                 ...current,
-                middle_initial: value.toUpperCase().slice(0, 5),
+                middle_initial: value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 5),
             }));
             return;
         }

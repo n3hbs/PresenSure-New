@@ -15,6 +15,21 @@ class StoreBulkStudentRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('students') && is_array($this->students)) {
+            $cleanedStudents = array_map(function ($student) {
+                if (is_array($student) && isset($student['middle_initial']) && is_string($student['middle_initial'])) {
+                    $cleaned = preg_replace('/[^a-zA-Z]/', '', $student['middle_initial']);
+                    $student['middle_initial'] = $cleaned !== '' ? strtoupper($cleaned) : null;
+                }
+                return $student;
+            }, $this->students);
+
+            $this->merge(['students' => $cleanedStudents]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -27,7 +42,7 @@ class StoreBulkStudentRequest extends FormRequest
             'students.*.user_id' => 'required|string',
             'students.*.first_name' => 'required|string|max:255',
             'students.*.last_name' => 'required|string|max:255',
-            'students.*.middle_initial' => 'nullable|string|max:5',
+            'students.*.middle_initial' => ['nullable', 'string', 'max:5', 'regex:/^[a-zA-Z]+$/'],
             'students.*.suffix' => 'nullable|string|max:20',
             'students.*.sex' => 'nullable|string|in:male,female,Male,Female',
             'students.*.program_id' => 'required|integer',
@@ -43,6 +58,7 @@ class StoreBulkStudentRequest extends FormRequest
             'students.min' => 'At least one student record is required to proceed.',
             'students.*.user_id.required' => 'Student ID is required.',
             'students.*.program_id.required' => 'Program is required.',
+            'students.*.middle_initial.regex' => 'The middle initial must not contain any special characters or periods.',
         ];
     }
 }

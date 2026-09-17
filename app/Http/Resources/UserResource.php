@@ -21,6 +21,10 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'suffix' => $this->suffix,
             'sex' => $this->sex,
+            'full_name' => trim("{$this->first_name} " . ($this->middle_initial ? "{$this->middle_initial} " : '') . "{$this->last_name} {$this->suffix}"),
+            'profile_picture' => $this->userProfile?->profile_picture,
+            'role_name' => $this->role_name,
+            'permissions' => $this->permissions,
         ];
     }
 }

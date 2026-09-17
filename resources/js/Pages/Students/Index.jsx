@@ -21,6 +21,7 @@ import { getAuthToken } from "@/Services/auth";
 import { activeStudentsQueryKey } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
 import NoImage from "@/assets/images/noImage.webp";
+import usePermission from "@/Hooks/usePermission";
 
 const allOption = { label: "All", value: "" };
 const yearOrder = ["First Year", "Second Year", "Third Year", "Fourth Year"];
@@ -30,21 +31,25 @@ const actionLinks = [
         label: "Bulk Registration",
         href: "/students/bulk-registration",
         icon: UsersIcon,
+        permission: "students.create",
     },
     {
         label: "Upload Images",
         href: "/students/bulk-image-upload",
         icon: CloudArrowUpIcon,
+        permission: "students.create",
     },
     {
         label: "Single Registration",
         href: "/students/single-registration",
         icon: UserPlusIcon,
+        permission: "students.create",
     },
     {
         label: "View Archives",
         href: "/students/archives",
         icon: ArchiveBoxIcon,
+        permission: "students.archive",
     },
 ];
 
@@ -151,12 +156,18 @@ const StatCard = ({ icon: Icon, label, value, tone = "blue" }) => {
 };
 
 export default function Students() {
+    const { can } = usePermission();
     const [search, setSearch] = useState("");
     const [department, setDepartment] = useState("");
     const [program, setProgram] = useState("");
     const [year, setYear] = useState("");
     const [block, setBlock] = useState("");
     const queryClient = useQueryClient();
+
+    const visibleActionLinks = useMemo(
+        () => actionLinks.filter((a) => !a.permission || can(a.permission)),
+        [can]
+    );
 
     const {
         data: students = [],
@@ -398,7 +409,7 @@ export default function Students() {
                 </div>
 
                 <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
-                    {actionLinks.map(({ label, href, icon: Icon }) => (
+                    {visibleActionLinks.map(({ label, href, icon: Icon }) => (
                         <Link
                             key={href}
                             href={href}

@@ -51,7 +51,7 @@ export default function ArchiveStudentModal({
             title="Archive Student"
             description="Are you sure you want to archive this student?"
             icon={<ArchiveBoxIcon className="h-6 w-6" />}
-            iconBg="bg-rose-50 text-rose-600"
+            iconBg="bg-red-50 text-red-600"
             maxWidth="md"
             footer={
                 <div className="flex items-center justify-end gap-3">
@@ -67,7 +67,7 @@ export default function ArchiveStudentModal({
                         type="button"
                         disabled={submitting}
                         onClick={handleArchive}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 active:scale-[0.98]"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-red-200 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:scale-[0.98]"
                     >
                         {submitting ? (
                             <>
