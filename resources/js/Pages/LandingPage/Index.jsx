@@ -13,7 +13,7 @@ export default function Index() {
         <ThemeProvider>
             <Head title="Welcome" />
             <AppLayout>
-                <div className="min-h-screen font-sans antialiased">
+                <div className="min-h-screen font-sans antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
                     <Navbar />
                     <main>
                         <HeroSection />

@@ -51,6 +51,7 @@ html,
 body {
     scroll-behavior: smooth;
     font-family: var(--font-sans);
+    transition: background-color 300ms ease, color 300ms ease;
 }
 
 .hide-password-reveal::-ms-reveal,
