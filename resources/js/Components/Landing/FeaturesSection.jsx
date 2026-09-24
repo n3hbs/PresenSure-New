@@ -51,21 +51,23 @@ export default function FeaturesSection() {
     return (
         <section
             id="features"
-            className="py-24 bg-linear-to-br from-blue-500 via-blue-600 to-blue-700 dark:from-blue-900 dark:to-gray-950"
+            className="relative py-24 overflow-hidden bg-linear-to-br from-blue-500 via-blue-600 to-blue-700"
         >
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
+            {/* Smooth gradient transition overlay for dark mode */}
+            <div className="absolute inset-0 bg-linear-to-br from-blue-900 to-gray-950 opacity-0 dark:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+            <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center mb-14">
-                    <p className="text-sm font-semibold text-blue-200 uppercase tracking-wider mb-3">
+                    <p className="text-sm font-semibold text-blue-200 uppercase tracking-wider mb-3 transition-colors duration-300">
                         Classroom Attendance System
                     </p>
 
-                    <h2 className="text-3xl sm:text-4xl font-bold text-white">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-white transition-colors duration-300">
                         Built for Modern Classroom Attendance
                     </h2>
 
-                    <p className="mt-4 text-blue-100 max-w-2xl mx-auto">
+                    <p className="mt-4 text-blue-100 max-w-2xl mx-auto transition-colors duration-300">
                         Designed specifically for schools, PresenSure automates
                         classroom attendance using Bluetooth Low Energy (BLE)
                         technology and facial recognition to provide fast,

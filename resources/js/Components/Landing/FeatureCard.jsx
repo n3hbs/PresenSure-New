@@ -23,11 +23,11 @@ export default function FeatureCard({
             </div>
 
             <div>
-                <h3 className="mt-5 text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="mt-5 text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-300">
                     {title}
                 </h3>
 
-                <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400 transition-colors duration-300">
                     {description}
                 </p>
             </div>

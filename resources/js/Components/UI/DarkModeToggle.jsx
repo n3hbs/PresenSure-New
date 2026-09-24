@@ -13,13 +13,15 @@ export default function DarkModeToggle({ className = "" }) {
                 bg-blue-50 dark:bg-blue-900/40
                 text-blue-600 dark:text-blue-300
                 hover:bg-blue-100 dark:hover:bg-blue-800/60
-                transition-colors duration-200
+                transition-all duration-300
                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                 dark:focus:ring-offset-gray-900
                 ${className}
             `}
         >
-            {dark ? <Sun size={18} /> : <Moon size={18} />}
+            <span className="transition-transform duration-300 transform dark:-rotate-90">
+                {dark ? <Sun size={18} /> : <Moon size={18} />}
+            </span>
         </button>
     );
 }
