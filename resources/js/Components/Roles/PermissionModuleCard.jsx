@@ -11,19 +11,22 @@ export default function PermissionModuleCard({
     badge = "bg-blue-50 text-blue-700 border-blue-200",
     iconBg = "bg-blue-50 text-blue-600 border-blue-100",
     permissions = [],
+    totalModuleCount,
+    isFiltered = false,
     selectedPermissionIds = [],
     onTogglePermission,
     onToggleAll,
     disabled = false,
 }) {
-    const totalCount = permissions.length;
+    const totalCount = totalModuleCount ?? permissions.length;
+    const matchingCount = permissions.length;
     const selectedCount = permissions.filter((p) =>
         selectedPermissionIds.includes(p.permission_id)
     ).length;
-    const isAllSelected = totalCount > 0 && selectedCount === totalCount;
+    const isAllSelected = matchingCount > 0 && selectedCount === matchingCount;
 
     const badgeStyle =
-        selectedCount === totalCount && totalCount > 0
+        selectedCount === matchingCount && matchingCount > 0
             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
             : selectedCount > 0
             ? "bg-blue-50 text-blue-700 border-blue-200"
@@ -49,7 +52,9 @@ export default function PermissionModuleCard({
                             <span
                                 className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${badgeStyle}`}
                             >
-                                {selectedCount} / {totalCount} Granted
+                                {isFiltered
+                                    ? `${selectedCount} / ${matchingCount} Matching (${totalCount} Total)`
+                                    : `${selectedCount} / ${totalCount} Granted`}
                             </span>
                         </div>
                         {description && (
@@ -63,8 +68,8 @@ export default function PermissionModuleCard({
                 {/* Quick Toggle All Button */}
                 <button
                     type="button"
-                    disabled={disabled || totalCount === 0}
-                    onClick={() => onToggleAll(moduleKey, !isAllSelected)}
+                    disabled={disabled || matchingCount === 0}
+                    onClick={() => onToggleAll(moduleKey, !isAllSelected, isFiltered)}
                     className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all duration-150 ${
                         isAllSelected
                             ? "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100/70"
@@ -76,7 +81,13 @@ export default function PermissionModuleCard({
                             isAllSelected ? "text-blue-600" : "text-gray-400"
                         }`}
                     />
-                    {isAllSelected ? "Deselect All" : "Grant All"}
+                    {isFiltered
+                        ? isAllSelected
+                            ? "Deselect Filtered"
+                            : "Grant Filtered"
+                        : isAllSelected
+                        ? "Deselect All"
+                        : "Grant All"}
                 </button>
             </div>
 

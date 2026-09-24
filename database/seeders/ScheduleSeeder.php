@@ -31,7 +31,7 @@ class ScheduleSeeder extends Seeder
         $firstRoom = Room::where('name', 'Room 101')->first();
         $secondRoom = Room::where('name', 'Room 102')->first();
 
-        if (!$firstCourseBlock || !$secondCourseBlock || !$firstRoom || !$secondRoom) {
+        if (! $firstCourseBlock || ! $secondCourseBlock || ! $firstRoom || ! $secondRoom) {
             return;
         }
 

@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Semester extends Model
 {
     use HasFactory;
+
     protected $primaryKey = 'semester_id';
+
     protected $fillable = [
         'school_year_id',
         'term',
@@ -21,7 +23,8 @@ class Semester extends Model
         return $this->belongsTo(SchoolYear::class, 'school_year_id', 'school_year_id');
     }
 
-    public function student(){
-        return $this->hasMany(Student::class. 'semester_id', 'semester_id');
+    public function student()
+    {
+        return $this->hasMany(Student::class.'semester_id', 'semester_id');
     }
 }

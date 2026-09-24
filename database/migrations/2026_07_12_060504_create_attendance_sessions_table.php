@@ -46,7 +46,6 @@ return new class extends Migration
             $table->timestamp('device_started_at')
                 ->nullable();
 
-
             $table->enum('status', ['draft', 'pending_device_confirmation', 'active', 'ended', 'cancelled'])
                 ->default('draft');
 

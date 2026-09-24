@@ -16,7 +16,7 @@ class UserProfileService
 
     public function uploadProfile(?UploadedFile $image, string $userId)
     {
-        if (!$image) {
+        if (! $image) {
             return null;
         }
 
@@ -52,7 +52,7 @@ class UserProfileService
         $validExtensions = ['jpg', 'jpeg', 'png', 'webp'];
 
         foreach ($images as $image) {
-            if (!$image instanceof UploadedFile) {
+            if (! $image instanceof UploadedFile) {
                 continue;
             }
 
@@ -60,18 +60,19 @@ class UserProfileService
             $extension = strtolower($image->getClientOriginalExtension());
             $userId = strtoupper(pathinfo($originalName, PATHINFO_FILENAME));
 
-            if (!in_array($extension, $validExtensions)) {
+            if (! in_array($extension, $validExtensions)) {
                 $results['failed']['invalid_format'][] = [
                     'user_id' => $userId,
                     'fullname' => null,
                     'status' => 'Invalid File Format',
                 ];
                 $results['summary']['failed']++;
+
                 continue;
             }
 
             // Validate that the filename strictly matches the User ID format (e.g., C-0000-0000 or 0000-0000)
-            if (!preg_match('/^(?:[A-Z]-)?\d{4}-\d{4}$/', $userId)) {
+            if (! preg_match('/^(?:[A-Z]-)?\d{4}-\d{4}$/', $userId)) {
                 $results['failed']['invalid_name_format'][] = [
                     'user_id' => $userId,
                     'fullname' => null,
@@ -80,12 +81,13 @@ class UserProfileService
                     'detail' => 'Filename must be formatted as C-0000-0000 or 0000-0000',
                 ];
                 $results['summary']['failed']++;
+
                 continue;
             }
 
             $user = $this->userRepository->findByUserId($userId);
 
-            if (!$user) {
+            if (! $user) {
                 $results['failed']['user_not_found'][] = [
                     'user_id' => $userId,
                     'fullname' => null,
@@ -93,13 +95,14 @@ class UserProfileService
                     'status' => 'User Not Found',
                 ];
                 $results['summary']['failed']++;
+
                 continue;
             }
 
             $fullNameParts = array_filter([
-                $user->last_name . ',',
+                $user->last_name.',',
                 $user->first_name,
-                $user->middle_initial ? $user->middle_initial . '.' : null,
+                $user->middle_initial ? $user->middle_initial.'.' : null,
                 $user->suffix,
             ]);
             $fullName = implode(' ', $fullNameParts);
@@ -109,7 +112,7 @@ class UserProfileService
             $userRole = $isStudent ? 'Student' : ($isInstructor ? 'Instructor' : 'User');
 
             // Must be a registered student or instructor
-            if (!$isStudent && !$isInstructor) {
+            if (! $isStudent && ! $isInstructor) {
                 $results['failed']['user_not_found'][] = [
                     'user_id' => $userId,
                     'fullname' => $fullName,
@@ -117,10 +120,11 @@ class UserProfileService
                     'status' => 'User is not a student or instructor',
                 ];
                 $results['summary']['failed']++;
+
                 continue;
             }
 
-            if (!$overwrite && $user->userProfile && !empty($user->userProfile->imagelink)) {
+            if (! $overwrite && $user->userProfile && ! empty($user->userProfile->imagelink)) {
                 $results['failed']['profile_exists'][] = [
                     'user_id' => $userId,
                     'fullname' => $fullName,
@@ -128,6 +132,7 @@ class UserProfileService
                     'status' => 'Profile Already Exists',
                 ];
                 $results['summary']['failed']++;
+
                 continue;
             }
 

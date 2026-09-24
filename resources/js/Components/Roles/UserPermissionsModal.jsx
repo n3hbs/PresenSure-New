@@ -19,6 +19,8 @@ import {
 import Modal from "@/Components/UI/Modal";
 import api from "@/Services/api";
 import { notify } from "@/Services/toast";
+import { getStoredUser } from "@/Services/auth";
+import usePermission from "@/Hooks/usePermission";
 import { MODULE_CONFIG, getPermissionTitle } from "./roleConstants";
 
 export default function UserPermissionsModal({
@@ -28,6 +30,7 @@ export default function UserPermissionsModal({
     onSaved,
 }) {
     const queryClient = useQueryClient();
+    const { refreshPermissions } = usePermission();
     const searchInputRef = useRef(null);
 
     const [selectedUserId, setSelectedUserId] = useState(initialUserId || null);
@@ -205,6 +208,10 @@ export default function UserPermissionsModal({
             await queryClient.invalidateQueries({
                 queryKey: ["user-permissions", selectedUserId],
             });
+            const storedUser = getStoredUser();
+            if (storedUser?.user_id === selectedUserId) {
+                await refreshPermissions();
+            }
             onSaved?.();
             onClose?.();
         } catch (err) {
@@ -233,6 +240,10 @@ export default function UserPermissionsModal({
                 queryKey: ["user-permissions", selectedUserId],
             });
             setSelectedDirectIds([]);
+            const storedUser = getStoredUser();
+            if (storedUser?.user_id === selectedUserId) {
+                await refreshPermissions();
+            }
             onSaved?.();
         } catch (err) {
             notify.error("Failed to reset permissions.");

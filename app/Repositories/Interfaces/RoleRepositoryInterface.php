@@ -7,9 +7,12 @@ namespace App\Repositories\Interfaces;
 interface RoleRepositoryInterface
 {
     public function getRoleId(string $role_name);
+
     public function assignUserRole(string $user_id, int $role_id);
+
     public function getAllRolesWithPermissions();
+
     public function getAllPermissions();
+
     public function syncRolePermissions(int $role_id, array $permission_ids);
 }
-

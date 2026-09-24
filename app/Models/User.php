@@ -10,10 +10,14 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasPermissions;
+    use HasApiTokens, HasFactory, HasPermissions, Notifiable;
+
     protected $primaryKey = 'user_id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $fillable = [
         'user_id',
         'first_name',
@@ -21,11 +25,11 @@ class User extends Authenticatable
         'last_name',
         'suffix',
         'sex',
-        'password'
+        'password',
     ];
 
     protected $hidden = [
-        'password'
+        'password',
     ];
 
     protected $appends = [
@@ -43,13 +47,13 @@ class User extends Authenticatable
         return $this->getPermissions();
     }
 
-    public function userProfile() 
+    public function userProfile()
     {
         return $this->hasOne(UserProfile::class, 'user_id', 'user_id');
     }
 
     public function student()
-    {   
+    {
         return $this->hasMany(Student::class, 'user_id', 'user_id');
     }
 
@@ -57,8 +61,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Instructor::class, 'user_id', 'user_id');
     }
-    
-    public function roleAssignment(){
+
+    public function roleAssignment()
+    {
         return $this->hasOne(UserRole::class, 'user_id', 'user_id');
     }
 

@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Program extends Model
 {
     use HasFactory;
+
     protected $primaryKey = 'program_id';
+
     protected $fillable = [
         'department_id',
         'program_code',
         'program_name',
-        'program_years'
+        'program_years',
     ];
 
     public function student()

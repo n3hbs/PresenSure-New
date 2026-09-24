@@ -23,6 +23,7 @@ class StoreBulkStudentRequest extends FormRequest
                     $cleaned = preg_replace('/[^a-zA-Z]/', '', $student['middle_initial']);
                     $student['middle_initial'] = $cleaned !== '' ? strtoupper($cleaned) : null;
                 }
+
                 return $student;
             }, $this->students);
 

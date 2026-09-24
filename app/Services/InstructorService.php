@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\InstructorRepository;
 use App\Repositories\Interfaces\UserRepositoryInterface;
-use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -19,37 +18,38 @@ class InstructorService
         protected SemesterService $semesterService,
         protected UserRepositoryInterface $userRepository,
     ) {}
+
     public function createInstructor(array $data)
     {
         return DB::transaction(function () use ($data) {
 
-            //create User
+            // create User
             $user = $this->userService
                 ->createUser($data);
 
-            //upload and store user image
+            // upload and store user image
             $profile = $this->userProfileService
                 ->uploadProfile($data['image'] ?? null, $data['user_id']);
 
-            //register instructor
+            // register instructor
             $instructor = $this->instructorRepository->create([
                 'user_id' => $data['user_id'],
                 'department_id' => $data['department_id'],
-                'status' => 'Active'
+                'status' => 'Active',
             ]);
 
-            //get role_id by role_name
+            // get role_id by role_name
             $role_id = $this->roleService->getRoleId('instructor');
 
-            if (!$role_id) {
+            if (! $role_id) {
                 throw ValidationException::withMessages([
                     'role_id' => [
-                        'Instructor role not found.'
+                        'Instructor role not found.',
                     ],
                 ]);
             }
 
-            //assign user role
+            // assign user role
             $this->roleService->assignUserRole($data['user_id'], $role_id);
 
             return $instructor;
@@ -68,7 +68,7 @@ class InstructorService
 
         $instructor = $this->instructorRepository->getInstructorDetails($userId, $semesterId);
 
-        if (!$instructor) {
+        if (! $instructor) {
             throw ValidationException::withMessages([
                 'user_id' => ['Instructor not found.'],
             ]);
@@ -81,24 +81,32 @@ class InstructorService
     {
         return DB::transaction(function () use ($userId, $data) {
             $user = $this->userRepository->findByUserId($userId);
-            if (!$user) {
+            if (! $user) {
                 throw ValidationException::withMessages([
                     'user_id' => ['Instructor user account not found.'],
                 ]);
             }
 
             $userFields = [];
-            if (isset($data['first_name'])) $userFields['first_name'] = $data['first_name'];
-            if (isset($data['last_name'])) $userFields['last_name'] = ucfirst(strtolower($data['last_name']));
+            if (isset($data['first_name'])) {
+                $userFields['first_name'] = $data['first_name'];
+            }
+            if (isset($data['last_name'])) {
+                $userFields['last_name'] = ucfirst(strtolower($data['last_name']));
+            }
             if (array_key_exists('middle_initial', $data)) {
-                $userFields['middle_initial'] = !empty($data['middle_initial'])
+                $userFields['middle_initial'] = ! empty($data['middle_initial'])
                     ? strtoupper(preg_replace('/[^a-zA-Z]/', '', $data['middle_initial']))
                     : null;
             }
-            if (array_key_exists('suffix', $data)) $userFields['suffix'] = $data['suffix'];
-            if (isset($data['sex'])) $userFields['sex'] = $data['sex'];
+            if (array_key_exists('suffix', $data)) {
+                $userFields['suffix'] = $data['suffix'];
+            }
+            if (isset($data['sex'])) {
+                $userFields['sex'] = $data['sex'];
+            }
 
-            if (!empty($userFields)) {
+            if (! empty($userFields)) {
                 $this->userRepository->update($userId, $userFields);
             }
 
@@ -107,10 +115,14 @@ class InstructorService
             }
 
             $instructorFields = [];
-            if (isset($data['department_id'])) $instructorFields['department_id'] = $data['department_id'];
-            if (isset($data['status'])) $instructorFields['status'] = $data['status'];
+            if (isset($data['department_id'])) {
+                $instructorFields['department_id'] = $data['department_id'];
+            }
+            if (isset($data['status'])) {
+                $instructorFields['status'] = $data['status'];
+            }
 
-            if (!empty($instructorFields)) {
+            if (! empty($instructorFields)) {
                 $this->instructorRepository->updateInstructor($userId, $instructorFields);
             }
 

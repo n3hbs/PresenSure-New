@@ -11,8 +11,11 @@ class Course extends Model
     use HasFactory, SoftDeletes;
 
     protected $primaryKey = 'course_id';
+
     public $incrementing = true;
+
     protected $keyType = 'int';
+
     protected $fillable = [
         'subject_code',
         'name',

@@ -6,12 +6,13 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\Interfaces\UserPermissionRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class UserPermissionRepository implements UserPermissionRepositoryInterface
 {
     public function getUserWithPermissions(string $userId)
     {
-        return User::with(['roleAssignment.role.permissions', 'directPermissions'])
+        return User::with(['roleAssignment.role.permissions', 'directPermissions', 'userProfile'])
             ->findOrFail($userId);
     }
 
@@ -47,13 +48,18 @@ class UserPermissionRepository implements UserPermissionRepositoryInterface
         $cleanQuery = trim($query);
         $strippedId = str_replace(['-', ' '], '', $cleanQuery);
 
-        return User::with(['roleAssignment.role', 'userProfile'])
-            ->where(function ($q) use ($cleanQuery, $strippedId) {
+        $driver = DB::connection()->getDriverName();
+        $fullNameSql = $driver === 'sqlite'
+            ? "(first_name || ' ' || last_name)"
+            : "CONCAT(first_name, ' ', last_name)";
+
+        return User::with(['roleAssignment.role.permissions', 'directPermissions', 'userProfile'])
+            ->where(function ($q) use ($cleanQuery, $strippedId, $fullNameSql) {
                 $q->where('user_id', 'like', "%{$cleanQuery}%")
-                  ->orWhereRaw("REPLACE(user_id, '-', '') LIKE ?", ["%{$strippedId}%"])
-                  ->orWhere('first_name', 'like', "%{$cleanQuery}%")
-                  ->orWhere('last_name', 'like', "%{$cleanQuery}%")
-                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$cleanQuery}%"]);
+                    ->orWhereRaw("REPLACE(user_id, '-', '') LIKE ?", ["%{$strippedId}%"])
+                    ->orWhere('first_name', 'like', "%{$cleanQuery}%")
+                    ->orWhere('last_name', 'like', "%{$cleanQuery}%")
+                    ->orWhereRaw("{$fullNameSql} LIKE ?", ["%{$cleanQuery}%"]);
             })
             ->orderByRaw("
                 CASE 

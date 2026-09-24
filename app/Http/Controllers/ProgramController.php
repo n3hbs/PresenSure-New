@@ -14,6 +14,7 @@ class ProgramController extends Controller
     public function index()
     {
         $programs = $this->programService->getPrograms();
+
         return $this->successResponse(
             ProgramResource::collection($programs),
             'Programs retrieved successfully.',

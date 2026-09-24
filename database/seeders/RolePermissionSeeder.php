@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -17,8 +16,9 @@ class RolePermissionSeeder extends Seeder
 
         $allPermissions = Permission::all();
 
-        // 1. Administrator gets all permissions
+        // 1. Administrator gets all permissions and is marked as system admin
         if ($adminRole) {
+            $adminRole->update(['is_system_admin' => true]);
             $adminRole->permissions()->sync($allPermissions->pluck('permission_id')->toArray());
         }
 

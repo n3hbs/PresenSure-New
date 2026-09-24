@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Http\Resources\Student\ActiveSemesterStudentListResource;
 use App\Repositories\ScheduleRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -61,7 +60,7 @@ final class ScheduleService
     {
         $activeSemester = $this->semesterService->getActiveSemester();
 
-        if (!$activeSemester) {
+        if (! $activeSemester) {
             return collect();
         }
 
@@ -76,7 +75,7 @@ final class ScheduleService
         $students = $this->scheduleRepository->getScheduleStudentList($schedule_id);
 
         $studentsWithoutProfileCount = $students->filter(
-            fn($user) => empty($user->userProfile?->imagelink)
+            fn ($user) => empty($user->userProfile?->imagelink)
         )->count();
 
         return [

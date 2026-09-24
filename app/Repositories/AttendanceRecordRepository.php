@@ -21,5 +21,4 @@ class AttendanceRecordRepository implements AttendanceRecordRepositoryInterface
             ->whereDate('verified_at', today())
             ->first();
     }
-
 }

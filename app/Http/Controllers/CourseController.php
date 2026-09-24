@@ -16,6 +16,7 @@ class CourseController extends Controller
     public function create(CreateCourseRequest $request)
     {
         $this->courseService->createCourse($request->validated());
+
         return response()->json([
             'message' => 'Course Successfully Created',
         ], 201);
@@ -24,12 +25,14 @@ class CourseController extends Controller
     public function createBlock(CreateCourseBlockRequest $request)
     {
         $this->courseService->createCourseBlock($request->validated());
-        return response()->json(['message' => 'Course block successfully created.',], 201);
+
+        return response()->json(['message' => 'Course block successfully created.'], 201);
     }
 
     public function assign(AssignUserCourseBlockRequest $request)
     {
         $this->courseService->assignUsersToCourseBlock($request->validated());
-        return response()->json(['message' => 'Users successfully assigned to course block.',], 201);
+
+        return response()->json(['message' => 'Users successfully assigned to course block.'], 201);
     }
 }

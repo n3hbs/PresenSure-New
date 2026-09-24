@@ -12,14 +12,19 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 class StudentBulkImport implements ToCollection
 {
     public array $toEnroll = [];
+
     public array $alreadyEnrolled = [];
+
     public array $invalid = [];
 
     protected ?Semester $activeSemester;
+
     protected StudentRepository $studentRepository;
+
     protected Collection $programs;
 
     protected ?int $headerRowIndex = null;
+
     protected array $headerMap = [];
 
     public function __construct(Semester $activeSemester, StudentRepository $studentRepository)
@@ -48,8 +53,11 @@ class StudentBulkImport implements ToCollection
             $rowArray = $row->toArray();
 
             $normalized = array_map(function ($cell) {
-                if ($cell === null) return '';
-                $clean = str_replace(['.', '-', ' '], '_', Str::lower(trim((string)$cell)));
+                if ($cell === null) {
+                    return '';
+                }
+                $clean = str_replace(['.', '-', ' '], '_', Str::lower(trim((string) $cell)));
+
                 return preg_replace('/_+/', '_', $clean);
             }, $rowArray);
 
@@ -69,19 +77,21 @@ class StudentBulkImport implements ToCollection
                 $this->headerRowIndex = $index;
 
                 foreach ($normalized as $pos => $val) {
-                    if (empty($val)) continue;
+                    if (empty($val)) {
+                        continue;
+                    }
 
-                    if (in_array($val, ['student_no', 'student_id', 'id_number', 'id', 'user_id'], true) && !isset($this->headerMap['student_no'])) {
+                    if (in_array($val, ['student_no', 'student_id', 'id_number', 'id', 'user_id'], true) && ! isset($this->headerMap['student_no'])) {
                         $this->headerMap['student_no'] = $pos;
-                    } elseif (in_array($val, ['full_name', 'name', 'fullname', 'student_name'], true) && !isset($this->headerMap['full_name'])) {
+                    } elseif (in_array($val, ['full_name', 'name', 'fullname', 'student_name'], true) && ! isset($this->headerMap['full_name'])) {
                         $this->headerMap['full_name'] = $pos;
-                    } elseif (in_array($val, ['gender', 'sex'], true) && !isset($this->headerMap['gender'])) {
+                    } elseif (in_array($val, ['gender', 'sex'], true) && ! isset($this->headerMap['gender'])) {
                         $this->headerMap['gender'] = $pos;
-                    } elseif (in_array($val, ['program', 'course', 'program_code'], true) && !isset($this->headerMap['program'])) {
+                    } elseif (in_array($val, ['program', 'course', 'program_code'], true) && ! isset($this->headerMap['program'])) {
                         $this->headerMap['program'] = $pos;
-                    } elseif (in_array($val, ['year_level', 'year', 'level'], true) && !isset($this->headerMap['year_level'])) {
+                    } elseif (in_array($val, ['year_level', 'year', 'level'], true) && ! isset($this->headerMap['year_level'])) {
                         $this->headerMap['year_level'] = $pos;
-                    } elseif (in_array($val, ['block', 'section'], true) && !isset($this->headerMap['block'])) {
+                    } elseif (in_array($val, ['block', 'section'], true) && ! isset($this->headerMap['block'])) {
                         $this->headerMap['block'] = $pos;
                     }
                 }
@@ -119,6 +129,7 @@ class StudentBulkImport implements ToCollection
                     'full_name' => $fullName ?: 'N/A',
                     'reason' => 'Missing student ID or full name.',
                 ];
+
                 continue;
             }
 
@@ -144,7 +155,7 @@ class StudentBulkImport implements ToCollection
             $programKey = strtoupper(trim($programCode));
             $matchedProgram = $this->programs->get($programKey);
 
-            if (!$matchedProgram) {
+            if (! $matchedProgram) {
                 // If only one program exists in system, or match partial
                 foreach ($this->programs as $key => $prog) {
                     if (str_contains($programKey, $key) || str_contains($key, $programKey)) {
@@ -154,13 +165,14 @@ class StudentBulkImport implements ToCollection
                 }
             }
 
-            if (!$matchedProgram) {
+            if (! $matchedProgram) {
                 $this->invalid[] = [
                     'row' => $actualRowNumber,
                     'user_id' => $studentNo,
                     'full_name' => $fullName,
                     'reason' => "Program '{$programCode}' is not recognized in the system.",
                 ];
+
                 continue;
             }
 
@@ -191,18 +203,14 @@ class StudentBulkImport implements ToCollection
         }
     }
 
-    /**
-     * @param array|\ArrayAccess $row
-     * @param string $key
-     * @return string
-     */
     protected function getValue(array|\ArrayAccess $row, string $key): string
     {
-        if (!isset($this->headerMap[$key])) {
+        if (! isset($this->headerMap[$key])) {
             return '';
         }
         $index = $this->headerMap[$key];
-        return isset($row[$index]) ? trim((string)$row[$index]) : '';
+
+        return isset($row[$index]) ? trim((string) $row[$index]) : '';
     }
 
     protected function parseFullName(string $fullName): array
@@ -221,7 +229,7 @@ class StudentBulkImport implements ToCollection
             $names = preg_split('/\s+/', trim($rest), -1, PREG_SPLIT_NO_EMPTY);
 
             // Check suffix at end
-            if (!empty($names)) {
+            if (! empty($names)) {
                 $lastTokenUpper = strtoupper(end($names));
                 if (in_array($lastTokenUpper, $suffixes, true)) {
                     $suffix = array_pop($names);
@@ -229,7 +237,7 @@ class StudentBulkImport implements ToCollection
             }
 
             // Check middle initial at end
-            if (!empty($names)) {
+            if (! empty($names)) {
                 $lastToken = end($names);
                 if (preg_match('/^[a-zA-Z]\.?$/', $lastToken)) {
                     $middleInitial = strtoupper(substr($lastToken, 0, 1));
@@ -251,7 +259,7 @@ class StudentBulkImport implements ToCollection
                 $lastName = array_pop($names);
 
                 // Check middle initial
-                if (!empty($names)) {
+                if (! empty($names)) {
                     $lastToken = end($names);
                     if (preg_match('/^[a-zA-Z]\.?$/', $lastToken)) {
                         $middleInitial = strtoupper(substr($lastToken, 0, 1));
@@ -266,7 +274,7 @@ class StudentBulkImport implements ToCollection
             }
         }
 
-        $formatted = trim($lastName . ($firstName ? ", {$firstName}" : '') . ($middleInitial ? " {$middleInitial}." : '') . ($suffix ? " {$suffix}" : ''));
+        $formatted = trim($lastName.($firstName ? ", {$firstName}" : '').($middleInitial ? " {$middleInitial}." : '').($suffix ? " {$suffix}" : ''));
 
         return [
             'first_name' => $firstName ?: $fullName,

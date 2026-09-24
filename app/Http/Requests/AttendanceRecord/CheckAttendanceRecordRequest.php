@@ -27,5 +27,4 @@ class CheckAttendanceRecordRequest extends FormRequest
             'attendance_schedule_id' => 'required_without:schedule_id|nullable|integer|exists:schedules,schedule_id',
         ];
     }
-
 }

@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Repositories\Interfaces\SemesterRepositoryInterface;
 use App\Models\Semester;
-use Carbon\Carbon;
+use App\Repositories\Interfaces\SemesterRepositoryInterface;
 
 class SemesterRepository implements SemesterRepositoryInterface
 {

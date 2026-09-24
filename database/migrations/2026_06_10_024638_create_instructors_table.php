@@ -25,7 +25,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->enum('status', [
                 'Active',
-                'Inactive'
+                'Inactive',
             ]);
             $table->timestamps();
         });

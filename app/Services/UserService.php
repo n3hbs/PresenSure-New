@@ -17,8 +17,8 @@ class UserService
     {
         $user = $this->userRepository->findByUserId($data['user_id']);
 
-        if (!$user) {
-            $middleInitial = !empty($data['middle_initial'])
+        if (! $user) {
+            $middleInitial = ! empty($data['middle_initial'])
                 ? strtoupper(preg_replace('/[^a-zA-Z]/', '', $data['middle_initial']))
                 : null;
 
@@ -41,7 +41,7 @@ class UserService
     {
         $user = $this->userRepository->findByUserId($userId);
 
-        if (!$user) {
+        if (! $user) {
             throw ValidationException::withMessages([
                 'user_id' => ['User account not found.'],
             ]);
@@ -69,4 +69,3 @@ class UserService
         ];
     }
 }
-

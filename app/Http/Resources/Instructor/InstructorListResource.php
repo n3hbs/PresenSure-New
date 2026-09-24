@@ -3,13 +3,11 @@
 namespace App\Http\Resources\Instructor;
 
 use App\Http\Resources\BaseResource;
-use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\InstructorResource;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserProfileResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class InstructorListResource extends BaseResource
 {

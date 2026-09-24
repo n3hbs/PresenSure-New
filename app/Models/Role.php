@@ -2,18 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model {
+class Role extends Model
+{
     use HasFactory;
+
     protected $primaryKey = 'role_id';
+
     protected $fillable = [
         'role_name',
-        'description'
+        'is_system_admin',
+        'description',
     ];
 
-    public function userRole(){
+    protected $casts = [
+        'is_system_admin' => 'boolean',
+    ];
+
+    public function userRole()
+    {
         return $this->hasMany(UserRole::class, 'role_id', 'role_id');
     }
 

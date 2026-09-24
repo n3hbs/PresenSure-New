@@ -59,7 +59,6 @@ class StudentRepository implements StudentRepositoryInterface
             ->get();
     }
 
-
     public function getStudentDetails(string $user_id, int $semesterId)
     {
         return $this->activeSemesterStudentQuery($semesterId)
@@ -87,12 +86,14 @@ class StudentRepository implements StudentRepositoryInterface
 
         if ($student) {
             $student->update($data);
+
             return $student;
         }
 
         $latest = Student::where('user_id', $userId)->latest()->first();
         if ($latest) {
             $latest->update($data);
+
             return $latest;
         }
 
@@ -105,7 +106,7 @@ class StudentRepository implements StudentRepositoryInterface
             ->where('semester_id', $semesterId)
             ->update(['status' => 'Inactive']);
 
-        if (!$updated) {
+        if (! $updated) {
             $updated = Student::where('user_id', $userId)
                 ->update(['status' => 'Inactive']);
         }
@@ -159,7 +160,7 @@ class StudentRepository implements StudentRepositoryInterface
 
         $updated = $query->update(['status' => 'Active']);
 
-        if (!$updated) {
+        if (! $updated) {
             $updated = Student::where('user_id', $userId)
                 ->update(['status' => 'Active']);
         }
@@ -167,5 +168,3 @@ class StudentRepository implements StudentRepositoryInterface
         return (bool) $updated;
     }
 }
-
-

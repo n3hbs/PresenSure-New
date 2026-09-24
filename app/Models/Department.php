@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
 {
     use HasFactory;
+
     protected $primaryKey = 'department_id';
 
     protected $fillable = [
         'department_code',
-        'department_name'
+        'department_name',
     ];
 
     public function program()
@@ -25,4 +26,3 @@ class Department extends Model
         return $this->hasMany(Instructor::class, 'department_id', 'department_id');
     }
 }
-
