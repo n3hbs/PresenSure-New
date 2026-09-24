@@ -13,18 +13,18 @@ class AuthController extends Controller
         protected AuthService $authService
     ) {}
 
-
     public function signIn(AuthRequest $request)
     {
         $result = $this->authService->signIn($request->validated());
-        if (!$result) {
+        if (! $result) {
             return response()->json([
-                'message' => 'Invalid credentials'
+                'message' => 'Invalid credentials',
             ], 401);
         }
+
         return response()->json([
             'message' => 'Successfully login',
-            'data' => new AuthResource($result)
+            'data' => new AuthResource($result),
         ]);
     }
 }

@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { getStoredUser, getAuthToken, setAuthSession } from "@/Services/auth";
 import api from "@/Services/api";
 
+export const PERMISSIONS_UPDATED_EVENT = "ps:permissions-updated";
+
 /**
  * Custom React hook for evaluating user permissions and role authorization.
  */
@@ -13,11 +15,25 @@ export function usePermission() {
             setUser(getStoredUser());
         };
 
+        const handlePermissionsUpdated = (e) => {
+            if (e.detail?.user) {
+                setUser(e.detail.user);
+            } else {
+                setUser(getStoredUser());
+            }
+        };
+
         window.addEventListener("storage", handleStorageChange);
-        return () => window.removeEventListener("storage", handleStorageChange);
+        window.addEventListener(PERMISSIONS_UPDATED_EVENT, handlePermissionsUpdated);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener(PERMISSIONS_UPDATED_EVENT, handlePermissionsUpdated);
+        };
     }, []);
 
     const roleName = (user?.role_name || user?.role?.role_name || "").toLowerCase();
+    const isSystemAdmin = Boolean(user?.is_system_admin || roleName === "administrator");
     const permissions = Array.isArray(user?.permissions) ? user.permissions : [];
 
     /**
@@ -37,21 +53,21 @@ export function usePermission() {
     );
 
     /**
-     * Check if user has permission(s). Universal bypass for 'administrator'.
+     * Check if user has permission(s). Universal bypass for administrators.
      * @param {string|string[]} permission
      * @returns {boolean}
      */
     const can = useCallback(
         (permission) => {
             // Super-administrator bypass
-            if (hasRole("administrator")) return true;
+            if (isSystemAdmin) return true;
 
             if (Array.isArray(permission)) {
                 return permission.some((p) => permissions.includes(p));
             }
             return permissions.includes(permission);
         },
-        [hasRole, permissions]
+        [isSystemAdmin, permissions]
     );
 
     /**
@@ -61,11 +77,11 @@ export function usePermission() {
      */
     const canAll = useCallback(
         (requiredPermissions) => {
-            if (hasRole("administrator")) return true;
+            if (isSystemAdmin) return true;
             if (!Array.isArray(requiredPermissions)) return can(requiredPermissions);
             return requiredPermissions.every((p) => permissions.includes(p));
         },
-        [hasRole, permissions, can]
+        [isSystemAdmin, permissions, can]
     );
 
     /**
@@ -81,6 +97,9 @@ export function usePermission() {
             if (freshUser) {
                 setAuthSession(token, freshUser);
                 setUser(freshUser);
+                window.dispatchEvent(
+                    new CustomEvent(PERMISSIONS_UPDATED_EVENT, { detail: { user: freshUser } })
+                );
             }
             return freshUser;
         } catch (error) {

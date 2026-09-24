@@ -9,7 +9,6 @@ use App\Http\Resources\StudentResource;
 use App\Http\Resources\UserProfileResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class StudentDetailsResource extends BaseResource
 {

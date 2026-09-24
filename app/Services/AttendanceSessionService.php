@@ -153,8 +153,8 @@ class AttendanceSessionService
             throw ValidationException::withMessages([
                 'device_id' => [
                     "{$bleDevice->device_name} belongs to room ID "
-                        . "{$bleDevice->room_id}, but the schedule belongs "
-                        . "to room ID {$schedule->room_id}.",
+                        ."{$bleDevice->room_id}, but the schedule belongs "
+                        ."to room ID {$schedule->room_id}.",
                 ],
             ]);
         }
@@ -192,10 +192,8 @@ class AttendanceSessionService
 
         $session->refresh();
 
-
         return $session;
     }
-
 
     public function continueAttendanceSession(array $data)
     {
@@ -241,7 +239,6 @@ class AttendanceSessionService
             $bleDevice
         );
 
-
         return [
             'session' => $session,
             'ble_token' => $rawToken,
@@ -278,9 +275,9 @@ class AttendanceSessionService
         );
 
         $totalStudents = $students->count();
-        $presentCount = $students->filter(fn($u) => $u->attendanceRecords?->first()?->status === 'present')->count();
-        $lateCount = $students->filter(fn($u) => $u->attendanceRecords?->first()?->status === 'late')->count();
-        $absentCount = $students->filter(fn($u) => $u->attendanceRecords?->first()?->status === 'absent')->count();
+        $presentCount = $students->filter(fn ($u) => $u->attendanceRecords?->first()?->status === 'present')->count();
+        $lateCount = $students->filter(fn ($u) => $u->attendanceRecords?->first()?->status === 'late')->count();
+        $absentCount = $students->filter(fn ($u) => $u->attendanceRecords?->first()?->status === 'absent')->count();
         $unmarkedCount = $totalStudents - ($presentCount + $lateCount + $absentCount);
 
         return [

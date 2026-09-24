@@ -47,7 +47,7 @@ export default defineConfig({
     server: {
         host: "0.0.0.0",
         hmr: {
-            host: "192.168.1.13",
+            host: process.env.VITE_HMR_HOST || "192.168.1.10",
         },
     },
 });

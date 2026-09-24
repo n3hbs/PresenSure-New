@@ -52,7 +52,7 @@ class CreatePeriodRequest extends FormRequest
 
             $context = $this->periodValidationContext();
 
-            if (!$context) {
+            if (! $context) {
                 return;
             }
 
@@ -67,7 +67,7 @@ class CreatePeriodRequest extends FormRequest
     {
         $semester = Semester::where('semester_id', $this->input('semester_id'))->first();
 
-        if (!$semester) {
+        if (! $semester) {
             return null;
         }
 
@@ -122,7 +122,7 @@ class CreatePeriodRequest extends FormRequest
         $previousPeriodNames = array_slice(self::PERIOD_ORDER, 0, $context['periodIndex']);
 
         $missingPreviousPeriod = collect($previousPeriodNames)
-            ->first(fn (string $name) => !$context['existingPeriods']->contains('name', $name));
+            ->first(fn (string $name) => ! $context['existingPeriods']->contains('name', $name));
 
         if ($missingPreviousPeriod) {
             $validator->errors()->add(
@@ -156,7 +156,7 @@ class CreatePeriodRequest extends FormRequest
     {
         $adjacentIndex = $context['periodIndex'] + $direction;
 
-        if (!isset(self::PERIOD_ORDER[$adjacentIndex])) {
+        if (! isset(self::PERIOD_ORDER[$adjacentIndex])) {
             return null;
         }
 

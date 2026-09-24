@@ -107,24 +107,32 @@ class StudentService
     {
         return DB::transaction(function () use ($userId, $data) {
             $user = $this->userRepository->findByUserId($userId);
-            if (!$user) {
+            if (! $user) {
                 throw ValidationException::withMessages([
                     'user_id' => ['Student user account not found.'],
                 ]);
             }
 
             $userFields = [];
-            if (isset($data['first_name'])) $userFields['first_name'] = $data['first_name'];
-            if (isset($data['last_name'])) $userFields['last_name'] = ucfirst(strtolower($data['last_name']));
+            if (isset($data['first_name'])) {
+                $userFields['first_name'] = $data['first_name'];
+            }
+            if (isset($data['last_name'])) {
+                $userFields['last_name'] = ucfirst(strtolower($data['last_name']));
+            }
             if (array_key_exists('middle_initial', $data)) {
-                $userFields['middle_initial'] = !empty($data['middle_initial'])
+                $userFields['middle_initial'] = ! empty($data['middle_initial'])
                     ? strtoupper(preg_replace('/[^a-zA-Z]/', '', $data['middle_initial']))
                     : null;
             }
-            if (array_key_exists('suffix', $data)) $userFields['suffix'] = $data['suffix'];
-            if (isset($data['sex'])) $userFields['sex'] = $data['sex'];
+            if (array_key_exists('suffix', $data)) {
+                $userFields['suffix'] = $data['suffix'];
+            }
+            if (isset($data['sex'])) {
+                $userFields['sex'] = $data['sex'];
+            }
 
-            if (!empty($userFields)) {
+            if (! empty($userFields)) {
                 $this->userRepository->update($userId, $userFields);
             }
 
@@ -133,19 +141,27 @@ class StudentService
             }
 
             $semester = $this->semesterService->getActiveSemester();
-            if (!$semester) {
+            if (! $semester) {
                 throw ValidationException::withMessages([
                     'semester_id' => ['No active semester found.'],
                 ]);
             }
 
             $studentFields = [];
-            if (isset($data['program_id'])) $studentFields['program_id'] = $data['program_id'];
-            if (isset($data['year'])) $studentFields['year'] = $data['year'];
-            if (isset($data['block'])) $studentFields['block'] = $data['block'];
-            if (isset($data['status'])) $studentFields['status'] = $data['status'];
+            if (isset($data['program_id'])) {
+                $studentFields['program_id'] = $data['program_id'];
+            }
+            if (isset($data['year'])) {
+                $studentFields['year'] = $data['year'];
+            }
+            if (isset($data['block'])) {
+                $studentFields['block'] = $data['block'];
+            }
+            if (isset($data['status'])) {
+                $studentFields['status'] = $data['status'];
+            }
 
-            if (!empty($studentFields)) {
+            if (! empty($studentFields)) {
                 $this->studentRepository->updateStudent($userId, $semester->semester_id, $studentFields);
             }
 
@@ -178,21 +194,21 @@ class StudentService
     public function getArchivedStudents()
     {
         $semester = $this->semesterService->getActiveSemester();
+
         return $this->studentRepository->getArchivedStudents($semester?->semester_id);
     }
 
     public function restoreStudent(string $userId): bool
     {
         $semester = $this->semesterService->getActiveSemester();
+
         return $this->studentRepository->restoreStudent($userId, $semester?->semester_id);
     }
-
-
 
     public function checkStudent(string $user_id)
     {
         $semester = $this->semesterService->getActiveSemester();
-        if (!$semester) {
+        if (! $semester) {
             throw ValidationException::withMessages([
                 'semester_id' => [
                     'No active semester found.',
@@ -202,7 +218,7 @@ class StudentService
 
         $user = $this->userRepository->findByUserId($user_id);
 
-        if (!$user) {
+        if (! $user) {
             throw ValidationException::withMessages([
                 'user_id' => [
                     'Student account not found.',
@@ -251,6 +267,7 @@ class StudentService
                 try {
                     if ($this->studentRepository->isEnrolled($userId, $activeSemester->semester_id)) {
                         $skippedCount++;
+
                         continue;
                     }
 
@@ -279,7 +296,7 @@ class StudentService
 
                     $enrolledCount++;
                 } catch (\Throwable $e) {
-                    $errors[] = "Row " . ($index + 1) . " ({$userId}): " . $e->getMessage();
+                    $errors[] = 'Row '.($index + 1)." ({$userId}): ".$e->getMessage();
                 }
             }
 

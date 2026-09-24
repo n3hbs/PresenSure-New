@@ -7,5 +7,6 @@ namespace App\Repositories\Interfaces;
 interface PeriodRepositoryInterface
 {
     public function create(array $data);
+
     public function getActivePeriod();
 }

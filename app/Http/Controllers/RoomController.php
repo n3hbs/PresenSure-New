@@ -15,6 +15,7 @@ class RoomController extends Controller
     public function create(CreateRoomRequest $request)
     {
         $room = $this->roomService->create($request->validated());
+
         return $this->successResponse(
             new RoomResource($room),
             'Room Successfully Created',

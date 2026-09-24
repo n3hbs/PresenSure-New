@@ -2,22 +2,20 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\URL;
-
-use App\Repositories\UserRepository;
-use App\Repositories\StudentRepository;
-use App\Repositories\SemesterRepository;
-use App\Repositories\UserProfileRepository;
-
-use App\Repositories\Interfaces\UserRepositoryInterface;
-use App\Repositories\Interfaces\StudentRepositoryInterface;
-use App\Repositories\Interfaces\SemesterRepositoryInterface;
-use App\Repositories\Interfaces\UserProfileRepositoryInterface;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
+use App\Repositories\Interfaces\SemesterRepositoryInterface;
+use App\Repositories\Interfaces\StudentRepositoryInterface;
 use App\Repositories\Interfaces\UserPermissionRepositoryInterface;
+use App\Repositories\Interfaces\UserProfileRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\RoleRepository;
+use App\Repositories\SemesterRepository;
+use App\Repositories\StudentRepository;
 use App\Repositories\UserPermissionRepository;
+use App\Repositories\UserProfileRepository;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
@@ -77,6 +75,7 @@ class AppServiceProvider extends ServiceProvider
 
             if ($lastActivity && $lastActivity->lt(now()->subMinutes(60))) {
                 $accessToken->delete();
+
                 return false;
             }
 

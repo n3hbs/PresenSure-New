@@ -19,11 +19,11 @@ class ScheduleStudentListResource extends BaseResource
     public function data(Request $request): array
     {
         return [
-            'students' => $this->resource['students']->map(function ($user) use ($request) {
+            'students' => $this->resource['students']->map(function ($user) {
                 return [
-                    'user'    => new UserResource($user),
+                    'user' => new UserResource($user),
                     'student' => StudentResource::collection($user->student),
-                    'role'    => new RoleResource($user->roleAssignment?->role),
+                    'role' => new RoleResource($user->roleAssignment?->role),
                     'profile' => $user->userProfile ? new UserProfileResource($user->userProfile) : null,
                 ];
             }),

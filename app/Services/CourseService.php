@@ -10,10 +10,11 @@ class CourseService
         protected CourseRepository $courseRepository,
     ) {}
 
-    public function createCourse(array $data){
+    public function createCourse(array $data)
+    {
         $this->courseRepository->create([
             'subject_code' => $data['subject_code'],
-            'name' => $data['name']
+            'name' => $data['name'],
         ]);
     }
 

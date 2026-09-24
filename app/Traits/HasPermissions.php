@@ -2,16 +2,21 @@
 
 namespace App\Traits;
 
+use App\Models\Permission;
 use App\Models\Role;
+use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Support\Collection;
 
 /**
  * Trait HasPermissions
  *
- * @property-read \App\Models\UserRole|null $roleAssignment
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Permission> $directPermissions
+ * @property-read UserRole|null $roleAssignment
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Permission> $directPermissions
+ *
  * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany directPermissions()
- * @mixin \App\Models\User
+ *
+ * @mixin User
  */
 trait HasPermissions
 {
@@ -22,28 +27,31 @@ trait HasPermissions
      */
     public function hasRole(string|array $roles): bool
     {
-        $currentRole = strtolower($this->roleAssignment?->role?->role_name ?? '');
+        $role = $this->roleAssignment?->role;
 
-        if (empty($currentRole)) {
+        if (! $role) {
             return false;
         }
 
+        $currentRoleName = strtolower($role->role_name ?? '');
+
         if (is_array($roles)) {
             $normalized = array_map('strtolower', $roles);
-            return in_array($currentRole, $normalized, true);
+
+            return in_array($currentRoleName, $normalized, true);
         }
 
-        return $currentRole === strtolower($roles);
+        return $currentRoleName === strtolower($roles);
     }
 
     /**
      * Check if the user possesses the required permission(s).
-     * Super-administrators automatically bypass all permission checks.
+     * System administrators automatically bypass all permission checks.
      */
     public function hasPermission(string|array $permissions): bool
     {
-        // 1. Universal administrator bypass
-        if ($this->hasRole('administrator')) {
+        $role = $this->roleAssignment?->role;
+        if ($role && ($role->is_system_admin || strtolower($role->role_name ?? '') === 'administrator')) {
             return true;
         }
 
@@ -55,6 +63,7 @@ trait HasPermissions
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -62,7 +71,8 @@ trait HasPermissions
     }
 
     /**
-     * Get all effective permission names (Role permissions + Direct user permissions).
+     * Get all effective permission names (Role permissions + Direct user overrides).
+     * Direct Denies (is_granted = false) override Role Grants.
      */
     public function getPermissions(): Collection
     {
@@ -80,13 +90,20 @@ trait HasPermissions
                 : $role->permissions()->pluck('permission_name');
         }
 
-        // 2. Direct permissions assigned specifically to this user_id
-        $directPermissions = $this->relationLoaded('directPermissions')
-            ? $this->directPermissions->where('pivot.is_granted', true)->pluck('permission_name')
-            : $this->directPermissions()->wherePivot('is_granted', true)->pluck('permission_name');
+        // 2. Fetch all direct overrides (Grants and Denies)
+        $overrides = $this->relationLoaded('directPermissions')
+            ? $this->directPermissions
+            : $this->directPermissions()->get();
 
-        // 3. Combined unique permissions
-        $effective = $rolePermissions->merge($directPermissions)->unique()->values();
+        $directGrants = $overrides->where('pivot.is_granted', true)->pluck('permission_name');
+        $directDenies = $overrides->where('pivot.is_granted', false)->pluck('permission_name');
+
+        // 3. Combined Logic: (Role Permissions - Denies) + Grants
+        $effective = $rolePermissions
+            ->reject(fn ($name) => $directDenies->contains($name))
+            ->merge($directGrants)
+            ->unique()
+            ->values();
 
         return $this->cachedPermissions = $effective;
     }

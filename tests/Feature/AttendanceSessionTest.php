@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\BleDevice;
 use App\Models\Period;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Schedule;
 use App\Models\ScheduleDay;
@@ -289,6 +290,12 @@ class AttendanceSessionTest extends TestCase
             'role_name' => 'instructor',
             'description' => 'Creates and manages attendance sessions.',
         ]);
+
+        $permission = Permission::firstOrCreate(
+            ['permission_name' => 'attendance.sessions.manage'],
+            ['module_name' => 'attendance', 'description' => 'Creates and manages attendance sessions.']
+        );
+        $instructorRole->permissions()->attach($permission->permission_id);
 
         UserRole::create([
             'user_id' => $this->instructor->user_id,

@@ -15,7 +15,6 @@ class SemesterController extends Controller
     {
         $semester = $this->semesterService->getActiveSemester();
 
-
         return $this->successResponse(
             new SemesterResource($semester),
             'Active semester retrieved successfully.',

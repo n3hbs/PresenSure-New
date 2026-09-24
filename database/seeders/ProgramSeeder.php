@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Program;
+use Illuminate\Database\Seeder;
+
 class ProgramSeeder extends Seeder
 {
     /**
@@ -16,7 +16,7 @@ class ProgramSeeder extends Seeder
             'department_id' => 1,
             'program_code' => 'BSIT',
             'program_name' => 'Bachelor of Science in Information Technology',
-            'program_years' => 4
+            'program_years' => 4,
         ]);
     }
 }

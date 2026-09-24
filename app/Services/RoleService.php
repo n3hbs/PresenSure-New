@@ -31,12 +31,26 @@ class RoleService
         $permissions = $this->roleRepository->getAllPermissions();
 
         return $permissions->groupBy(function ($permission) {
+            if (! empty($permission->module_name)) {
+                return $permission->module_name;
+            }
+
             $name = strtolower($permission->permission_name);
-            if (str_starts_with($name, 'students.')) return 'students';
-            if (str_starts_with($name, 'instructors.')) return 'instructors';
-            if (str_starts_with($name, 'roles.')) return 'roles';
-            if (str_starts_with($name, 'attendance.')) return 'attendance';
-            if (str_starts_with($name, 'audit.')) return 'audit';
+            if (str_starts_with($name, 'students.')) {
+                return 'students';
+            }
+            if (str_starts_with($name, 'instructors.')) {
+                return 'instructors';
+            }
+            if (str_starts_with($name, 'roles.')) {
+                return 'roles';
+            }
+            if (str_starts_with($name, 'attendance.')) {
+                return 'attendance';
+            }
+            if (str_starts_with($name, 'audit.')) {
+                return 'audit';
+            }
             if (
                 str_starts_with($name, 'departments.') ||
                 str_starts_with($name, 'programs.') ||
@@ -50,6 +64,7 @@ class RoleService
             }
 
             $parts = explode('.', $permission->permission_name);
+
             return $parts[0] ?? 'general';
         });
     }

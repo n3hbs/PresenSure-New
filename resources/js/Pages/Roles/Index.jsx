@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { Head } from "@inertiajs/react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { Head, router } from "@inertiajs/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
     ArrowPathIcon,
@@ -14,6 +14,7 @@ import {
 
 import MainLayout from "@/Components/Layout/MainLayout";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
+import Modal from "@/Components/UI/Modal";
 import PermissionModuleCard from "@/Components/Roles/PermissionModuleCard";
 import UserPermissionsModal from "@/Components/Roles/UserPermissionsModal";
 import { MODULE_CONFIG } from "@/Components/Roles/roleConstants";
@@ -62,14 +63,25 @@ const FILTER_MODULE_TABS = [
 
 export default function RolesIndex() {
     const queryClient = useQueryClient();
-    const { refreshPermissions } = usePermission();
+    const { can, hasRole, refreshPermissions } = usePermission();
 
+    // Guard: ensure user has roles.view permission or administrator role
+    useEffect(() => {
+        if (!hasRole("administrator") && !can("roles.view")) {
+            notify.error("Access denied. You do not have permission to view roles.");
+            router.visit("/dashboard");
+        }
+    }, [hasRole, can]);
+
+    const hasInitializedRef = useRef(false);
     const [selectedRoleId, setSelectedRoleId] = useState(null);
     const [rolePermissionMap, setRolePermissionMap] = useState({});
     const [searchQuery, setSearchQuery] = useState("");
     const [activeModuleFilter, setActiveModuleFilter] = useState("all");
     const [isSaving, setIsSaving] = useState(false);
     const [isUserPermModalOpen, setIsUserPermModalOpen] = useState(false);
+    const [pendingRoleId, setPendingRoleId] = useState(null);
+    const [isConfirmSwitchOpen, setIsConfirmSwitchOpen] = useState(false);
 
     // 1. Fetch Roles with their assigned permissions
     const {
@@ -82,6 +94,7 @@ export default function RolesIndex() {
             const res = await api.get("/roles");
             return res.data?.data || [];
         },
+        refetchOnWindowFocus: false,
     });
 
     // 2. Fetch all available permissions grouped
@@ -94,11 +107,13 @@ export default function RolesIndex() {
             const res = await api.get("/permissions");
             return res.data?.data || {};
         },
+        refetchOnWindowFocus: false,
     });
 
-    // Initialize local state once roles load
+    // Initialize local state once roles load on initial mount
     useEffect(() => {
-        if (roles.length > 0) {
+        if (roles.length > 0 && !hasInitializedRef.current) {
+            hasInitializedRef.current = true;
             const initialMap = {};
             roles.forEach((r) => {
                 initialMap[r.role_id] = (r.permissions || []).map(
@@ -109,12 +124,12 @@ export default function RolesIndex() {
 
             if (selectedRoleId === null) {
                 const adminRole = roles.find(
-                    (r) => r.role_name.toLowerCase() === "administrator"
+                    (r) => r.is_system_admin || r.role_name.toLowerCase() === "administrator"
                 );
                 setSelectedRoleId(adminRole ? adminRole.role_id : roles[0].role_id);
             }
         }
-    }, [roles]);
+    }, [roles, selectedRoleId]);
 
     // Active selected role object
     const selectedRole = useMemo(() => {
@@ -156,8 +171,8 @@ export default function RolesIndex() {
         return list;
     }, [groupedPermissions]);
 
-    // Map module key according to prefix and search query
-    const categorizedModules = useMemo(() => {
+    // All system permissions categorized by module (unfiltered)
+    const allCategorizedModules = useMemo(() => {
         const modules = {
             students: [],
             instructors: [],
@@ -167,19 +182,13 @@ export default function RolesIndex() {
             audit: [],
         };
 
-        const searchLower = searchQuery.trim().toLowerCase();
-
         allPermissions.forEach((perm) => {
-            const matchesSearch =
-                !searchLower ||
-                perm.permission_name.toLowerCase().includes(searchLower) ||
-                (perm.description &&
-                    perm.description.toLowerCase().includes(searchLower));
-
-            if (!matchesSearch) return;
-
+            const moduleName = perm.module_name?.toLowerCase();
             const name = perm.permission_name.toLowerCase();
-            if (name.startsWith("students.")) {
+
+            if (moduleName && modules[moduleName]) {
+                modules[moduleName].push(perm);
+            } else if (name.startsWith("students.")) {
                 modules.students.push(perm);
             } else if (name.startsWith("instructors.")) {
                 modules.instructors.push(perm);
@@ -205,7 +214,34 @@ export default function RolesIndex() {
         });
 
         return modules;
-    }, [allPermissions, searchQuery]);
+    }, [allPermissions]);
+
+    // Categorized modules filtered by search query
+    const categorizedModules = useMemo(() => {
+        const searchLower = searchQuery.trim().toLowerCase();
+        if (!searchLower) return allCategorizedModules;
+
+        const filtered = {
+            students: [],
+            instructors: [],
+            academic: [],
+            attendance: [],
+            roles: [],
+            audit: [],
+        };
+
+        Object.entries(allCategorizedModules).forEach(([modKey, perms]) => {
+            filtered[modKey] = perms.filter((perm) => {
+                return (
+                    perm.permission_name.toLowerCase().includes(searchLower) ||
+                    (perm.description &&
+                        perm.description.toLowerCase().includes(searchLower))
+                );
+            });
+        });
+
+        return filtered;
+    }, [allCategorizedModules, searchQuery]);
 
     // Visible modules based on active filter tab
     const visibleModuleKeys = useMemo(() => {
@@ -247,19 +283,21 @@ export default function RolesIndex() {
     };
 
     // Toggle all permissions in a specific module
-    const handleToggleModule = (moduleKey, grantAll) => {
+    const handleToggleModule = (moduleKey, grantAll, isFiltered = false) => {
         if (!selectedRoleId) return;
-        const modulePerms = categorizedModules[moduleKey] || [];
-        const modulePermIds = modulePerms.map((p) => p.permission_id);
+        const targetPerms = isFiltered
+            ? (categorizedModules[moduleKey] || [])
+            : (allCategorizedModules[moduleKey] || []);
+        const targetPermIds = targetPerms.map((p) => p.permission_id);
 
         setRolePermissionMap((prev) => {
             const currentList = prev[selectedRoleId] || [];
             let updated;
             if (grantAll) {
-                const set = new Set([...currentList, ...modulePermIds]);
+                const set = new Set([...currentList, ...targetPermIds]);
                 updated = Array.from(set);
             } else {
-                const toRemove = new Set(modulePermIds);
+                const toRemove = new Set(targetPermIds);
                 updated = currentList.filter((id) => !toRemove.has(id));
             }
             return {
@@ -267,6 +305,48 @@ export default function RolesIndex() {
                 [selectedRoleId]: updated,
             };
         });
+    };
+
+    // Role switching with unsaved changes detection
+    const handleSelectRole = (newRoleId) => {
+        if (newRoleId === selectedRoleId) return;
+        if (isDirty) {
+            setPendingRoleId(newRoleId);
+            setIsConfirmSwitchOpen(true);
+        } else {
+            setSelectedRoleId(newRoleId);
+        }
+    };
+
+    const handleConfirmDiscardAndSwitch = () => {
+        if (selectedRoleId) {
+            setRolePermissionMap((prev) => ({
+                ...prev,
+                [selectedRoleId]: originalPermissionIds,
+            }));
+        }
+        setSelectedRoleId(pendingRoleId);
+        setPendingRoleId(null);
+        setIsConfirmSwitchOpen(false);
+        notify.info("Unsaved changes discarded.");
+    };
+
+    const handleConfirmSaveAndSwitch = async () => {
+        if (!selectedRoleId || isSaving) return;
+        setIsSaving(true);
+        try {
+            await savePermissionsMutation.mutateAsync({
+                roleId: selectedRoleId,
+                permissionIds: currentSelectedIds,
+            });
+            setSelectedRoleId(pendingRoleId);
+            setPendingRoleId(null);
+            setIsConfirmSwitchOpen(false);
+        } catch {
+            // Handled in onError
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     // Grant all system permissions to the current role
@@ -426,7 +506,7 @@ export default function RolesIndex() {
                                         return (
                                             <div
                                                 key={r.role_id}
-                                                onClick={() => setSelectedRoleId(r.role_id)}
+                                                onClick={() => handleSelectRole(r.role_id)}
                                                 className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer text-left relative overflow-hidden ${isSelected
                                                     ? "bg-blue-50/50 border-blue-500 ring-2 ring-blue-500/20 shadow-sm"
                                                     : "bg-white border-gray-200/80 hover:border-gray-300 hover:bg-gray-50/50"
@@ -556,8 +636,8 @@ export default function RolesIndex() {
                             </div>
                         </div>
 
-                        {/* SCROLLABLE PERMISSIONS MODULES LIST */}
-                        <div className="space-y-4 lg:max-h-[calc(100vh-25rem)] lg:overflow-y-auto pr-1">
+                        {/* PERMISSIONS MODULES LIST */}
+                        <div className="space-y-4">
                             {isLoadingPermissions ? (
                                 <div className="space-y-4">
                                     {[1, 2, 3].map((n) => (
@@ -601,6 +681,9 @@ export default function RolesIndex() {
                                             iconBg: "bg-blue-50 text-blue-600 border-blue-100",
                                         };
 
+                                    const totalModCount = (allCategorizedModules[moduleKey] || []).length;
+                                    const isModuleFiltered = Boolean(searchQuery.trim() || activeModuleFilter !== "all");
+
                                     return (
                                         <PermissionModuleCard
                                             key={moduleKey}
@@ -612,6 +695,8 @@ export default function RolesIndex() {
                                             badge={meta.badge}
                                             iconBg={meta.iconBg}
                                             permissions={perms}
+                                            totalModuleCount={totalModCount}
+                                            isFiltered={isModuleFiltered}
                                             selectedPermissionIds={currentSelectedIds}
                                             onTogglePermission={handleTogglePermission}
                                             onToggleAll={handleToggleModule}
@@ -674,6 +759,54 @@ export default function RolesIndex() {
                 isOpen={isUserPermModalOpen}
                 onClose={() => setIsUserPermModalOpen(false)}
             />
+
+            {/* Role Switch Unsaved Changes Confirmation Modal */}
+            <Modal
+                isOpen={isConfirmSwitchOpen}
+                onClose={() => {
+                    setIsConfirmSwitchOpen(false);
+                    setPendingRoleId(null);
+                }}
+                maxWidth="md"
+                title="Unsaved Changes"
+                description={`You have unsaved changes for ${selectedRole?.role_name || "this role"}.`}
+            >
+                <div className="p-6 space-y-4">
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                        Switching to another role without saving will discard your modifications to{" "}
+                        <strong className="text-gray-900 capitalize">
+                            {selectedRole?.role_name}
+                        </strong>.
+                    </p>
+                    <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsConfirmSwitchOpen(false);
+                                setPendingRoleId(null);
+                            }}
+                            className="px-3.5 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition"
+                        >
+                            Stay Here
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleConfirmDiscardAndSwitch}
+                            className="px-3.5 py-2 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition"
+                        >
+                            Discard & Switch
+                        </button>
+                        <button
+                            type="button"
+                            disabled={isSaving}
+                            onClick={handleConfirmSaveAndSwitch}
+                            className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition inline-flex items-center gap-1.5"
+                        >
+                            {isSaving ? "Saving..." : "Save & Switch"}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </>
     );
 }

@@ -47,7 +47,6 @@ class UpdateStudentRequest extends FormRequest
         ];
     }
 
-
     /**
      * Get custom attributes for validator errors.
      *

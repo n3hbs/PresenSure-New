@@ -12,14 +12,17 @@ class RoleSeeder extends Seeder
         $roles = [
             [
                 'role_name' => 'administrator',
+                'is_system_admin' => true,
                 'description' => 'Administrator account',
             ],
             [
                 'role_name' => 'instructor',
+                'is_system_admin' => false,
                 'description' => 'Instructor account',
             ],
             [
                 'role_name' => 'student',
+                'is_system_admin' => false,
                 'description' => 'Student account',
             ],
         ];
@@ -30,6 +33,7 @@ class RoleSeeder extends Seeder
                     'role_name' => $role['role_name'],
                 ],
                 [
+                    'is_system_admin' => $role['is_system_admin'],
                     'description' => $role['description'],
                 ]
             );

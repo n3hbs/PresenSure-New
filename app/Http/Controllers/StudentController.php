@@ -6,12 +6,13 @@ use App\Http\Requests\Student\CreateStudentRequest;
 use App\Http\Requests\Student\ExtractBulkStudentRequest;
 use App\Http\Requests\Student\StoreBulkStudentRequest;
 use App\Http\Requests\Student\UpdateStudentRequest;
-use App\Services\StudentService;
 use App\Http\Resources\Student\ActiveSemesterStudentListResource;
 use App\Http\Resources\Student\CheckStudentResource;
 use App\Http\Resources\Student\StudentDetailsResource;
 use App\Http\Resources\StudentResource;
+use App\Services\StudentService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class StudentController extends Controller
 {
@@ -33,6 +34,7 @@ class StudentController extends Controller
     public function getStudentByActiveSemester()
     {
         $students = $this->studentService->getStudentByActiveSemester();
+
         return ActiveSemesterStudentListResource::collection($students)
             ->message('Student List Retrieved Successfully.')
             ->status(200);
@@ -41,6 +43,7 @@ class StudentController extends Controller
     public function getStudentDetails(string $user_id)
     {
         $student = $this->studentService->getStudentDetails($user_id);
+
         return (new StudentDetailsResource($student))
             ->message('Student Details Retrieved Successfully.')
             ->status(200);
@@ -49,6 +52,7 @@ class StudentController extends Controller
     public function checkStudent(string $user_id)
     {
         $student = $this->studentService->checkStudent($user_id);
+
         return (new CheckStudentResource($student))
             ->message('Student Checked Successfully.')
             ->status(200);
@@ -58,6 +62,7 @@ class StudentController extends Controller
     {
         try {
             $data = $this->studentService->extractBulkStudents($request->file('file'));
+
             return $this->successResponse($data, 'Spreadsheet extracted successfully.');
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), 422);
@@ -68,6 +73,7 @@ class StudentController extends Controller
     {
         try {
             $result = $this->studentService->storeBulkStudents($request->validated('students'));
+
             return $this->successResponse($result, 'Bulk students registered successfully.', 201);
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), 422);
@@ -103,8 +109,8 @@ class StudentController extends Controller
     public function update(UpdateStudentRequest $request, ?string $user_id = null)
     {
         $userId = $user_id ?? $request->input('user_id');
-        if (!$userId) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+        if (! $userId) {
+            throw ValidationException::withMessages([
                 'user_id' => ['The student ID (user_id) is required.'],
             ]);
         }
@@ -142,6 +148,7 @@ class StudentController extends Controller
     public function getArchivedStudents()
     {
         $students = $this->studentService->getArchivedStudents();
+
         return ActiveSemesterStudentListResource::collection($students)
             ->message('Archived Students Retrieved Successfully.')
             ->status(200);
@@ -158,5 +165,3 @@ class StudentController extends Controller
         );
     }
 }
-
-

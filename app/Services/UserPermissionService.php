@@ -22,7 +22,7 @@ class UserPermissionService
         $role = $user->roleAssignment?->role;
 
         $rolePermissions = $role
-            ? $role->permissions->map(fn($p) => [
+            ? $role->permissions->map(fn ($p) => [
                 'permission_id' => $p->permission_id,
                 'permission_name' => $p->permission_name,
                 'description' => $p->description,
@@ -31,7 +31,7 @@ class UserPermissionService
 
         $directPermissions = $user->directPermissions
             ->where('pivot.is_granted', true)
-            ->map(fn($p) => [
+            ->map(fn ($p) => [
                 'permission_id' => $p->permission_id,
                 'permission_name' => $p->permission_name,
                 'description' => $p->description,
@@ -43,7 +43,8 @@ class UserPermissionService
 
         return [
             'user_id' => $user->user_id,
-            'full_name' => trim("{$user->first_name} {$user->middle_initial} {$user->last_name} {$user->suffix}"),
+            'full_name' => trim("{$user->first_name} ".($user->middle_initial ? "{$user->middle_initial} " : '')."{$user->last_name} {$user->suffix}"),
+            'profile_picture' => $user->userProfile?->profile_picture,
             'role_name' => $user->role_name,
             'inherited_permission_ids' => $inheritedIds,
             'direct_permission_ids' => $directIds,
@@ -59,6 +60,7 @@ class UserPermissionService
     {
         return DB::transaction(function () use ($userId, $permissionIds) {
             $this->userPermissionRepository->syncUserPermissions($userId, $permissionIds);
+
             return $this->getUserPermissionData($userId);
         });
     }
@@ -70,6 +72,7 @@ class UserPermissionService
     {
         return DB::transaction(function () use ($userId) {
             $this->userPermissionRepository->resetUserPermissions($userId);
+
             return $this->getUserPermissionData($userId);
         });
     }

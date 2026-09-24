@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('term', [
                 'First Semester',
                 'Second Semester',
-                'Summer'
+                'Summer',
             ]);
             $table->date('semester_start');
             $table->date('semester_end');

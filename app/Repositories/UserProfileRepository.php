@@ -2,9 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Repositories\Interfaces\UserProfileInterface;
-use App\Repositories\Interfaces\UserProfileRepositoryInterface;
 use App\Models\UserProfile;
+use App\Repositories\Interfaces\UserProfileRepositoryInterface;
 
 class UserProfileRepository implements UserProfileRepositoryInterface
 {

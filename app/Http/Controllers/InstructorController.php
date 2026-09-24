@@ -9,6 +9,7 @@ use App\Http\Resources\Instructor\InstructorListResource;
 use App\Http\Resources\InstructorResource;
 use App\Services\InstructorService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class InstructorController extends Controller
 {
@@ -19,6 +20,7 @@ class InstructorController extends Controller
     public function create(CreateInstructorRequest $request)
     {
         $instructor = $this->instructorService->createInstructor($request->validated());
+
         return $this->successResponse(
             new InstructorResource($instructor),
             'Instructor successfully registered.',
@@ -29,6 +31,7 @@ class InstructorController extends Controller
     public function getAll()
     {
         $instructors = $this->instructorService->getAllInstructors();
+
         return InstructorListResource::collection($instructors)
             ->message('Instructors successfully retrieved.')
             ->status(200);
@@ -37,6 +40,7 @@ class InstructorController extends Controller
     public function getInstructorDetails(string $user_id)
     {
         $instructor = $this->instructorService->getInstructorDetails($user_id);
+
         return (new InstructorDetailsResource($instructor))
             ->message('Instructor Details Retrieved Successfully.')
             ->status(200);
@@ -45,8 +49,8 @@ class InstructorController extends Controller
     public function update(UpdateInstructorRequest $request, ?string $user_id = null)
     {
         $userId = $user_id ?? $request->input('user_id');
-        if (!$userId) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+        if (! $userId) {
+            throw ValidationException::withMessages([
                 'user_id' => ['The instructor ID (user_id) is required.'],
             ]);
         }

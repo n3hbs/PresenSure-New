@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Period\CreatePeriodRequest;
-use App\Services\PeriodService;
 use App\Http\Resources\PeriodResource;
+use App\Services\PeriodService;
 
 class PeriodController extends Controller
 {
@@ -15,6 +15,7 @@ class PeriodController extends Controller
     public function create(CreatePeriodRequest $request)
     {
         $period = $this->periodService->create($request->validated());
+
         return $this->successResponse(
             new PeriodResource($period),
             'Period Successfully Created',
@@ -25,6 +26,7 @@ class PeriodController extends Controller
     public function getActivePeriod()
     {
         $period = $this->periodService->getActivePeriod();
+
         return $this->successResponse(
             new PeriodResource($period),
             'Active Period Retrieved Successfully.',

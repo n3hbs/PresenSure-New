@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\BleDetection;
 use App\Models\User;
 use App\Repositories\AttendanceRecordRepository;
 use App\Repositories\AttendanceSessionRepository;
@@ -27,7 +26,7 @@ class BleDetectionService
                 ],
             ]);
         }
-        if (!$attendanceSession->requires_periodic_verification) {
+        if (! $attendanceSession->requires_periodic_verification) {
             throw ValidationException::withMessages([
                 'schedule_id' => [
                     'BLE detection is not enabled for this schedule.',

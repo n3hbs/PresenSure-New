@@ -17,6 +17,7 @@ class UserPermissionResource extends JsonResource
         return [
             'user_id' => $this['user_id'],
             'full_name' => $this['full_name'],
+            'profile_picture' => $this['profile_picture'] ?? null,
             'role_name' => $this['role_name'],
             'inherited_permission_ids' => $this['inherited_permission_ids'],
             'direct_permission_ids' => $this['direct_permission_ids'],

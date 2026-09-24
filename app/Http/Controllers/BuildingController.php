@@ -15,6 +15,7 @@ class BuildingController extends Controller
     public function create(CreateBuildingRequest $request)
     {
         $building = $this->buildingService->create($request->validated());
+
         return $this->successResponse(
             new BuildingResource($building),
             'Building Successfully Created',

@@ -7,7 +7,6 @@ Route::get('/', function () {
     return Inertia::render('LandingPage/Index');
 })->name('index');
 
-
 Route::redirect('/signIn', '/signin');
 Route::redirect('/login', '/signin');
 
@@ -24,9 +23,7 @@ Route::get('/roles', function () {
     return Inertia::render('Roles/Index');
 })->name('roles.index');
 
-
-
-//student page
+// student page
 Route::get('/students', function () {
     return Inertia::render('Students/Index');
 })->name('students.index');
@@ -55,8 +52,7 @@ Route::get('/students/edit', function () {
     return Inertia::render('Students/Edit');
 })->name('students.edit');
 
-
-//instructor
+// instructor
 Route::get('/instructors', function () {
     return Inertia::render('Instructors/Index');
 })->name('instructors.index');
@@ -80,6 +76,3 @@ Route::get('/instructors/archives', function () {
 Route::get('/instructors/edit', function () {
     return Inertia::render('Instructors/Edit');
 })->name('instructors.edit');
-
-
-

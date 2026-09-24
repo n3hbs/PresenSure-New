@@ -22,7 +22,7 @@ import usePermission from "@/Hooks/usePermission";
 
 const mainLinks = [
     { label: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { label: "Role", href: "/roles", icon: IdentificationIcon, permission: "roles.view" },
+    { label: "Roles & Permissions", href: "/roles", icon: ShieldCheckIcon, permission: "roles.view" },
     { label: "Semesters", href: "/semesters", icon: CalendarDaysIcon, permission: "semesters.manage" },
     { label: "Department", href: "/departments", icon: BuildingOffice2Icon, permission: "departments.manage" },
     { label: "Programs", href: "/programs", icon: AcademicCapIcon, permission: "programs.manage" },
