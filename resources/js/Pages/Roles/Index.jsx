@@ -419,7 +419,7 @@ export default function RolesIndex() {
         <>
             <Head title="Roles & Permissions Management" />
 
-            <div className="space-y-6">
+            <div className="space-y-6 pb-16">
                 {/* 1. Header: Breadcrumbs & Action Bar matching Students / Instructors */}
                 <div className="flex min-h-10 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
@@ -469,7 +469,7 @@ export default function RolesIndex() {
                 {/* 3. Main 2-Column Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     {/* Left Column: Role Selector (4 columns) - Fixed/Sticky */}
-                    <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-4 lg:self-start">
+                    <div className="lg:col-span-4 space-y-4 lg:sticky lg:-top-6 lg:-mt-6 lg:pt-6 lg:self-start z-10">
                         <div className="rounded-xl bg-white p-5 shadow-sm shadow-blue-950/5 border border-gray-100">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
@@ -495,7 +495,7 @@ export default function RolesIndex() {
                                     No roles found in the database.
                                 </div>
                             ) : (
-                                <div className="space-y-3">
+                                <div className="space-y-3 max-h-[calc(100vh-12rem)] overflow-y-auto pr-1">
                                     {roles.map((r) => {
                                         const isSelected = r.role_id === selectedRoleId;
                                         const assignedPermCount = (
@@ -551,93 +551,95 @@ export default function RolesIndex() {
 
                     {/* Right Column: Permissions Panel (8 columns) */}
                     <div className="lg:col-span-8 flex flex-col space-y-4">
-                        {/* STICKY / FIXED SEARCH & ROLE CONTROL PANEL */}
-                        <div className="sticky top-4 z-10 rounded-xl bg-white p-5 shadow-sm shadow-blue-950/5 border border-gray-100 space-y-4">
-                            {/* Top row: Role title, unsaved badge, grant all, revoke all */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        {/* STICKY SEARCH & ROLE CONTROL PANEL */}
+                        <div className="sticky -top-6 -mt-6 pt-6 pb-2 z-20 bg-gray-100">
+                            <div className="rounded-xl bg-white p-5 shadow-sm shadow-blue-950/5 border border-gray-100 space-y-4">
+                                {/* Top row: Role title, unsaved badge, grant all, revoke all */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <div className="flex items-center gap-2.5">
+                                            <h2 className="text-lg font-bold text-gray-900 capitalize">
+                                                {selectedRole?.role_name || "Role"} Permissions
+                                            </h2>
+                                            {isDirty && (
+                                                <span className="text-[11px] bg-amber-50 text-amber-700 font-semibold px-2 py-0.5 rounded-full border border-amber-200">
+                                                    Unsaved Changes
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-0.5">
+                                            Toggle modular switches to grant or revoke system capabilities for this role.
+                                        </p>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={handleGrantAll}
+                                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition shadow-2xs"
+                                        >
+                                            Grant All
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleRevokeAll}
+                                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 text-red-700 bg-red-50 hover:bg-red-100 transition shadow-2xs"
+                                        >
+                                            Revoke All
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Search Input styled identically to Students & Instructors search box */}
                                 <div>
-                                    <div className="flex items-center gap-2.5">
-                                        <h2 className="text-lg font-bold text-gray-900 capitalize">
-                                            {selectedRole?.role_name || "Role"} Permissions
-                                        </h2>
-                                        {isDirty && (
-                                            <span className="text-[11px] bg-amber-50 text-amber-700 font-semibold px-2 py-0.5 rounded-full border border-amber-200">
-                                                Unsaved Changes
-                                            </span>
+                                    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                        Search Permissions
+                                    </label>
+                                    <div className="relative">
+                                        <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                                        <input
+                                            type="search"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Search permissions by name or keyword..."
+                                            className="h-11 w-full rounded-xl bg-gray-50 pl-11 pr-10 text-sm text-gray-700 shadow-sm shadow-blue-950/5 outline-none transition placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                        />
+                                        {searchQuery && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setSearchQuery("")}
+                                                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                            >
+                                                <XMarkIcon className="h-4 w-4" />
+                                            </button>
                                         )}
                                     </div>
-                                    <p className="text-xs text-gray-400 mt-0.5">
-                                        Toggle modular switches to grant or revoke system capabilities for this role.
-                                    </p>
                                 </div>
 
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={handleGrantAll}
-                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition shadow-2xs"
-                                    >
-                                        Grant All
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleRevokeAll}
-                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 text-red-700 bg-red-50 hover:bg-red-100 transition shadow-2xs"
-                                    >
-                                        Revoke All
-                                    </button>
+                                {/* Module Category Filter Pills */}
+                                <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-xs">
+                                    {FILTER_MODULE_TABS.map((tab) => {
+                                        const isActive = activeModuleFilter === tab.key;
+                                        return (
+                                            <button
+                                                key={tab.key}
+                                                type="button"
+                                                onClick={() => setActiveModuleFilter(tab.key)}
+                                                className={`px-3 py-1.5 rounded-lg font-medium transition whitespace-nowrap ${isActive
+                                                    ? "bg-blue-600 text-white shadow-2xs font-semibold"
+                                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-900 border border-transparent"
+                                                    }`}
+                                            >
+                                                {tab.label}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
-                            </div>
-
-                            {/* Search Input styled identically to Students & Instructors search box */}
-                            <div>
-                                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
-                                    Search Permissions
-                                </label>
-                                <div className="relative">
-                                    <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-                                    <input
-                                        type="search"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Search permissions by name or keyword..."
-                                        className="h-11 w-full rounded-xl bg-gray-50 pl-11 pr-10 text-sm text-gray-700 shadow-sm shadow-blue-950/5 outline-none transition placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                                    />
-                                    {searchQuery && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setSearchQuery("")}
-                                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                        >
-                                            <XMarkIcon className="h-4 w-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Module Category Filter Pills */}
-                            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-xs">
-                                {FILTER_MODULE_TABS.map((tab) => {
-                                    const isActive = activeModuleFilter === tab.key;
-                                    return (
-                                        <button
-                                            key={tab.key}
-                                            type="button"
-                                            onClick={() => setActiveModuleFilter(tab.key)}
-                                            className={`px-3 py-1.5 rounded-lg font-medium transition whitespace-nowrap ${isActive
-                                                ? "bg-blue-600 text-white shadow-2xs font-semibold"
-                                                : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-900 border border-transparent"
-                                                }`}
-                                        >
-                                            {tab.label}
-                                        </button>
-                                    );
-                                })}
                             </div>
                         </div>
 
                         {/* PERMISSIONS MODULES LIST */}
-                        <div className="space-y-4">
+                        <div className="space-y-4 relative z-0">
                             {isLoadingPermissions ? (
                                 <div className="space-y-4">
                                     {[1, 2, 3].map((n) => (

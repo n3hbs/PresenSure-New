@@ -9,4 +9,6 @@ interface PeriodRepositoryInterface
     public function create(array $data);
 
     public function getActivePeriod();
+
+    public function delete(int $id): bool;
 }

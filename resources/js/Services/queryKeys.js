@@ -7,4 +7,10 @@ export const activeSemesterStorageKey = "activeSemester";
 export const activePeriodQueryKey = ["period", "active", "v1"];
 export const activePeriodStorageKey = "activePeriod";
 export const departmentsQueryKey = ["departments"];
+export const archivedDepartmentsQueryKey = ["departments", "archived"];
 export const programsQueryKey = ["programs"];
+export const semestersQueryKey = ["semesters"];
+export const archivedSemestersQueryKey = ["semesters", "archived"];
+export const schoolYearsQueryKey = ["school-years"];
+
+

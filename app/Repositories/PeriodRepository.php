@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Models\Period;
 use App\Repositories\Interfaces\PeriodRepositoryInterface;
+use Illuminate\Validation\ValidationException;
 
 final class PeriodRepository implements PeriodRepositoryInterface
 {
@@ -31,5 +32,23 @@ final class PeriodRepository implements PeriodRepositoryInterface
         }
 
         return $period;
+    }
+
+    /**
+     * Delete a period ensuring no attendance records or sessions depend on it.
+     *
+     * @throws ValidationException
+     */
+    public function delete(int $id): bool
+    {
+        $period = Period::findOrFail($id);
+
+        if ($period->attendanceSessions()->exists()) {
+            throw ValidationException::withMessages([
+                'period' => ['Cannot delete this period because it has existing attendance sessions recorded.'],
+            ]);
+        }
+
+        return (bool) $period->delete();
     }
 }
