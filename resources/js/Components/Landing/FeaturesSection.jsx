@@ -1,46 +1,46 @@
 import {
-    Bluetooth,
-    ScanFace,
-    ShieldCheck,
-    BarChart3,
-    Clock,
-    Wifi,
-} from "lucide-react";
+    SignalIcon,
+    IdentificationIcon,
+    ShieldCheckIcon,
+    ChartBarIcon,
+    ClockIcon,
+    WifiIcon,
+} from "@heroicons/react/24/outline";
 import FeatureCard from "@/Components/Landing/FeatureCard";
 
 const FEATURES = [
     {
-        icon: Bluetooth,
+        icon: SignalIcon,
         title: "BLE Proximity Detection",
         description:
             "The student's registered device detects nearby Bluetooth Low Energy (BLE) beacons to automatically start the attendance process upon entering the classroom.",
     },
     {
-        icon: ScanFace,
+        icon: IdentificationIcon,
         title: "Face Recognition",
         description:
             "Real-time facial recognition verifies each student's identity, preventing proxy attendance and ensuring accurate records.",
     },
     {
-        icon: ShieldCheck,
+        icon: ShieldCheckIcon,
         title: "Automatic Attendance Grading",
         description:
             "Attendance grades are calculated automatically based on customizable rules such as attendance percentage, lateness, absences, and class requirements.",
     },
     {
-        icon: BarChart3,
+        icon: ChartBarIcon,
         title: "Live Dashboard",
         description:
             "Monitor attendance in real time, filter records by class or date, and generate detailed reports with just a few clicks.",
     },
     {
-        icon: Clock,
+        icon: ClockIcon,
         title: "Automatic Timestamps",
         description:
             "Time-in and time-out are recorded automatically the moment a student enters or leaves the classroom.",
     },
     {
-        icon: Wifi,
+        icon: WifiIcon,
         title: "Works Offline",
         description:
             "Attendance records are stored locally when the network is unavailable and automatically synchronized once the connection is restored.",
@@ -58,27 +58,28 @@ export default function FeaturesSection() {
 
             <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center mb-14">
-                    <p className="text-sm font-semibold text-blue-200 uppercase tracking-wider mb-3 transition-colors duration-300">
-                        Classroom Attendance System
+                <div className="text-center max-w-2xl mx-auto mb-16">
+                    <p className="text-sm font-semibold uppercase tracking-wider text-blue-200 dark:text-blue-300">
+                        Features
                     </p>
-
-                    <h2 className="text-3xl sm:text-4xl font-bold text-white transition-colors duration-300">
-                        Built for Modern Classroom Attendance
+                    <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-white">
+                        Built for Modern Educational Environments
                     </h2>
-
-                    <p className="mt-4 text-blue-100 max-w-2xl mx-auto transition-colors duration-300">
-                        Designed specifically for schools, PresenSure automates
-                        classroom attendance using Bluetooth Low Energy (BLE)
-                        technology and facial recognition to provide fast,
-                        secure, and accurate attendance tracking.
+                    <p className="mt-4 text-blue-50 dark:text-gray-300 text-lg">
+                        PresenSure provides enterprise-grade proximity and identity
+                        verification for classrooms, laboratories, and field sessions.
                     </p>
                 </div>
 
                 {/* Grid */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {FEATURES.map((feature) => (
-                        <FeatureCard key={feature.title} {...feature} />
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {FEATURES.map((feature, idx) => (
+                        <FeatureCard
+                            key={idx}
+                            icon={feature.icon}
+                            title={feature.title}
+                            description={feature.description}
+                        />
                     ))}
                 </div>
             </div>

@@ -1,4 +1,3 @@
-import { Fingerprint } from "lucide-react";
 import Logo from "@/assets/images/whiteLogo.webp";
 
 const LINKS = {
@@ -12,8 +11,6 @@ const LINKS = {
             name: "GitHub",
             href: "https://github.com/n3hbs/PresenSure-New.git",
         },
-        // Remove this if you don't have documentation yet
-        // { name: "Documentation", href: "#" },
     ],
     Contact: [
         {

@@ -1,6 +1,13 @@
 import React from 'react';
 import { useAttendanceMonitor } from '@/Hooks/useAttendanceMonitor';
-import { CheckCircle, Clock, Wifi, UserCheck, ShieldCheck, Radio, AlertCircle } from 'lucide-react';
+import {
+    CheckCircleIcon,
+    ClockIcon,
+    SignalIcon,
+    ShieldCheckIcon,
+    UserCircleIcon,
+    ExclamationCircleIcon,
+} from '@heroicons/react/24/outline';
 
 /**
  * Live Attendance Monitor Component
@@ -43,7 +50,7 @@ export default function LiveAttendanceMonitor({
                 <div>
                     <div className="flex items-center gap-2 mb-1">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 animate-pulse">
-                            <Radio className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                            <SignalIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                             {sessionStatus.toUpperCase()}
                         </span>
                         <span
@@ -52,7 +59,7 @@ export default function LiveAttendanceMonitor({
                                     : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
                                 }`}
                         >
-                            <Wifi className="w-3 h-3" />
+                            <SignalIcon className="w-3.5 h-3.5" />
                             {isConnected ? 'Reverb WebSocket Live' : 'Connecting...'}
                         </span>
                     </div>
@@ -93,7 +100,7 @@ export default function LiveAttendanceMonitor({
                             <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300">
                                 {lastCheckIn.face_verified && (
                                     <span className="flex items-center gap-0.5">
-                                        <ShieldCheck className="w-3.5 h-3.5" /> Face Verified
+                                        <ShieldCheckIcon className="w-3.5 h-3.5" /> Face Verified
                                     </span>
                                 )}
                                 {lastCheckIn.rssi && <span>RSSI: {lastCheckIn.rssi} dBm</span>}
@@ -109,13 +116,13 @@ export default function LiveAttendanceMonitor({
             {/* Live Student Feed */}
             <div className="p-6">
                 <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
-                    <UserCheck className="w-4 h-4 text-indigo-500" />
+                    <UserCircleIcon className="w-4 h-4 text-indigo-500" />
                     Live Verified Students ({allRecords.length})
                 </h3>
 
                 {allRecords.length === 0 ? (
                     <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                        <Radio className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2 animate-pulse" />
+                        <SignalIcon className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2 animate-pulse" />
                         <p className="text-sm text-slate-500 dark:text-slate-400">Waiting for students to check in...</p>
                         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                             WebSocket is active and listening for BLE & facial detections.
@@ -153,7 +160,7 @@ export default function LiveAttendanceMonitor({
                                 <div className="flex items-center gap-3">
                                     {record.face_verified && (
                                         <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                            <ShieldCheck className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                                            <ShieldCheckIcon className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                                             Face Match
                                         </span>
                                     )}
@@ -163,7 +170,7 @@ export default function LiveAttendanceMonitor({
                                         </span>
                                     )}
                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                        <CheckCircle className="w-3 h-3" />
+                                        <CheckCircleIcon className="w-3.5 h-3.5" />
                                         {record.status?.toUpperCase() || 'PRESENT'}
                                     </span>
                                     <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">

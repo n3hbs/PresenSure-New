@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X, Fingerprint } from "lucide-react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import DarkModeToggle from "@/Components/UI/DarkModeToggle";
 import Logo from "@/assets/images/whiteLogo.webp";
 import Button from "@/Components/UI/Button";
@@ -59,7 +59,7 @@ export default function Navbar() {
                         onClick={() => setMobileOpen(!mobileOpen)}
                         aria-label="Toggle menu"
                     >
-                        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+                        {mobileOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
                     </button>
                     <DarkModeToggle />
                 </div>

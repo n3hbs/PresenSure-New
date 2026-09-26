@@ -1,4 +1,3 @@
-import { ArrowRight } from "lucide-react";
 import Badge from "@/Components/UI/Badge";
 import Button from "@/Components/UI/Button";
 import ScanPulse from "@/Components/Landing/ScanPulse";
@@ -6,7 +5,6 @@ import ScanPulse from "@/Components/Landing/ScanPulse";
 export default function HeroSection() {
     return (
         <section className="relative min-h-screen flex items-center pt-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300">
-            {/* Background grid */}
             {/* Background grid - Light */}
             <div
                 className="absolute inset-0 opacity-100 dark:opacity-0 transition-opacity duration-300 pointer-events-none"

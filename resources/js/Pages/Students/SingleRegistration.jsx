@@ -20,6 +20,7 @@ import {
 } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
 import usePermission from "@/Hooks/usePermission";
+import useFetchData from "@/Hooks/useFetchData";
 
 const emptyForm = {
     user_id: "",
@@ -102,44 +103,15 @@ export default function SingleRegistration() {
         [currentStep, form, image, registrationType],
     );
 
-    const getAuthHeaders = () => {
-        const token = getAuthToken();
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    };
+    const { data: departments = [], isLoading: loadingDepartments } = useFetchData(
+        departmentsQueryKey,
+        "/departments"
+    );
 
-    const {
-        data: departments = [],
-        isLoading: loadingDepartments,
-        isError: departmentsError,
-        error: departmentRequestError,
-    } = useQuery({
-        queryKey: departmentsQueryKey,
-        enabled: Boolean(getAuthToken()),
-        queryFn: async () => {
-            const response = await api.get("/departments", {
-                headers: getAuthHeaders(),
-            });
-
-            return getCollection(response);
-        },
-    });
-
-    const {
-        data: programs = [],
-        isLoading: loadingPrograms,
-        isError: programsError,
-        error: programRequestError,
-    } = useQuery({
-        queryKey: programsQueryKey,
-        enabled: Boolean(getAuthToken()),
-        queryFn: async () => {
-            const response = await api.get("/programs", {
-                headers: getAuthHeaders(),
-            });
-
-            return getCollection(response);
-        },
-    });
+    const { data: programs = [], isLoading: loadingPrograms } = useFetchData(
+        programsQueryKey,
+        "/programs"
+    );
 
     const loadingOptions = loadingDepartments || loadingPrograms;
 

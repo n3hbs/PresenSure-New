@@ -9,3 +9,10 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# GitHub Linguist language detection overrides
+public/build/** linguist-vendored
+resources/css/** linguist-vendored
+resources/js/echo.js linguist-vendored
+resources/js/bootstrap.js linguist-vendored
+tests/** linguist-documentation

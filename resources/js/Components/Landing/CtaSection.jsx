@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Button from "@/Components/UI/Button";
 
 export default function CtaSection() {
@@ -14,8 +14,8 @@ export default function CtaSection() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <a href="/signin">
-                        <Button size="lg">
-                            Start for Free <ArrowRight size={18} />
+                        <Button size="lg" className="inline-flex items-center gap-2">
+                            Start for Free <ArrowRightIcon className="h-4.5 w-4.5" />
                         </Button>
                     </a>
                     <a href="#how-it-works">

@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import { IdCard, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import {
+    IdentificationIcon,
+    LockClosedIcon,
+    EyeIcon,
+    EyeSlashIcon,
+    ArrowLeftIcon,
+} from "@heroicons/react/24/outline";
 
 import Logo from "@/assets/images/MainLogo.webp";
 import Button from "@/Components/UI/Button";
@@ -148,10 +154,7 @@ export default function Login() {
                                 </label>
 
                                 <div className="relative group">
-                                    <IdCard
-                                        size={18}
-                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"
-                                    />
+                                    <IdentificationIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
 
                                     <input
                                         type="text"
@@ -178,10 +181,7 @@ export default function Login() {
                                 </label>
 
                                 <div className="relative group">
-                                    <Lock
-                                        size={18}
-                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"
-                                    />
+                                    <LockClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
 
                                     <input
                                         type={
@@ -209,9 +209,9 @@ export default function Login() {
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition"
                                     >
                                         {showPassword ? (
-                                            <EyeOff size={20} />
+                                            <EyeSlashIcon className="h-5 w-5" />
                                         ) : (
-                                            <Eye size={20} />
+                                            <EyeIcon className="h-5 w-5" />
                                         )}
                                     </button>
                                 </div>
