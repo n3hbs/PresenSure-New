@@ -136,6 +136,51 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('attendance-session/continue', [AttendanceSessionController::class, 'continueAttendance']);
     });
 
+    // --- SEMESTER MANAGEMENT ---
+    Route::middleware('permission:semesters.manage')->group(function () {
+        Route::prefix('v1')->group(function () {
+            Route::get('semesters', [SemesterController::class, 'index']);
+            Route::post('semesters', [SemesterController::class, 'store']);
+            Route::get('semesters/school-years', [SemesterController::class, 'schoolYears']);
+            Route::get('semesters/archives', [SemesterController::class, 'archives']);
+            Route::get('semesters/{semester_id}', [SemesterController::class, 'show']);
+            Route::put('semesters/{semester_id}', [SemesterController::class, 'update']);
+            Route::delete('semesters/{semester_id}', [SemesterController::class, 'destroy']);
+            Route::post('semesters/{semester_id}/restore', [SemesterController::class, 'restore']);
+            Route::patch('semesters/{semester_id}/activate', [SemesterController::class, 'setActive']);
+        });
+
+        Route::get('semesters', [SemesterController::class, 'index']);
+        Route::post('semesters', [SemesterController::class, 'store']);
+        Route::get('semesters/school-years', [SemesterController::class, 'schoolYears']);
+        Route::get('semesters/archives', [SemesterController::class, 'archives']);
+        Route::get('semesters/{semester_id}', [SemesterController::class, 'show']);
+        Route::put('semesters/{semester_id}', [SemesterController::class, 'update']);
+        Route::delete('semesters/{semester_id}', [SemesterController::class, 'destroy']);
+        Route::post('semesters/{semester_id}/restore', [SemesterController::class, 'restore']);
+        Route::patch('semesters/{semester_id}/activate', [SemesterController::class, 'setActive']);
+        Route::delete('period/{period_id}', [PeriodController::class, 'destroy']);
+    });
+
+    // --- DEPARTMENT MANAGEMENT ---
+    Route::middleware('permission:departments.manage')->group(function () {
+        Route::prefix('v1')->group(function () {
+            Route::get('departments', [DepartmentController::class, 'index']);
+            Route::post('departments', [DepartmentController::class, 'store']);
+            Route::get('departments/archives', [DepartmentController::class, 'archives']);
+            Route::get('departments/{department_id}', [DepartmentController::class, 'show']);
+            Route::put('departments/{department_id}', [DepartmentController::class, 'update']);
+            Route::delete('departments/{department_id}', [DepartmentController::class, 'destroy']);
+            Route::post('departments/{department_id}/restore', [DepartmentController::class, 'restore']);
+        });
+
+        Route::get('departments/archives', [DepartmentController::class, 'archives']);
+        Route::get('departments/{department_id}', [DepartmentController::class, 'show']);
+        Route::put('departments/{department_id}', [DepartmentController::class, 'update']);
+        Route::delete('departments/{department_id}', [DepartmentController::class, 'destroy']);
+        Route::post('departments/{department_id}/restore', [DepartmentController::class, 'restore']);
+    });
+
     // =========================================================================
     // TIER 3: COMMON & GENERAL AUTHENTICATED ENDPOINTS
     // Read-only catalog lookups, personal schedules, and check-ins for all active users.

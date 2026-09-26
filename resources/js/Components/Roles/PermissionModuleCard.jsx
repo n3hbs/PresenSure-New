@@ -35,7 +35,7 @@ export default function PermissionModuleCard({
     return (
         <div className="rounded-xl bg-white shadow-sm shadow-blue-950/5 border border-gray-100 overflow-hidden transition-all duration-200">
             {/* Header */}
-            <div className="px-5 py-4 bg-gray-50/60 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="px-5 py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                     {Icon && (
                         <div
@@ -45,7 +45,7 @@ export default function PermissionModuleCard({
                         </div>
                     )}
                     <div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="text-base font-bold text-gray-900">
                                 {title}
                             </h3>
@@ -118,11 +118,11 @@ export default function PermissionModuleCard({
                                     <span className="text-sm font-semibold text-gray-900 leading-tight">
                                         {getPermissionTitle(perm.permission_name)}
                                     </span>
-                                    <code className="text-[10px] font-mono text-gray-500 bg-gray-100 border border-gray-200/80 px-1.5 py-0.5 rounded">
+                                    <code className="text-[10px] font-mono text-gray-500 bg-gray-100 border border-gray-200/80 px-1.5 py-0.5 rounded break-all">
                                         {perm.permission_name}
                                     </code>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-0.5 leading-normal">
+                                <p className="text-xs text-gray-500 mt-0.5 leading-normal break-words">
                                     {perm.description || "No description provided."}
                                 </p>
                             </div>

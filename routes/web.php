@@ -76,3 +76,53 @@ Route::get('/instructors/archives', function () {
 Route::get('/instructors/edit', function () {
     return Inertia::render('Instructors/Edit');
 })->name('instructors.edit');
+
+// semesters page
+Route::get('/semesters', function () {
+    return Inertia::render('Semesters/Index');
+})->name('semesters.index');
+
+Route::get('/semesters/create', function () {
+    return Inertia::render('Semesters/Create');
+})->name('semesters.create');
+
+Route::get('/semesters/edit', function () {
+    return Inertia::render('Semesters/Edit');
+})->name('semesters.edit');
+
+Route::get('/semesters/archives', function () {
+    return Inertia::render('Semesters/Archives');
+})->name('semesters.archives');
+
+Route::get('/semesters/semester-details', function () {
+    return Inertia::render('Semesters/SemesterDetails');
+})->name('semesters.semester-details');
+
+Route::get('/semesters/{semester}/edit', function ($semester) {
+    return Inertia::render('Semesters/Edit', ['semesterId' => $semester]);
+})->name('semesters.edit.param');
+
+// departments page
+Route::get('/departments', function () {
+    return Inertia::render('Departments/Index');
+})->name('departments.index');
+
+Route::get('/departments/create', function () {
+    return Inertia::render('Departments/Create');
+})->name('departments.create');
+
+Route::get('/departments/edit', function () {
+    return Inertia::render('Departments/Edit');
+})->name('departments.edit');
+
+Route::get('/departments/department-details', function () {
+    return Inertia::render('Departments/DepartmentDetails');
+})->name('departments.department-details');
+
+Route::get('/departments/archives', function () {
+    return Inertia::render('Departments/Archives');
+})->name('departments.archives');
+
+Route::get('/departments/{department}/edit', function ($department) {
+    return Inertia::render('Departments/Edit', ['departmentId' => $department]);
+})->name('departments.edit.param');

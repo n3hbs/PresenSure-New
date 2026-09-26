@@ -700,7 +700,14 @@ export default function SingleRegistration() {
                     </button>
                 </div>
 
-                <StudentRegistrationStepper currentStep={currentStep} />
+                <StudentRegistrationStepper
+                    currentStep={currentStep}
+                    onStepClick={(stepNumber) => {
+                        if (stepNumber < currentStep) {
+                            setCurrentStep(stepNumber);
+                        }
+                    }}
+                />
 
                 {currentStep === 1 && (
                     <StudentTypeStep

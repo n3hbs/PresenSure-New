@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { isValidElement, useEffect } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function Modal({
@@ -19,6 +19,16 @@ export default function Modal({
     backdropClassName = "",
 }) {
     const isVisible = isOpen ?? open ?? false;
+
+    const renderIcon = () => {
+        if (!icon) return null;
+        if (isValidElement(icon)) return icon;
+        if (typeof icon === "function" || typeof icon === "object") {
+            const IconComp = icon;
+            return <IconComp className="h-6 w-6" />;
+        }
+        return icon;
+    };
 
     useEffect(() => {
         if (!isVisible) return;
@@ -73,7 +83,7 @@ export default function Modal({
                                 <div
                                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg}`}
                                 >
-                                    {icon}
+                                    {renderIcon()}
                                 </div>
                             )}
                             {title && (

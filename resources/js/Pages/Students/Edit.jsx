@@ -486,6 +486,11 @@ export default function Edit() {
                         <StudentRegistrationStepper
                             currentStep={currentStep}
                             steps={editSteps}
+                            onStepClick={(stepNumber) => {
+                                if (stepNumber < currentStep) {
+                                    setCurrentStep(stepNumber);
+                                }
+                            }}
                         />
 
                         {currentStep === 1 && (

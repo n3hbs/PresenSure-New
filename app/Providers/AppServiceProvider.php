@@ -2,12 +2,16 @@
 
 namespace App\Providers;
 
+use App\Repositories\DepartmentRepository;
+use App\Repositories\Interfaces\DepartmentRepositoryInterface;
+use App\Repositories\Interfaces\PeriodRepositoryInterface;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Repositories\Interfaces\SemesterRepositoryInterface;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
 use App\Repositories\Interfaces\UserPermissionRepositoryInterface;
 use App\Repositories\Interfaces\UserProfileRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\PeriodRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\SemesterRepository;
 use App\Repositories\StudentRepository;
@@ -41,6 +45,11 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
+            PeriodRepositoryInterface::class,
+            PeriodRepository::class
+        );
+
+        $this->app->bind(
             UserProfileRepositoryInterface::class,
             UserProfileRepository::class
         );
@@ -53,6 +62,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             UserPermissionRepositoryInterface::class,
             UserPermissionRepository::class
+        );
+
+        $this->app->bind(
+            DepartmentRepositoryInterface::class,
+            DepartmentRepository::class
         );
     }
 

@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Period\CreatePeriodRequest;
 use App\Http\Resources\PeriodResource;
 use App\Services\PeriodService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class PeriodController extends Controller
 {
@@ -12,7 +16,7 @@ class PeriodController extends Controller
         protected PeriodService $periodService
     ) {}
 
-    public function create(CreatePeriodRequest $request)
+    public function create(CreatePeriodRequest $request): JsonResponse
     {
         $period = $this->periodService->create($request->validated());
 
@@ -23,7 +27,7 @@ class PeriodController extends Controller
         );
     }
 
-    public function getActivePeriod()
+    public function getActivePeriod(): JsonResponse
     {
         $period = $this->periodService->getActivePeriod();
 
@@ -32,5 +36,12 @@ class PeriodController extends Controller
             'Active Period Retrieved Successfully.',
             200
         );
+    }
+
+    public function destroy(int $period_id): Response
+    {
+        $this->periodService->deletePeriod($period_id);
+
+        return response()->noContent();
     }
 }
