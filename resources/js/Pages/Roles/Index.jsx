@@ -17,39 +17,12 @@ import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import Modal from "@/Components/UI/Modal";
 import PermissionModuleCard from "@/Components/Roles/PermissionModuleCard";
 import UserPermissionsModal from "@/Components/Roles/UserPermissionsModal";
+import StatCard from "@/Components/UI/StatCard";
 import { MODULE_CONFIG } from "@/Components/Roles/roleConstants";
 import api from "@/Services/api";
 import { notify } from "@/Services/toast";
 import usePermission from "@/Hooks/usePermission";
-
-// Reusable StatCard identical to Students & Instructors pages with balanced palette
-const StatCard = ({ icon: Icon, label, value, tone = "blue" }) => {
-    const tones = {
-        blue: "bg-blue-50 text-blue-700",
-        green: "bg-emerald-50 text-emerald-700",
-        gray: "bg-gray-100 text-gray-600",
-    };
-
-    return (
-        <div className="rounded-xl bg-white p-5 shadow-sm shadow-blue-950/5 border border-gray-100">
-            <div className="flex items-center gap-4">
-                <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-xl ${tones[tone] || tones.blue}`}
-                >
-                    <Icon className="h-6 w-6" />
-                </div>
-                <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                        {label}
-                    </p>
-                    <p className="mt-1 text-2xl font-bold text-gray-900">
-                        {value}
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-};
+import useFetchData from "@/Hooks/useFetchData";
 
 const FILTER_MODULE_TABS = [
     { key: "all", label: "All Modules" },
@@ -88,27 +61,13 @@ export default function RolesIndex() {
         data: roles = [],
         isLoading: isLoadingRoles,
         refetch: refetchRoles,
-    } = useQuery({
-        queryKey: ["roles"],
-        queryFn: async () => {
-            const res = await api.get("/roles");
-            return res.data?.data || [];
-        },
-        refetchOnWindowFocus: false,
-    });
+    } = useFetchData(["roles"], "/roles", { refetchOnWindowFocus: false });
 
     // 2. Fetch all available permissions grouped
     const {
         data: groupedPermissions = {},
         isLoading: isLoadingPermissions,
-    } = useQuery({
-        queryKey: ["permissions"],
-        queryFn: async () => {
-            const res = await api.get("/permissions");
-            return res.data?.data || {};
-        },
-        refetchOnWindowFocus: false,
-    });
+    } = useFetchData(["permissions"], "/permissions", { refetchOnWindowFocus: false });
 
     // Initialize local state once roles load on initial mount
     useEffect(() => {

@@ -14,6 +14,8 @@ import MainLayout from "@/Components/Layout/MainLayout";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import DataTable from "@/Components/UI/DataTable";
 import SelectDropdown from "@/Components/UI/SelectDropdown";
+import StatCard from "@/Components/UI/StatCard";
+import { formatDate } from "@/Utils/date";
 import api from "@/Services/api";
 import { getAuthToken } from "@/Services/auth";
 import {
@@ -43,50 +45,6 @@ const getCollection = (response) => {
     if (Array.isArray(response?.data?.data)) return response.data.data;
     if (Array.isArray(response?.data)) return response.data;
     return [];
-};
-
-const formatDate = (dateStr) => {
-    if (!dateStr) return "—";
-    try {
-        if (typeof dateStr === "string" && /^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
-            const [y, m, d] = dateStr.slice(0, 10).split("-").map(Number);
-            const date = new Date(y, m - 1, d);
-            return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-        }
-        const date = new Date(dateStr);
-        if (isNaN(date.getTime())) return dateStr;
-        return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    } catch {
-        return dateStr;
-    }
-};
-
-const StatCard = ({ icon: Icon, label, value, tone = "blue" }) => {
-    const tones = {
-        blue: "bg-blue-50 text-blue-700",
-        green: "bg-green-50 text-green-700",
-        gray: "bg-gray-100 text-gray-600",
-    };
-
-    return (
-        <div className="rounded-lg bg-white p-5 shadow-sm shadow-blue-950/5">
-            <div className="flex items-center gap-4">
-                <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-xl ${tones[tone] || tones.blue}`}
-                >
-                    <Icon className="h-6 w-6" />
-                </div>
-                <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                        {label}
-                    </p>
-                    <p className="mt-1 text-2xl font-bold text-gray-900">
-                        {value}
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
 };
 
 export default function Semesters() {

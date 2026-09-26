@@ -1,5 +1,5 @@
 import { useTheme } from "@/Context/ThemeContext";
-import { Moon, Sun } from "lucide-react";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 export default function DarkModeToggle({ className = "" }) {
     const { dark, setDark } = useTheme();
@@ -20,7 +20,7 @@ export default function DarkModeToggle({ className = "" }) {
             `}
         >
             <span className="transition-transform duration-300 transform dark:-rotate-90">
-                {dark ? <Sun size={18} /> : <Moon size={18} />}
+                {dark ? <SunIcon className="h-4.5 w-4.5" /> : <MoonIcon className="h-4.5 w-4.5" />}
             </span>
         </button>
     );

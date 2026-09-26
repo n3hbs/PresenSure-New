@@ -16,6 +16,7 @@ import Badge from "@/Components/UI/Badge";
 import Breadcrumbs from "@/Components/UI/Breadcrumbs";
 import DataTable from "@/Components/UI/DataTable";
 import SelectDropdown from "@/Components/UI/SelectDropdown";
+import StatCard from "@/Components/UI/StatCard";
 import api from "@/Services/api";
 import { getAuthToken } from "@/Services/auth";
 import { activeStudentsQueryKey } from "@/Services/queryKeys";
@@ -126,34 +127,6 @@ const makeOptions = (items) => [
         })
         .map((item) => ({ label: item, value: item })),
 ];
-
-const StatCard = ({ icon: Icon, label, value, tone = "blue" }) => {
-    const tones = {
-        blue: "bg-blue-50 text-blue-700",
-        green: "bg-green-50 text-green-700",
-        gray: "bg-gray-100 text-gray-600",
-    };
-
-    return (
-        <div className="rounded-lg bg-white p-5 shadow-sm shadow-blue-950/5">
-            <div className="flex items-center gap-4">
-                <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-xl ${tones[tone]}`}
-                >
-                    <Icon className="h-6 w-6" />
-                </div>
-                <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                        {label}
-                    </p>
-                    <p className="mt-1 text-2xl font-bold text-gray-900">
-                        {value}
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 export default function Students() {
     const { can } = usePermission();

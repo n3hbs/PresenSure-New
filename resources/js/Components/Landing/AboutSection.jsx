@@ -1,20 +1,20 @@
-import { ShieldCheck, Clock, Smartphone } from "lucide-react";
+import { ShieldCheckIcon, ClockIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
 
 const HIGHLIGHTS = [
     {
-        icon: Clock,
+        icon: ClockIcon,
         title: "Save Class Time",
         description:
             "Automates attendance recording, allowing instructors to spend more time teaching instead of conducting manual roll calls.",
     },
     {
-        icon: ShieldCheck,
+        icon: ShieldCheckIcon,
         title: "Prevent Attendance Fraud",
         description:
             "Combines Bluetooth Low Energy (BLE) proximity detection and facial recognition to verify both presence and identity.",
     },
     {
-        icon: Smartphone,
+        icon: DevicePhoneMobileIcon,
         title: "Smart & Reliable",
         description:
             "Designed for classroom and outdoor attendance monitoring with accurate, secure, and efficient record keeping.",
@@ -70,7 +70,7 @@ export default function AboutSection() {
                                     className="flex gap-4 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                                 >
                                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 transition-colors duration-300">
-                                        <Icon size={22} />
+                                        <Icon className="h-6 w-6" />
                                     </div>
 
                                     <div>

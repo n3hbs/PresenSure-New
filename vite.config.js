@@ -44,6 +44,30 @@ export default defineConfig({
         react(),
         tailwindcss(),
     ],
+    build: {
+        chunkSizeWarningLimit: 600,
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+                        return "vendor-react";
+                    }
+                    if (id.includes("node_modules/@inertiajs")) {
+                        return "vendor-inertia";
+                    }
+                    if (id.includes("node_modules/@tanstack/react-query")) {
+                        return "vendor-query";
+                    }
+                    if (id.includes("node_modules/@heroicons/react")) {
+                        return "vendor-icons";
+                    }
+                    if (id.includes("node_modules/laravel-echo") || id.includes("node_modules/pusher-js")) {
+                        return "vendor-echo";
+                    }
+                },
+            },
+        },
+    },
     server: {
         host: "0.0.0.0",
         hmr: {

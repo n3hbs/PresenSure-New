@@ -20,6 +20,7 @@ import {
 } from "@/Services/queryKeys";
 import { notify } from "@/Services/toast";
 import usePermission from "@/Hooks/usePermission";
+import useFetchData from "@/Hooks/useFetchData";
 
 const yearOptions = [
     { label: "First Year", value: "First Year" },
@@ -90,52 +91,27 @@ export default function Edit() {
         setToast({ type, title, message, id: Date.now() });
     }, []);
 
-    const getAuthHeaders = () => {
-        const token = getAuthToken();
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    };
-
     // Fetch student details
     const {
         data: studentData,
         isLoading: loadingStudent,
         isError: studentError,
         error: studentRequestError,
-    } = useQuery({
-        queryKey: ["student-details", userId],
-        enabled: Boolean(userId) && Boolean(getAuthToken()),
-        queryFn: async () => {
-            const token = getAuthToken();
-            const response = await api.get(`student/${userId}`, {
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
-            });
-            return response.data.data;
-        },
+    } = useFetchData(["student-details", userId], () => `/student/${userId}`, {
+        enabled: Boolean(userId),
     });
 
     // Load departments
-    const { data: departments = [], isLoading: loadingDepartments } = useQuery({
-        queryKey: departmentsQueryKey,
-        enabled: Boolean(getAuthToken()),
-        queryFn: async () => {
-            const response = await api.get("/departments", {
-                headers: getAuthHeaders(),
-            });
-            return getCollection(response);
-        },
-    });
+    const { data: departments = [], isLoading: loadingDepartments } = useFetchData(
+        departmentsQueryKey,
+        "/departments"
+    );
 
     // Load programs
-    const { data: programs = [], isLoading: loadingPrograms } = useQuery({
-        queryKey: programsQueryKey,
-        enabled: Boolean(getAuthToken()),
-        queryFn: async () => {
-            const response = await api.get("/programs", {
-                headers: getAuthHeaders(),
-            });
-            return getCollection(response);
-        },
-    });
+    const { data: programs = [], isLoading: loadingPrograms } = useFetchData(
+        programsQueryKey,
+        "/programs"
+    );
 
     const loadingOptions = loadingDepartments || loadingPrograms;
 
