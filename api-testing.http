@@ -1,0 +1,54 @@
+### =========================================================================
+### PresenSure REST Client Testing Script (Antigravity IDE)
+### =========================================================================
+### Usage:
+### 1. Ensure backend is running: php artisan serve
+### 2. Click "Send Request" above the "# @name login" block below.
+###    The auth token is automatically extracted and injected into the subsequent requests.
+### 3. Click "Send Request" above any request block to execute it.
+### =========================================================================
+
+### Global Variables
+@baseUrl = http://127.0.0.1:8000/api
+@contentType = application/json
+@userId = 2000-0001
+@password = password
+@departmentId = 1
+
+### -------------------------------------------------------------------------
+### 1. Authenticate (Admin User)
+### -------------------------------------------------------------------------
+# @name login
+POST {{baseUrl}}/user/signin HTTP/1.1
+Content-Type: {{contentType}}
+Accept: application/json
+
+{
+    "user_id": "{{userId}}",
+    "password": "{{password}}"
+}
+
+### Dynamic Token Assignment
+@authToken = {{login.response.body.data.token}}
+
+### -------------------------------------------------------------------------
+### 2. View Department Details (with Program & Department Student Counts)
+### Department 1 is CCS (College of Computer Studies) holding BSIT (18 students)
+### -------------------------------------------------------------------------
+GET {{baseUrl}}/v1/departments/{{departmentId}} HTTP/1.1
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### -------------------------------------------------------------------------
+### 3. List All Programs (shows students_count for each program)
+### -------------------------------------------------------------------------
+GET {{baseUrl}}/programs HTTP/1.1
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### -------------------------------------------------------------------------
+### 4. List All Active Departments (shows programs and student counts)
+### -------------------------------------------------------------------------
+GET {{baseUrl}}/v1/departments HTTP/1.1
+Authorization: Bearer {{authToken}}
+Accept: application/json

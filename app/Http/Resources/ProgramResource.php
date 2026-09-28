@@ -19,6 +19,12 @@ class ProgramResource extends JsonResource
             'program_code' => $this->program_code,
             'program_name' => $this->program_name,
             'program_years' => $this->program_years,
+            'students_count' => (int) (
+                $this->students_count
+                ?? $this->student_count
+                ?? ($this->relationLoaded('students') ? $this->students->count() : null)
+                ?? ($this->relationLoaded('student') ? $this->student->count() : 0)
+            ),
 
             'department' => new DepartmentResource(
                 $this->whenLoaded('department')

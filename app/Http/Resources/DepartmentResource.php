@@ -23,7 +23,7 @@ class DepartmentResource extends JsonResource
             'description' => $this->description,
             'programs_count' => $this->programs_count ?? ($this->relationLoaded('programs') ? $this->programs->count() : 0),
             'instructors_count' => $this->instructors_count ?? ($this->relationLoaded('instructors') ? $this->instructors->count() : 0),
-            'students_count' => $this->students_count ?? 0,
+            'students_count' => (int) ($this->students_count ?? 0),
             'programs' => ProgramResource::collection($this->whenLoaded('programs')),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
