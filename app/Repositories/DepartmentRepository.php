@@ -19,8 +19,10 @@ class DepartmentRepository implements DepartmentRepositoryInterface
      */
     public function getAll(): Collection
     {
-        return Department::withCount(['programs', 'instructors'])
-            ->with('programs')
+        return Department::withCount(['programs', 'instructors', 'students'])
+            ->with(['programs' => function ($q) {
+                $q->withCount(['student as students_count']);
+            }])
             ->orderBy('department_name')
             ->get();
     }
@@ -33,8 +35,10 @@ class DepartmentRepository implements DepartmentRepositoryInterface
     public function getArchived(): Collection
     {
         return Department::onlyTrashed()
-            ->withCount(['programs', 'instructors'])
-            ->with('programs')
+            ->withCount(['programs', 'instructors', 'students'])
+            ->with(['programs' => function ($q) {
+                $q->withCount(['student as students_count']);
+            }])
             ->orderByDesc('deleted_at')
             ->get();
     }
@@ -47,9 +51,9 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         $query = Department::where('department_id', $id);
 
         if ($withRelations) {
-            $query->withCount(['programs', 'instructors'])
+            $query->withCount(['programs', 'instructors', 'students'])
                 ->with(['programs' => function ($q) {
-                    $q->withCount('student');
+                    $q->withCount(['student as students_count']);
                 }]);
         }
 
@@ -78,7 +82,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface
             }
         }
 
-        return $department->fresh(['programs']);
+        return $this->findById((int) $department->department_id);
     }
 
     /**
@@ -138,7 +142,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface
             }
         }
 
-        return $department->fresh(['programs']);
+        return $this->findById((int) $department->department_id);
     }
 
     /**
@@ -159,7 +163,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         $department = Department::onlyTrashed()->findOrFail($id);
         $department->restore();
 
-        return $department->fresh(['programs']);
+        return $this->findById((int) $department->department_id);
     }
 
     /**

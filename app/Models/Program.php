@@ -18,9 +18,14 @@ class Program extends Model
         'program_years',
     ];
 
-    public function student()
+    public function students()
     {
         return $this->hasMany(Student::class, 'program_id', 'program_id');
+    }
+
+    public function student()
+    {
+        return $this->students();
     }
 
     public function department()

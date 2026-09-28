@@ -8,6 +8,9 @@ use App\Models\Department;
 use App\Models\Instructor;
 use App\Models\Program;
 use App\Models\Role;
+use App\Models\SchoolYear;
+use App\Models\Semester;
+use App\Models\Student;
 use App\Models\User;
 use App\Models\UserRole;
 use Database\Seeders\PermissionSeeder;
@@ -154,11 +157,79 @@ test('admin can fetch department details with programs (200 OK)', function () {
         'department_name' => 'College of Teacher Education',
     ]);
 
-    Program::create([
+    $program1 = Program::create([
         'department_id' => $dept->department_id,
         'program_code' => 'BSED',
         'program_name' => 'Bachelor of Secondary Education',
         'program_years' => 4,
+    ]);
+
+    $program2 = Program::create([
+        'department_id' => $dept->department_id,
+        'program_code' => 'BEED',
+        'program_name' => 'Bachelor of Elementary Education',
+        'program_years' => 4,
+    ]);
+
+    $sy = SchoolYear::create([
+        'school_year_start' => '2026-01-01',
+        'school_year_end' => '2026-12-31',
+    ]);
+
+    $sem = Semester::create([
+        'school_year_id' => $sy->school_year_id,
+        'term' => 'First Semester',
+        'semester_start' => '2026-01-01',
+        'semester_end' => '2026-05-31',
+        'is_active' => true,
+    ]);
+
+    $studentUser1 = User::create([
+        'user_id' => 'STUD-DEPT-TEST-1',
+        'first_name' => 'Alice',
+        'last_name' => 'Test',
+        'sex' => 'female',
+        'password' => bcrypt('password'),
+    ]);
+    Student::create([
+        'user_id' => $studentUser1->user_id,
+        'semester_id' => $sem->semester_id,
+        'program_id' => $program1->program_id,
+        'year' => '1',
+        'block' => 'A',
+        'status' => 'Active',
+    ]);
+
+    $studentUser2 = User::create([
+        'user_id' => 'STUD-DEPT-TEST-2',
+        'first_name' => 'Bob',
+        'last_name' => 'Test',
+        'sex' => 'male',
+        'password' => bcrypt('password'),
+    ]);
+    Student::create([
+        'user_id' => $studentUser2->user_id,
+        'semester_id' => $sem->semester_id,
+        'program_id' => $program1->program_id,
+        'year' => '2',
+        'block' => 'A',
+        'status' => 'Active',
+    ]);
+
+    $studentUser3 = User::create([
+        'user_id' => 'STUD-DEPT-TEST-3',
+        'first_name' => 'Charlie',
+        'last_name' => 'Test',
+        'sex' => 'male',
+        'password' => bcrypt('password'),
+    ]);
+    Student::create([
+        'user_id' => $studentUser3->user_id,
+        'semester_id' => $sem->semester_id,
+        'program_id' => $program2->program_id,
+        'year' => '1',
+        'block' => 'B',
+        'status' => 'Active',
     ]);
 
     $response = $this->getJson("/api/v1/departments/{$dept->department_id}");
@@ -166,7 +237,11 @@ test('admin can fetch department details with programs (200 OK)', function () {
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.department_code', 'CTE')
-        ->assertJsonPath('data.programs.0.program_code', 'BSED');
+        ->assertJsonPath('data.students_count', 3)
+        ->assertJsonPath('data.programs.0.program_code', 'BSED')
+        ->assertJsonPath('data.programs.0.students_count', 2)
+        ->assertJsonPath('data.programs.1.program_code', 'BEED')
+        ->assertJsonPath('data.programs.1.students_count', 1);
 });
 
 test('admin can update department and programs (200 OK)', function () {
