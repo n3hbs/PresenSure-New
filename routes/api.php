@@ -118,8 +118,28 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('user/{user_id}/reset-password', [UserController::class, 'resetPassword']);
     });
 
-    // --- ACADEMIC COURSES & SCHEDULES ---
+    // --- COURSE MANAGEMENT ---
     Route::middleware('permission:courses.manage')->group(function () {
+        Route::prefix('v1')->group(function () {
+            Route::get('courses', [CourseController::class, 'index']);
+            Route::post('courses', [CourseController::class, 'store']);
+            Route::get('courses/archives', [CourseController::class, 'archives']);
+            Route::get('courses/{course_id}', [CourseController::class, 'show']);
+            Route::put('courses/{course_id}', [CourseController::class, 'update']);
+            Route::delete('courses/{course_id}', [CourseController::class, 'destroy']);
+            Route::post('courses/{course_id}/restore', [CourseController::class, 'restore']);
+
+            Route::post('course-blocks', [CourseController::class, 'createBlock']);
+            Route::post('course-blocks/assign-users', [CourseController::class, 'assign']);
+        });
+
+        Route::get('courses/archives', [CourseController::class, 'archives']);
+        Route::get('courses/{course_id}', [CourseController::class, 'show']);
+        Route::put('courses/{course_id}', [CourseController::class, 'update']);
+        Route::delete('courses/{course_id}', [CourseController::class, 'destroy']);
+        Route::post('courses/{course_id}/restore', [CourseController::class, 'restore']);
+
+        // Legacy compatibility routes
         Route::post('course', [CourseController::class, 'create']);
         Route::post('course-block', [CourseController::class, 'createBlock']);
         Route::post('course-block/assign-users', [CourseController::class, 'assign']);
@@ -181,12 +201,54 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('departments/{department_id}/restore', [DepartmentController::class, 'restore']);
     });
 
+    // --- FACILITIES (BUILDING & ROOM) MANAGEMENT ---
+    Route::middleware('permission:facilities.manage')->group(function () {
+        Route::prefix('v1')->group(function () {
+            // Buildings
+            Route::get('buildings', [BuildingController::class, 'index']);
+            Route::post('buildings', [BuildingController::class, 'store']);
+            Route::get('buildings/archives', [BuildingController::class, 'archives']);
+            Route::get('buildings/{building_id}', [BuildingController::class, 'show']);
+            Route::put('buildings/{building_id}', [BuildingController::class, 'update']);
+            Route::delete('buildings/{building_id}', [BuildingController::class, 'destroy']);
+            Route::post('buildings/{building_id}/restore', [BuildingController::class, 'restore']);
+
+            // Rooms
+            Route::get('rooms', [RoomController::class, 'index']);
+            Route::post('rooms', [RoomController::class, 'store']);
+            Route::get('rooms/archives', [RoomController::class, 'archives']);
+            Route::get('rooms/{room_id}', [RoomController::class, 'show']);
+            Route::put('rooms/{room_id}', [RoomController::class, 'update']);
+            Route::delete('rooms/{room_id}', [RoomController::class, 'destroy']);
+            Route::post('rooms/{room_id}/restore', [RoomController::class, 'restore']);
+        });
+
+        Route::get('buildings/archives', [BuildingController::class, 'archives']);
+        Route::get('buildings/{building_id}', [BuildingController::class, 'show']);
+        Route::put('buildings/{building_id}', [BuildingController::class, 'update']);
+        Route::delete('buildings/{building_id}', [BuildingController::class, 'destroy']);
+        Route::post('buildings/{building_id}/restore', [BuildingController::class, 'restore']);
+
+        Route::get('rooms/archives', [RoomController::class, 'archives']);
+        Route::get('rooms/{room_id}', [RoomController::class, 'show']);
+        Route::put('rooms/{room_id}', [RoomController::class, 'update']);
+        Route::delete('rooms/{room_id}', [RoomController::class, 'destroy']);
+        Route::post('rooms/{room_id}/restore', [RoomController::class, 'restore']);
+
+        // Legacy compatibility routes
+        Route::post('building', [BuildingController::class, 'create']);
+        Route::post('room', [RoomController::class, 'create']);
+    });
+
     // =========================================================================
     // TIER 3: COMMON & GENERAL AUTHENTICATED ENDPOINTS
     // Read-only catalog lookups, personal schedules, and check-ins for all active users.
     // =========================================================================
     Route::get('departments', [DepartmentController::class, 'index']);
     Route::get('programs', [ProgramController::class, 'index']);
+    Route::get('courses', [CourseController::class, 'index']);
+    Route::get('buildings', [BuildingController::class, 'index']);
+    Route::get('rooms', [RoomController::class, 'index']);
     Route::get('semester/active', [SemesterController::class, 'getActiveSemester']);
     Route::get('period/active', [PeriodController::class, 'getActivePeriod']);
     Route::get('user/{user_id}/course-schedules', [ScheduleController::class, 'getUserCourseSchedule']);

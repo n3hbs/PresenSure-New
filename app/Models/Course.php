@@ -19,6 +19,7 @@ class Course extends Model
     protected $fillable = [
         'subject_code',
         'name',
+        'description',
     ];
 
     public function courseBlocks()
