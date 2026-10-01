@@ -2,10 +2,15 @@
 
 namespace App\Providers;
 
+use App\Repositories\BuildingRepository;
+use App\Repositories\CourseRepository;
 use App\Repositories\DepartmentRepository;
+use App\Repositories\Interfaces\BuildingRepositoryInterface;
+use App\Repositories\Interfaces\CourseRepositoryInterface;
 use App\Repositories\Interfaces\DepartmentRepositoryInterface;
 use App\Repositories\Interfaces\PeriodRepositoryInterface;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
+use App\Repositories\Interfaces\RoomRepositoryInterface;
 use App\Repositories\Interfaces\SemesterRepositoryInterface;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
 use App\Repositories\Interfaces\UserPermissionRepositoryInterface;
@@ -13,6 +18,7 @@ use App\Repositories\Interfaces\UserProfileRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\PeriodRepository;
 use App\Repositories\RoleRepository;
+use App\Repositories\RoomRepository;
 use App\Repositories\SemesterRepository;
 use App\Repositories\StudentRepository;
 use App\Repositories\UserPermissionRepository;
@@ -67,6 +73,21 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             DepartmentRepositoryInterface::class,
             DepartmentRepository::class
+        );
+
+        $this->app->bind(
+            CourseRepositoryInterface::class,
+            CourseRepository::class
+        );
+
+        $this->app->bind(
+            BuildingRepositoryInterface::class,
+            BuildingRepository::class
+        );
+
+        $this->app->bind(
+            RoomRepositoryInterface::class,
+            RoomRepository::class
         );
     }
 

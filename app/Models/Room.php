@@ -24,4 +24,14 @@ class Room extends Model
     {
         return $this->belongsTo(Building::class, 'building_id', 'building_id');
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class, 'room_id', 'room_id');
+    }
+
+    public function bleDevices()
+    {
+        return $this->hasMany(BleDevice::class, 'room_id', 'room_id');
+    }
 }
