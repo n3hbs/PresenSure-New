@@ -27,8 +27,11 @@ COPY --from=assets /app/public/build ./public/build
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-RUN php artisan view:cache
-
 RUN chmod -R 775 storage bootstrap/cache
 
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

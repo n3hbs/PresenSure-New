@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: presensure-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: singapore
+    branch: production
+    autoDeploy: false
+    preDeployCommand: php artisan migrate --force
+    healthCheckPath: /up
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        sync: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_SSLMODE
+        value: require
+      - key: DATABASE_URL
+        sync: false
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
