@@ -72,7 +72,7 @@ beforeEach(function () {
 });
 
 test('unauthenticated user cannot access buildings management', function () {
-    $response = $this->getJson('/api/v1/buildings');
+    $response = $this->getJson('/api/buildings');
 
     $response->assertStatus(401);
 });
@@ -80,10 +80,10 @@ test('unauthenticated user cannot access buildings management', function () {
 test('unauthorized user without permission receives 403 forbidden', function () {
     Sanctum::actingAs($this->student);
 
-    $response = $this->getJson('/api/v1/buildings');
+    $response = $this->getJson('/api/buildings/archives');
     $response->assertStatus(403);
 
-    $createResponse = $this->postJson('/api/v1/buildings', [
+    $createResponse = $this->postJson('/api/buildings', [
         'code' => 'ENG-BLDG',
         'name' => 'Engineering Complex',
     ]);
@@ -106,7 +106,7 @@ test('admin can fetch buildings list with room counts (200 OK)', function () {
         'status' => 'Active',
     ]);
 
-    $response = $this->getJson('/api/v1/buildings');
+    $response = $this->getJson('/api/buildings');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -135,7 +135,7 @@ test('admin can store building with basic data (201 Created)', function () {
         'name' => 'College of Computer Studies',
     ];
 
-    $response = $this->postJson('/api/v1/buildings', $payload);
+    $response = $this->postJson('/api/buildings', $payload);
 
     $response->assertStatus(201)
         ->assertJsonPath('success', true)
@@ -170,7 +170,7 @@ test('admin can store building with nested rooms batch (201 Created)', function 
         ],
     ];
 
-    $response = $this->postJson('/api/v1/buildings', $payload);
+    $response = $this->postJson('/api/buildings', $payload);
 
     $response->assertStatus(201)
         ->assertJsonPath('success', true)
@@ -190,7 +190,7 @@ test('store building validates required fields and unique code (422 Unprocessabl
         'name' => 'Existing Hall',
     ]);
 
-    $response = $this->postJson('/api/v1/buildings', [
+    $response = $this->postJson('/api/buildings', [
         'code' => 'EXISTING-01',
         'name' => '',
     ]);
@@ -242,7 +242,7 @@ test('admin can view building details with rooms and assigned schedules (200 OK)
         'assigned_at' => now(),
     ]);
 
-    $response = $this->getJson("/api/v1/buildings/{$bldg->building_id}");
+    $response = $this->getJson("/api/buildings/{$bldg->building_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -264,7 +264,7 @@ test('admin can update building details (200 OK)', function () {
         'name' => 'Old Building Name',
     ]);
 
-    $response = $this->putJson("/api/v1/buildings/{$bldg->building_id}", [
+    $response = $this->putJson("/api/buildings/{$bldg->building_id}", [
         'code' => 'NEW-CODE',
         'name' => 'Renovated Building Name',
     ]);
@@ -289,7 +289,7 @@ test('admin can soft-delete an unused building (200 OK)', function () {
         'name' => 'Unused Building',
     ]);
 
-    $response = $this->deleteJson("/api/v1/buildings/{$bldg->building_id}");
+    $response = $this->deleteJson("/api/buildings/{$bldg->building_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -335,7 +335,7 @@ test('admin cannot delete building whose rooms have class schedules (422 Unproce
         'end_time' => '12:00:00',
     ]);
 
-    $response = $this->deleteJson("/api/v1/buildings/{$bldg->building_id}");
+    $response = $this->deleteJson("/api/buildings/{$bldg->building_id}");
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false);
@@ -352,7 +352,7 @@ test('admin can fetch archived buildings (200 OK)', function () {
     ]);
     $bldg->delete();
 
-    $response = $this->getJson('/api/v1/buildings/archives');
+    $response = $this->getJson('/api/buildings/archives');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -368,7 +368,7 @@ test('admin can restore archived building (200 OK)', function () {
     ]);
     $bldg->delete();
 
-    $response = $this->postJson("/api/v1/buildings/{$bldg->building_id}/restore");
+    $response = $this->postJson("/api/buildings/{$bldg->building_id}/restore");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)

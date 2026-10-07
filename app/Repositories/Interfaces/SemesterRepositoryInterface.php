@@ -55,6 +55,23 @@ interface SemesterRepositoryInterface
     public function createSchoolYear(array $data);
 
     /**
+     * Delete / Archive a school year.
+     */
+    public function deleteSchoolYear(int $id): bool;
+
+    /**
+     * Get all archived (soft-deleted) school years.
+     *
+     * @return Collection
+     */
+    public function getArchivedSchoolYears(): Collection;
+
+    /**
+     * Restore an archived school year.
+     */
+    public function restoreSchoolYear(int $id);
+
+    /**
      * Get all archived (soft-deleted) semesters.
      *
      * @return Collection<int, Semester>

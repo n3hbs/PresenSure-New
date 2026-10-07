@@ -57,7 +57,7 @@ beforeEach(function () {
 });
 
 test('unauthenticated user cannot access departments management', function () {
-    $response = $this->getJson('/api/v1/departments');
+    $response = $this->getJson('/api/departments');
 
     $response->assertStatus(401);
 });
@@ -65,9 +65,14 @@ test('unauthenticated user cannot access departments management', function () {
 test('unauthorized user without permission receives 403 forbidden', function () {
     Sanctum::actingAs($this->student);
 
-    $response = $this->getJson('/api/v1/departments');
-
+    $response = $this->getJson('/api/departments/archives');
     $response->assertStatus(403);
+
+    $createResponse = $this->postJson('/api/departments', [
+        'department_code' => 'CCS',
+        'department_name' => 'College of Computer Studies',
+    ]);
+    $createResponse->assertStatus(403);
 });
 
 test('admin can fetch departments list (200 OK)', function () {
@@ -78,7 +83,7 @@ test('admin can fetch departments list (200 OK)', function () {
         'department_name' => 'College of Computer Studies',
     ]);
 
-    $response = $this->getJson('/api/v1/departments');
+    $response = $this->getJson('/api/departments');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -110,7 +115,7 @@ test('admin can create department with programs (201 Created)', function () {
         ],
     ];
 
-    $response = $this->postJson('/api/v1/departments', $payload);
+    $response = $this->postJson('/api/departments', $payload);
 
     $response->assertStatus(201)
         ->assertJsonPath('success', true)
@@ -142,7 +147,7 @@ test('validation fails (422) for duplicate department code or name', function ()
         'department_name' => 'College of Computing',
     ];
 
-    $response = $this->postJson('/api/v1/departments', $payload);
+    $response = $this->postJson('/api/departments', $payload);
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false)
@@ -232,7 +237,7 @@ test('admin can fetch department details with programs (200 OK)', function () {
         'status' => 'Active',
     ]);
 
-    $response = $this->getJson("/api/v1/departments/{$dept->department_id}");
+    $response = $this->getJson("/api/departments/{$dept->department_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -265,7 +270,7 @@ test('admin can update department and programs (200 OK)', function () {
         ],
     ];
 
-    $response = $this->putJson("/api/v1/departments/{$dept->department_id}", $payload);
+    $response = $this->putJson("/api/departments/{$dept->department_id}", $payload);
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -291,7 +296,7 @@ test('department cannot be deleted when it has dependent instructors', function 
         'status' => 'Active',
     ]);
 
-    $response = $this->deleteJson("/api/v1/departments/{$dept->department_id}");
+    $response = $this->deleteJson("/api/departments/{$dept->department_id}");
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false);
@@ -307,7 +312,7 @@ test('admin can delete department without dependencies (200 OK)', function () {
         'department_name' => 'Test Department',
     ]);
 
-    $response = $this->deleteJson("/api/v1/departments/{$dept->department_id}");
+    $response = $this->deleteJson("/api/departments/{$dept->department_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true);
@@ -325,7 +330,7 @@ test('admin can fetch archived departments list (200 OK)', function () {
     ]);
     $dept->delete();
 
-    $response = $this->getJson('/api/v1/departments/archives');
+    $response = $this->getJson('/api/departments/archives');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -343,7 +348,7 @@ test('admin can restore archived department (200 OK)', function () {
 
     expect(Department::find($dept->department_id))->toBeNull();
 
-    $response = $this->postJson("/api/v1/departments/{$dept->department_id}/restore");
+    $response = $this->postJson("/api/departments/{$dept->department_id}/restore");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)

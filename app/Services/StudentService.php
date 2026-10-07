@@ -191,11 +191,9 @@ class StudentService
         });
     }
 
-    public function getArchivedStudents()
+    public function getArchivedStudents(?int $semesterId = null)
     {
-        $semester = $this->semesterService->getActiveSemester();
-
-        return $this->studentRepository->getArchivedStudents($semester?->semester_id);
+        return $this->studentRepository->getArchivedStudents($semesterId);
     }
 
     public function restoreStudent(string $userId): bool

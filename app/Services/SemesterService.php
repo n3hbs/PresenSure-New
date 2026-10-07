@@ -113,6 +113,36 @@ class SemesterService
     }
 
     /**
+     * Delete / Archive a school year.
+     */
+    public function deleteSchoolYear(int $id): bool
+    {
+        return DB::transaction(function () use ($id) {
+            return $this->semesterRepository->deleteSchoolYear($id);
+        });
+    }
+
+    /**
+     * Get all archived school years.
+     *
+     * @return Collection
+     */
+    public function getArchivedSchoolYears(): Collection
+    {
+        return $this->semesterRepository->getArchivedSchoolYears();
+    }
+
+    /**
+     * Restore an archived school year.
+     */
+    public function restoreSchoolYear(int $id)
+    {
+        return DB::transaction(function () use ($id) {
+            return $this->semesterRepository->restoreSchoolYear($id);
+        });
+    }
+
+    /**
      * Get all archived (soft-deleted) semesters.
      *
      * @return Collection<int, Semester>

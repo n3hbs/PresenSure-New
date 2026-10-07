@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Semester\StoreSchoolYearRequest;
 use App\Http\Requests\Semester\StoreSemesterRequest;
 use App\Http\Requests\Semester\UpdateSemesterRequest;
 use App\Http\Resources\SchoolYearResource;
@@ -126,6 +127,62 @@ class SemesterController extends Controller
         return $this->successResponse(
             SchoolYearResource::collection($schoolYears),
             'School years retrieved successfully.',
+            200
+        );
+    }
+
+    /**
+     * Store a newly created school year.
+     */
+    public function storeSchoolYear(StoreSchoolYearRequest $request): JsonResponse
+    {
+        $schoolYear = $this->semesterService->createSchoolYear($request->validated());
+
+        return $this->successResponse(
+            new SchoolYearResource($schoolYear),
+            'School year created successfully.',
+            201
+        );
+    }
+
+    /**
+     * Archive (soft-delete) a school year.
+     */
+    public function destroySchoolYear(int $school_year_id): JsonResponse
+    {
+        $this->semesterService->deleteSchoolYear($school_year_id);
+
+        return $this->successResponse(
+            null,
+            'School year archived successfully.',
+            200
+        );
+    }
+
+    /**
+     * Get all archived school years.
+     */
+    public function schoolYearArchives(): JsonResponse
+    {
+        $schoolYears = $this->semesterService->getArchivedSchoolYears();
+
+        return $this->successResponse(
+            SchoolYearResource::collection($schoolYears),
+            'Archived school years retrieved successfully.',
+            200
+        );
+    }
+
+    /**
+     * Restore an archived school year.
+     */
+    public function restoreSchoolYear(int $school_year_id): JsonResponse
+    {
+        $schoolYear = $this->semesterService->restoreSchoolYear($school_year_id);
+
+        return $this->successResponse(
+            new SchoolYearResource($schoolYear),
+            'School year restored successfully.',
             200
         );
     }

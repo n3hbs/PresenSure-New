@@ -25,6 +25,13 @@ class SchoolYearResource extends JsonResource
                 ? $this->school_year_end->format('Y-m-d')
                 : $this->school_year_end,
             'year_range' => $this->year_range,
+            'deleted_at' => $this->deleted_at instanceof \DateTimeInterface
+                ? $this->deleted_at->toISOString()
+                : $this->deleted_at,
+            'created_at' => $this->created_at instanceof \DateTimeInterface
+                ? $this->created_at->toISOString()
+                : $this->created_at,
+            'semesters_count' => $this->whenCounted('semesters', $this->semesters_count),
         ];
     }
 }

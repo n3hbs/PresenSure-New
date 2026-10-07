@@ -219,6 +219,44 @@ class SemesterRepository implements SemesterRepositoryInterface
     }
 
     /**
+     * Delete / Archive a school year.
+     */
+    public function deleteSchoolYear(int $id): bool
+    {
+        $schoolYear = SchoolYear::withCount('semesters')->findOrFail($id);
+
+        if ($schoolYear->semesters_count > 0) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'school_year' => ['Cannot archive an academic year that has associated semesters. Archive or reassign its semesters first.'],
+            ]);
+        }
+
+        return (bool) $schoolYear->delete();
+    }
+
+    /**
+     * Get all archived (soft-deleted) school years.
+     */
+    public function getArchivedSchoolYears(): Collection
+    {
+        return SchoolYear::onlyTrashed()
+            ->withCount('semesters')
+            ->orderByDesc('deleted_at')
+            ->get();
+    }
+
+    /**
+     * Restore an archived (soft-deleted) school year.
+     */
+    public function restoreSchoolYear(int $id): SchoolYear
+    {
+        $schoolYear = SchoolYear::onlyTrashed()->findOrFail($id);
+        $schoolYear->restore();
+
+        return $schoolYear->fresh();
+    }
+
+    /**
      * Get all archived (soft-deleted) semesters.
      *
      * @return Collection<int, Semester>

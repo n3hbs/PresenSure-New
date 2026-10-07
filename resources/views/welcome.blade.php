@@ -150,7 +150,7 @@
     <main class="container">
         <div class="badge">
             <span class="status-dot"></span>
-            REST API v1 Active &bull; Laravel {{ app()->version() }}
+            REST API Active &bull; Laravel {{ app()->version() }}
         </div>
 
         <div class="logo-wrap">
@@ -184,14 +184,14 @@
                 <div class="endpoint">
                     <div>
                         <span class="method">GET</span>
-                        <span class="path">/api/v1/departments</span>
+                        <span class="path">/api/departments</span>
                     </div>
                     <span class="tag">REST API</span>
                 </div>
                 <div class="endpoint">
                     <div>
                         <span class="method">GET</span>
-                        <span class="path">/api/v1/semesters</span>
+                        <span class="path">/api/semesters</span>
                     </div>
                     <span class="tag">REST API</span>
                 </div>
