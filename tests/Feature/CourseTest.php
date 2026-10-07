@@ -80,7 +80,7 @@ beforeEach(function () {
 });
 
 test('unauthenticated user cannot access courses management', function () {
-    $response = $this->getJson('/api/v1/courses');
+    $response = $this->getJson('/api/courses');
 
     $response->assertStatus(401);
 });
@@ -88,10 +88,10 @@ test('unauthenticated user cannot access courses management', function () {
 test('unauthorized user without permission receives 403 forbidden', function () {
     Sanctum::actingAs($this->student);
 
-    $response = $this->getJson('/api/v1/courses');
+    $response = $this->getJson('/api/courses/archives');
     $response->assertStatus(403);
 
-    $createResponse = $this->postJson('/api/v1/courses', [
+    $createResponse = $this->postJson('/api/courses', [
         'subject_code' => 'CS101',
         'name' => 'Intro to Computer Science',
     ]);
@@ -107,7 +107,7 @@ test('admin can fetch courses list (200 OK)', function () {
         'description' => 'Fundamental concepts of CS.',
     ]);
 
-    $response = $this->getJson('/api/v1/courses');
+    $response = $this->getJson('/api/courses');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -143,7 +143,7 @@ test('admin can create course with optional blocks (201 Created)', function () {
         ],
     ];
 
-    $response = $this->postJson('/api/v1/courses', $payload);
+    $response = $this->postJson('/api/courses', $payload);
 
     $response->assertStatus(201)
         ->assertJsonPath('success', true)
@@ -164,7 +164,7 @@ test('validation fails (422) for duplicate subject code', function () {
         'name' => 'Original Course',
     ]);
 
-    $response = $this->postJson('/api/v1/courses', [
+    $response = $this->postJson('/api/courses', [
         'subject_code' => 'DUP101',
         'name' => 'Duplicate Course',
     ]);
@@ -197,7 +197,7 @@ test('admin can fetch course details with created course blocks in active semest
         'block_code' => 'BSCS-3B-FUTURE',
     ]);
 
-    $response = $this->getJson("/api/v1/courses/{$course->course_id}");
+    $response = $this->getJson("/api/courses/{$course->course_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -227,7 +227,7 @@ test('course details returns empty course blocks when no semester is active (200
         'block_code' => 'MATH-1A',
     ]);
 
-    $response = $this->getJson("/api/v1/courses/{$course->course_id}");
+    $response = $this->getJson("/api/courses/{$course->course_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -268,7 +268,7 @@ test('admin can update course details and synchronize blocks (200 OK)', function
         ],
     ];
 
-    $response = $this->putJson("/api/v1/courses/{$course->course_id}", $payload);
+    $response = $this->putJson("/api/courses/{$course->course_id}", $payload);
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -316,7 +316,7 @@ test('course cannot be deleted when it has dependent class schedules or enrolled
         'end_time' => '10:00:00',
     ]);
 
-    $response = $this->deleteJson("/api/v1/courses/{$course->course_id}");
+    $response = $this->deleteJson("/api/courses/{$course->course_id}");
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false);
@@ -332,7 +332,7 @@ test('admin can delete course without dependencies (200 OK)', function () {
         'name' => 'Elective Course',
     ]);
 
-    $response = $this->deleteJson("/api/v1/courses/{$course->course_id}");
+    $response = $this->deleteJson("/api/courses/{$course->course_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true);
@@ -350,7 +350,7 @@ test('admin can fetch archived courses list (200 OK)', function () {
     ]);
     $course->delete();
 
-    $response = $this->getJson('/api/v1/courses/archives');
+    $response = $this->getJson('/api/courses/archives');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -368,7 +368,7 @@ test('admin can restore archived course (200 OK)', function () {
 
     expect(Course::find($course->course_id))->toBeNull();
 
-    $response = $this->postJson("/api/v1/courses/{$course->course_id}/restore");
+    $response = $this->postJson("/api/courses/{$course->course_id}/restore");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)

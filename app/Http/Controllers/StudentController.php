@@ -44,6 +44,10 @@ class StudentController extends Controller
     {
         $student = $this->studentService->getStudentDetails($user_id);
 
+        if (! $student) {
+            return $this->errorResponse('Student not found.', 404);
+        }
+
         return (new StudentDetailsResource($student))
             ->message('Student Details Retrieved Successfully.')
             ->status(200);
@@ -145,9 +149,10 @@ class StudentController extends Controller
         );
     }
 
-    public function getArchivedStudents()
+    public function getArchivedStudents(Request $request)
     {
-        $students = $this->studentService->getArchivedStudents();
+        $semesterId = $request->query('semester_id') ? (int) $request->query('semester_id') : null;
+        $students = $this->studentService->getArchivedStudents($semesterId);
 
         return ActiveSemesterStudentListResource::collection($students)
             ->message('Archived Students Retrieved Successfully.')

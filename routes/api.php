@@ -63,6 +63,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // =========================================================================
 
     // --- STUDENT MANAGEMENT ---
+    Route::middleware('permission:students.archive')->group(function () {
+        Route::get('student/archives', [StudentController::class, 'getArchivedStudents']);
+        Route::delete('student/{user_id}', [StudentController::class, 'delete']);
+        Route::post('student/{user_id}/archive', [StudentController::class, 'archive']);
+        Route::post('student/{user_id}/restore', [StudentController::class, 'restore']);
+    });
+
     Route::middleware('permission:students.view')->group(function () {
         Route::get('student/getByActiveSemester', [StudentController::class, 'getStudentByActiveSemester']);
         Route::get('student/check-user/{user_id}', [StudentController::class, 'checkStudent']);
@@ -80,14 +87,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('student/{user_id}', [StudentController::class, 'update']);
     });
 
-    Route::middleware('permission:students.archive')->group(function () {
-        Route::delete('student/{user_id}', [StudentController::class, 'delete']);
-        Route::post('student/{user_id}/archive', [StudentController::class, 'archive']);
-        Route::post('student/{user_id}/restore', [StudentController::class, 'restore']);
-        Route::get('student/archives', [StudentController::class, 'getArchivedStudents']);
+    // --- INSTRUCTOR MANAGEMENT ---
+    Route::middleware('permission:instructors.archive')->group(function () {
+        Route::get('instructor/archives', [InstructorController::class, 'getArchivedInstructors']);
+        Route::delete('instructor/{user_id}', [InstructorController::class, 'delete']);
+        Route::post('instructor/{user_id}/archive', [InstructorController::class, 'archive']);
+        Route::post('instructor/{user_id}/restore', [InstructorController::class, 'restore']);
     });
 
-    // --- INSTRUCTOR MANAGEMENT ---
     Route::middleware('permission:instructors.view')->group(function () {
         Route::get('instructors', [InstructorController::class, 'getAll']);
         Route::get('instructor/{user_id}', [InstructorController::class, 'getInstructorDetails']);
@@ -102,13 +109,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('instructor/{user_id}', [InstructorController::class, 'update']);
     });
 
-    Route::middleware('permission:instructors.archive')->group(function () {
-        Route::delete('instructor/{user_id}', [InstructorController::class, 'delete']);
-        Route::post('instructor/{user_id}/archive', [InstructorController::class, 'archive']);
-        Route::post('instructor/{user_id}/restore', [InstructorController::class, 'restore']);
-        Route::get('instructor/archives', [InstructorController::class, 'getArchivedInstructors']);
-    });
-
     // --- USER ASSETS & PASSWORDS ---
     Route::middleware('permission:students.create,instructors.create')->group(function () {
         Route::post('user-profile/bulk-upload', [BulkImageUploadController::class, 'upload']);
@@ -120,24 +120,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- COURSE MANAGEMENT ---
     Route::middleware('permission:courses.manage')->group(function () {
-        Route::prefix('v1')->group(function () {
-            Route::get('courses', [CourseController::class, 'index']);
-            Route::post('courses', [CourseController::class, 'store']);
-            Route::get('courses/archives', [CourseController::class, 'archives']);
-            Route::get('courses/{course_id}', [CourseController::class, 'show']);
-            Route::put('courses/{course_id}', [CourseController::class, 'update']);
-            Route::delete('courses/{course_id}', [CourseController::class, 'destroy']);
-            Route::post('courses/{course_id}/restore', [CourseController::class, 'restore']);
-
-            Route::post('course-blocks', [CourseController::class, 'createBlock']);
-            Route::post('course-blocks/assign-users', [CourseController::class, 'assign']);
-        });
-
+        Route::post('courses', [CourseController::class, 'store']);
         Route::get('courses/archives', [CourseController::class, 'archives']);
         Route::get('courses/{course_id}', [CourseController::class, 'show']);
         Route::put('courses/{course_id}', [CourseController::class, 'update']);
         Route::delete('courses/{course_id}', [CourseController::class, 'destroy']);
         Route::post('courses/{course_id}/restore', [CourseController::class, 'restore']);
+
+        Route::post('course-blocks', [CourseController::class, 'createBlock']);
+        Route::post('course-blocks/assign-users', [CourseController::class, 'assign']);
 
         // Legacy compatibility routes
         Route::post('course', [CourseController::class, 'create']);
@@ -158,21 +149,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- SEMESTER MANAGEMENT ---
     Route::middleware('permission:semesters.manage')->group(function () {
-        Route::prefix('v1')->group(function () {
-            Route::get('semesters', [SemesterController::class, 'index']);
-            Route::post('semesters', [SemesterController::class, 'store']);
-            Route::get('semesters/school-years', [SemesterController::class, 'schoolYears']);
-            Route::get('semesters/archives', [SemesterController::class, 'archives']);
-            Route::get('semesters/{semester_id}', [SemesterController::class, 'show']);
-            Route::put('semesters/{semester_id}', [SemesterController::class, 'update']);
-            Route::delete('semesters/{semester_id}', [SemesterController::class, 'destroy']);
-            Route::post('semesters/{semester_id}/restore', [SemesterController::class, 'restore']);
-            Route::patch('semesters/{semester_id}/activate', [SemesterController::class, 'setActive']);
-        });
-
         Route::get('semesters', [SemesterController::class, 'index']);
         Route::post('semesters', [SemesterController::class, 'store']);
         Route::get('semesters/school-years', [SemesterController::class, 'schoolYears']);
+        Route::post('semesters/school-years', [SemesterController::class, 'storeSchoolYear']);
+        Route::get('semesters/school-years/archives', [SemesterController::class, 'schoolYearArchives']);
+        Route::delete('semesters/school-years/{school_year_id}', [SemesterController::class, 'destroySchoolYear']);
+        Route::post('semesters/school-years/{school_year_id}/restore', [SemesterController::class, 'restoreSchoolYear']);
         Route::get('semesters/archives', [SemesterController::class, 'archives']);
         Route::get('semesters/{semester_id}', [SemesterController::class, 'show']);
         Route::put('semesters/{semester_id}', [SemesterController::class, 'update']);
@@ -184,16 +167,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- DEPARTMENT MANAGEMENT ---
     Route::middleware('permission:departments.manage')->group(function () {
-        Route::prefix('v1')->group(function () {
-            Route::get('departments', [DepartmentController::class, 'index']);
-            Route::post('departments', [DepartmentController::class, 'store']);
-            Route::get('departments/archives', [DepartmentController::class, 'archives']);
-            Route::get('departments/{department_id}', [DepartmentController::class, 'show']);
-            Route::put('departments/{department_id}', [DepartmentController::class, 'update']);
-            Route::delete('departments/{department_id}', [DepartmentController::class, 'destroy']);
-            Route::post('departments/{department_id}/restore', [DepartmentController::class, 'restore']);
-        });
-
+        Route::post('departments', [DepartmentController::class, 'store']);
         Route::get('departments/archives', [DepartmentController::class, 'archives']);
         Route::get('departments/{department_id}', [DepartmentController::class, 'show']);
         Route::put('departments/{department_id}', [DepartmentController::class, 'update']);
@@ -203,32 +177,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- FACILITIES (BUILDING & ROOM) MANAGEMENT ---
     Route::middleware('permission:facilities.manage')->group(function () {
-        Route::prefix('v1')->group(function () {
-            // Buildings
-            Route::get('buildings', [BuildingController::class, 'index']);
-            Route::post('buildings', [BuildingController::class, 'store']);
-            Route::get('buildings/archives', [BuildingController::class, 'archives']);
-            Route::get('buildings/{building_id}', [BuildingController::class, 'show']);
-            Route::put('buildings/{building_id}', [BuildingController::class, 'update']);
-            Route::delete('buildings/{building_id}', [BuildingController::class, 'destroy']);
-            Route::post('buildings/{building_id}/restore', [BuildingController::class, 'restore']);
-
-            // Rooms
-            Route::get('rooms', [RoomController::class, 'index']);
-            Route::post('rooms', [RoomController::class, 'store']);
-            Route::get('rooms/archives', [RoomController::class, 'archives']);
-            Route::get('rooms/{room_id}', [RoomController::class, 'show']);
-            Route::put('rooms/{room_id}', [RoomController::class, 'update']);
-            Route::delete('rooms/{room_id}', [RoomController::class, 'destroy']);
-            Route::post('rooms/{room_id}/restore', [RoomController::class, 'restore']);
-        });
-
+        // Buildings
+        Route::post('buildings', [BuildingController::class, 'store']);
         Route::get('buildings/archives', [BuildingController::class, 'archives']);
         Route::get('buildings/{building_id}', [BuildingController::class, 'show']);
         Route::put('buildings/{building_id}', [BuildingController::class, 'update']);
         Route::delete('buildings/{building_id}', [BuildingController::class, 'destroy']);
         Route::post('buildings/{building_id}/restore', [BuildingController::class, 'restore']);
 
+        // Rooms
+        Route::post('rooms', [RoomController::class, 'store']);
         Route::get('rooms/archives', [RoomController::class, 'archives']);
         Route::get('rooms/{room_id}', [RoomController::class, 'show']);
         Route::put('rooms/{room_id}', [RoomController::class, 'update']);

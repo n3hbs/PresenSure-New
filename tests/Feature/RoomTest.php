@@ -77,7 +77,7 @@ beforeEach(function () {
 });
 
 test('unauthenticated user cannot access rooms management', function () {
-    $response = $this->getJson('/api/v1/rooms');
+    $response = $this->getJson('/api/rooms');
 
     $response->assertStatus(401);
 });
@@ -85,10 +85,10 @@ test('unauthenticated user cannot access rooms management', function () {
 test('unauthorized user without permission receives 403 forbidden', function () {
     Sanctum::actingAs($this->student);
 
-    $response = $this->getJson('/api/v1/rooms');
+    $response = $this->getJson('/api/rooms/archives');
     $response->assertStatus(403);
 
-    $createResponse = $this->postJson('/api/v1/rooms', [
+    $createResponse = $this->postJson('/api/rooms', [
         'building_id' => $this->building->building_id,
         'name' => 'Room 101',
         'floor_no' => 1,
@@ -115,19 +115,19 @@ test('admin can fetch rooms list with optional filters (200 OK)', function () {
         'status' => 'Inactive',
     ]);
 
-    $responseAll = $this->getJson('/api/v1/rooms');
+    $responseAll = $this->getJson('/api/rooms');
     $responseAll->assertStatus(200)
         ->assertJsonPath('success', true)
         ->assertJsonCount(2, 'data');
 
     // Filter by floor_no
-    $responseFloor = $this->getJson('/api/v1/rooms?floor_no=2');
+    $responseFloor = $this->getJson('/api/rooms?floor_no=2');
     $responseFloor->assertStatus(200)
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.name', 'Room 201');
 
     // Filter by status
-    $responseStatus = $this->getJson('/api/v1/rooms?status=Inactive');
+    $responseStatus = $this->getJson('/api/rooms?status=Inactive');
     $responseStatus->assertStatus(200)
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.name', 'Room 201');
@@ -144,7 +144,7 @@ test('admin can store room with valid building (201 Created)', function () {
         'status' => 'Active',
     ];
 
-    $response = $this->postJson('/api/v1/rooms', $payload);
+    $response = $this->postJson('/api/rooms', $payload);
 
     $response->assertStatus(201)
         ->assertJsonPath('success', true)
@@ -163,7 +163,7 @@ test('admin can store room with valid building (201 Created)', function () {
 test('store room validates building existence and non-negative floor (422 Unprocessable)', function () {
     Sanctum::actingAs($this->admin);
 
-    $response = $this->postJson('/api/v1/rooms', [
+    $response = $this->postJson('/api/rooms', [
         'building_id' => 999999,
         'name' => '',
         'floor_no' => -2,
@@ -211,7 +211,7 @@ test('admin can view room details with building and assigned schedules (200 OK)'
         'assigned_at' => now(),
     ]);
 
-    $response = $this->getJson("/api/v1/rooms/{$room->room_id}");
+    $response = $this->getJson("/api/rooms/{$room->room_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -235,7 +235,7 @@ test('admin can update room details (200 OK)', function () {
         'status' => 'Active',
     ]);
 
-    $response = $this->putJson("/api/v1/rooms/{$room->room_id}", [
+    $response = $this->putJson("/api/rooms/{$room->room_id}", [
         'name' => 'Renovated Room Name',
         'capacity' => 35,
         'status' => 'Inactive',
@@ -264,7 +264,7 @@ test('admin can soft-delete an unused room (200 OK)', function () {
         'floor_no' => 1,
     ]);
 
-    $response = $this->deleteJson("/api/v1/rooms/{$room->room_id}");
+    $response = $this->deleteJson("/api/rooms/{$room->room_id}");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -303,7 +303,7 @@ test('admin cannot delete room with assigned class schedules (422 Unprocessable)
         'end_time' => '12:00:00',
     ]);
 
-    $response = $this->deleteJson("/api/v1/rooms/{$room->room_id}");
+    $response = $this->deleteJson("/api/rooms/{$room->room_id}");
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false);
@@ -321,7 +321,7 @@ test('admin can fetch archived rooms (200 OK)', function () {
     ]);
     $room->delete();
 
-    $response = $this->getJson('/api/v1/rooms/archives');
+    $response = $this->getJson('/api/rooms/archives');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -338,7 +338,7 @@ test('admin can restore archived room (200 OK)', function () {
     ]);
     $room->delete();
 
-    $response = $this->postJson("/api/v1/rooms/{$room->room_id}/restore");
+    $response = $this->postJson("/api/rooms/{$room->room_id}/restore");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)

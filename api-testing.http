@@ -35,7 +35,7 @@ Accept: application/json
 ### 2. View Department Details (with Program & Department Student Counts)
 ### Department 1 is CCS (College of Computer Studies) holding BSIT (18 students)
 ### -------------------------------------------------------------------------
-GET {{baseUrl}}/v1/departments/{{departmentId}} HTTP/1.1
+GET {{baseUrl}}/departments/{{departmentId}} HTTP/1.1
 Authorization: Bearer {{authToken}}
 Accept: application/json
 
@@ -49,6 +49,6 @@ Accept: application/json
 ### -------------------------------------------------------------------------
 ### 4. List All Active Departments (shows programs and student counts)
 ### -------------------------------------------------------------------------
-GET {{baseUrl}}/v1/departments HTTP/1.1
+GET {{baseUrl}}/departments HTTP/1.1
 Authorization: Bearer {{authToken}}
 Accept: application/json

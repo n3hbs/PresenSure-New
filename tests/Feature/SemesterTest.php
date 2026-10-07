@@ -61,7 +61,7 @@ beforeEach(function () {
 });
 
 test('unauthenticated user cannot access semesters list', function () {
-    $response = $this->getJson('/api/v1/semesters');
+    $response = $this->getJson('/api/semesters');
 
     $response->assertStatus(401);
 });
@@ -69,10 +69,10 @@ test('unauthenticated user cannot access semesters list', function () {
 test('unauthorized user without permission receives 403 forbidden', function () {
     Sanctum::actingAs($this->student);
 
-    $response = $this->getJson('/api/v1/semesters');
+    $response = $this->getJson('/api/semesters');
     $response->assertStatus(403);
 
-    $storeResponse = $this->postJson('/api/v1/semesters', [
+    $storeResponse = $this->postJson('/api/semesters', [
         'school_year_id' => $this->schoolYear->school_year_id,
         'term' => 'First Semester',
         'semester_start' => now()->toDateString(),
@@ -98,7 +98,7 @@ test('admin can fetch semesters list with active period (200 OK)', function () {
         'period_end' => now()->addDays(20)->toDateString(),
     ]);
 
-    $response = $this->getJson('/api/v1/semesters');
+    $response = $this->getJson('/api/semesters');
 
     $response->assertStatus(200)
         ->assertJsonStructure([
@@ -149,7 +149,7 @@ test('admin can create semester with periods in stepper (201 Created)', function
         ],
     ];
 
-    $response = $this->postJson('/api/v1/semesters', $payload);
+    $response = $this->postJson('/api/semesters', $payload);
 
     $response->assertStatus(201)
         ->assertJsonPath('success', true)
@@ -177,7 +177,7 @@ test('validation fails (422) when end date is before start date', function () {
         'semester_end' => now()->addMonths(1)->toDateString(),
     ];
 
-    $response = $this->postJson('/api/v1/semesters', $payload);
+    $response = $this->postJson('/api/semesters', $payload);
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false)
@@ -194,7 +194,7 @@ test('validation fails (422) when semester end date is already in the past', fun
         'semester_end' => now()->subMonths(2)->toDateString(), // Already finished
     ];
 
-    $response = $this->postJson('/api/v1/semesters', $payload);
+    $response = $this->postJson('/api/semesters', $payload);
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false)
@@ -218,7 +218,7 @@ test('validation fails (422) for duplicate semester term in same school year', f
         'semester_end' => now()->addMonths(7)->toDateString(),
     ];
 
-    $response = $this->postJson('/api/v1/semesters', $payload);
+    $response = $this->postJson('/api/semesters', $payload);
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false)
@@ -242,7 +242,7 @@ test('validation fails (422) for overlapping semester dates in same school year'
         'semester_end' => now()->addMonths(6)->toDateString(),
     ];
 
-    $response = $this->postJson('/api/v1/semesters', $payload);
+    $response = $this->postJson('/api/semesters', $payload);
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false)
@@ -306,7 +306,7 @@ test('semester cannot be deleted when it has dependent records', function () {
         'status' => 'Active',
     ]);
 
-    $response = $this->deleteJson("/api/v1/semesters/{$semester->semester_id}");
+    $response = $this->deleteJson("/api/semesters/{$semester->semester_id}");
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false)
@@ -328,7 +328,7 @@ test('admin can delete semester without dependencies (204 No Content)', function
         'semester_end' => now()->addMonths(7)->toDateString(),
     ]);
 
-    $response = $this->deleteJson("/api/v1/semesters/{$semester->semester_id}");
+    $response = $this->deleteJson("/api/semesters/{$semester->semester_id}");
 
     $response->assertStatus(204);
 
@@ -377,7 +377,7 @@ test('admin can update semester with synchronized periods (200 OK)', function ()
         ],
     ];
 
-    $response = $this->putJson("/api/v1/semesters/{$semester->semester_id}", $payload);
+    $response = $this->putJson("/api/semesters/{$semester->semester_id}", $payload);
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -472,7 +472,7 @@ test('validation fails (422) when updating semester by removing period with atte
         'periods' => [],
     ];
 
-    $response = $this->putJson("/api/v1/semesters/{$semester->semester_id}", $payload);
+    $response = $this->putJson("/api/semesters/{$semester->semester_id}", $payload);
 
     $response->assertStatus(422)
         ->assertJsonPath('success', false)
@@ -499,7 +499,7 @@ test('admin can fetch archived semesters list (200 OK)', function () {
 
     $semester->delete(); // Soft delete
 
-    $response = $this->getJson('/api/v1/semesters/archives');
+    $response = $this->getJson('/api/semesters/archives');
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -534,7 +534,7 @@ test('admin can restore archived semester with periods preserved (200 OK)', func
     expect(Semester::find($semester->semester_id))->toBeNull();
     expect(Semester::withTrashed()->find($semester->semester_id))->not->toBeNull();
 
-    $response = $this->postJson("/api/v1/semesters/{$semester->semester_id}/restore");
+    $response = $this->postJson("/api/semesters/{$semester->semester_id}/restore");
 
     $response->assertStatus(200)
         ->assertJsonPath('success', true)
@@ -560,4 +560,94 @@ test('authenticated user can view semester details web page (200 OK)', function 
     $response = $this->get('/semesters/semester-details');
 
     $response->assertStatus(200);
+});
+
+test('admin can create a school year (201 Created)', function () {
+    Sanctum::actingAs($this->admin);
+
+    $payload = [
+        'school_year_start' => now()->addYears(2)->startOfYear()->toDateString(),
+        'school_year_end' => now()->addYears(3)->endOfYear()->toDateString(),
+    ];
+
+    $response = $this->postJson('/api/semesters/school-years', $payload);
+
+    $response->assertStatus(201)
+        ->assertJsonPath('success', true)
+        ->assertJsonStructure([
+            'data' => [
+                'school_year_id',
+                'school_year_start',
+                'school_year_end',
+                'year_range',
+            ],
+        ]);
+});
+
+test('validation fails (422) when school year dates overlap or are invalid', function () {
+    Sanctum::actingAs($this->admin);
+
+    // End before start
+    $response = $this->postJson('/api/semesters/school-years', [
+        'school_year_start' => '2028-10-01',
+        'school_year_end' => '2028-09-01',
+    ]);
+    $response->assertStatus(422)
+        ->assertJsonPath('success', false)
+        ->assertJsonStructure(['data' => ['errors' => ['school_year_end']]]);
+
+    // Overlapping with existing school year created in beforeEach
+    $responseOverlap = $this->postJson('/api/semesters/school-years', [
+        'school_year_start' => $this->schoolYear->school_year_start->toDateString(),
+        'school_year_end' => $this->schoolYear->school_year_end->toDateString(),
+    ]);
+    $responseOverlap->assertStatus(422)
+        ->assertJsonPath('success', false)
+        ->assertJsonStructure(['data' => ['errors' => ['school_year_start']]]);
+});
+
+test('admin can archive, list archives, and restore a school year without semesters', function () {
+    Sanctum::actingAs($this->admin);
+
+    $emptySY = SchoolYear::create([
+        'school_year_start' => '2035-01-01',
+        'school_year_end' => '2035-12-31',
+    ]);
+
+    // Archive
+    $deleteRes = $this->deleteJson("/api/semesters/school-years/{$emptySY->school_year_id}");
+    $deleteRes->assertStatus(200)
+        ->assertJsonPath('success', true);
+
+    expect(SchoolYear::find($emptySY->school_year_id))->toBeNull();
+    expect(SchoolYear::withTrashed()->find($emptySY->school_year_id))->not->toBeNull();
+
+    // Archives list
+    $archivesRes = $this->getJson('/api/semesters/school-years/archives');
+    $archivesRes->assertStatus(200)
+        ->assertJsonPath('success', true);
+
+    // Restore
+    $restoreRes = $this->postJson("/api/semesters/school-years/{$emptySY->school_year_id}/restore");
+    $restoreRes->assertStatus(200)
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('data.school_year_id', $emptySY->school_year_id);
+
+    expect(SchoolYear::find($emptySY->school_year_id))->not->toBeNull();
+});
+
+test('archiving a school year with existing semesters fails validation (422)', function () {
+    Sanctum::actingAs($this->admin);
+
+    // $this->schoolYear has semesters or can have one
+    Semester::create([
+        'school_year_id' => $this->schoolYear->school_year_id,
+        'term' => 'First Semester',
+        'semester_start' => now()->toDateString(),
+        'semester_end' => now()->addMonths(4)->toDateString(),
+    ]);
+
+    $res = $this->deleteJson("/api/semesters/school-years/{$this->schoolYear->school_year_id}");
+    $res->assertStatus(422)
+        ->assertJsonPath('success', false);
 });

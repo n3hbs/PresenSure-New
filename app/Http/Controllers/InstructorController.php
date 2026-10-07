@@ -41,6 +41,10 @@ class InstructorController extends Controller
     {
         $instructor = $this->instructorService->getInstructorDetails($user_id);
 
+        if (! $instructor) {
+            return $this->errorResponse('Instructor not found.', 404);
+        }
+
         return (new InstructorDetailsResource($instructor))
             ->message('Instructor Details Retrieved Successfully.')
             ->status(200);
