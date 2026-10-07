@@ -124,8 +124,6 @@ class SemesterService
 
     /**
      * Get all archived school years.
-     *
-     * @return Collection
      */
     public function getArchivedSchoolYears(): Collection
     {

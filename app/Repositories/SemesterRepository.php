@@ -226,7 +226,7 @@ class SemesterRepository implements SemesterRepositoryInterface
         $schoolYear = SchoolYear::withCount('semesters')->findOrFail($id);
 
         if ($schoolYear->semesters_count > 0) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+            throw ValidationException::withMessages([
                 'school_year' => ['Cannot archive an academic year that has associated semesters. Archive or reassign its semesters first.'],
             ]);
         }

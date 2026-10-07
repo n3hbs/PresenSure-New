@@ -651,5 +651,3 @@ test('archiving a school year with existing semesters fails validation (422)', f
     $res->assertStatus(422)
         ->assertJsonPath('success', false);
 });
-
-

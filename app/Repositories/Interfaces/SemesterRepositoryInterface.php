@@ -61,8 +61,6 @@ interface SemesterRepositoryInterface
 
     /**
      * Get all archived (soft-deleted) school years.
-     *
-     * @return Collection
      */
     public function getArchivedSchoolYears(): Collection;
 
