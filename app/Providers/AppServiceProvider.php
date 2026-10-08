@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Repositories\BuildingRepository;
+use App\Repositories\CourseBlockRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\Interfaces\BuildingRepositoryInterface;
+use App\Repositories\Interfaces\CourseBlockRepositoryInterface;
 use App\Repositories\Interfaces\CourseRepositoryInterface;
 use App\Repositories\Interfaces\DepartmentRepositoryInterface;
 use App\Repositories\Interfaces\PeriodRepositoryInterface;
@@ -78,6 +80,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             CourseRepositoryInterface::class,
             CourseRepository::class
+        );
+
+        $this->app->bind(
+            CourseBlockRepositoryInterface::class,
+            CourseBlockRepository::class
         );
 
         $this->app->bind(

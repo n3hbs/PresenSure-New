@@ -72,6 +72,8 @@ class RoomRepository implements RoomRepositoryInterface
                 $q->with([
                     'scheduleDays',
                     'courseBlock.course',
+                    'courseBlock.instructor',
+                    'courseBlock.userCourseBlocks.user',
                     'semester.schoolYear',
                 ])->orderBy('start_time');
             }]);

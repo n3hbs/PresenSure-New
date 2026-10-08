@@ -10,6 +10,7 @@ use App\Models\CourseBlock;
 use App\Models\Role;
 use App\Models\Room;
 use App\Models\Schedule;
+use App\Models\ScheduleDay;
 use App\Models\SchoolYear;
 use App\Models\Semester;
 use App\Models\User;
@@ -431,4 +432,92 @@ test('legacy endpoints continue to work as expected (201 Created)', function () 
     $assignRes->assertStatus(201);
 
     expect(UserCourseBlock::where('user_id', $this->student->user_id)->count())->toBe(1);
+});
+
+test('course details eager loads schedules with rooms and resolves assigned instructor from userCourseBlocks', function () {
+    Sanctum::actingAs($this->admin);
+
+    $course = Course::create([
+        'subject_code' => 'CS500',
+        'name' => 'Advanced Database Systems',
+    ]);
+
+    $block = CourseBlock::create([
+        'course_id' => $course->course_id,
+        'semester_id' => $this->activeSemester->semester_id,
+        'block_code' => 'CS500-A',
+    ]);
+
+    // Create instructor with no C- prefix (e.g. 2022-0138 / 2000-0000)
+    $instructorRole = Role::where('role_name', 'instructor')->first();
+    $instructor = User::create([
+        'user_id' => '2022-0138',
+        'first_name' => 'Alan',
+        'last_name' => 'Turing',
+        'sex' => 'male',
+        'password' => bcrypt('password'),
+    ]);
+    UserRole::create([
+        'user_id' => $instructor->user_id,
+        'role_id' => $instructorRole->role_id,
+        'assigned_at' => now(),
+    ]);
+
+    // Create student with C- prefix (e.g. C-2022-0138 / C-0000-0000)
+    $studentRole = Role::where('role_name', 'student')->first();
+    $student = User::create([
+        'user_id' => 'C-2022-0138',
+        'first_name' => 'Ada',
+        'last_name' => 'Lovelace',
+        'sex' => 'female',
+        'password' => bcrypt('password'),
+    ]);
+    UserRole::create([
+        'user_id' => $student->user_id,
+        'role_id' => $studentRole->role_id,
+        'assigned_at' => now(),
+    ]);
+
+    // Assign instructor and student to block
+    UserCourseBlock::create([
+        'course_block_id' => $block->course_block_id,
+        'user_id' => $instructor->user_id,
+        'assigned_at' => now(),
+    ]);
+    UserCourseBlock::create([
+        'course_block_id' => $block->course_block_id,
+        'user_id' => $student->user_id,
+        'assigned_at' => now(),
+    ]);
+
+    // Create building, room, schedule, schedule days
+    $building = Building::create(['code' => 'LAB', 'name' => 'Computer Lab Building']);
+    $room = Room::create(['building_id' => $building->building_id, 'name' => 'Room 401', 'floor_no' => 4]);
+
+    $schedule = Schedule::create([
+        'course_block_id' => $block->course_block_id,
+        'room_id' => $room->room_id,
+        'semester_id' => $this->activeSemester->semester_id,
+        'block_code' => $block->block_code,
+        'schedule_type' => 'laboratory',
+        'start_time' => '10:00:00',
+        'end_time' => '13:00:00',
+    ]);
+
+    ScheduleDay::create([
+        'schedule_id' => $schedule->schedule_id,
+        'day' => 'monday',
+        'assigned_at' => now(),
+    ]);
+
+    $response = $this->getJson("/api/courses/{$course->course_id}");
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.course_blocks.0.instructor.user_id', '2022-0138')
+        ->assertJsonPath('data.course_blocks.0.instructor.name', 'Alan Turing')
+        ->assertJsonPath('data.course_blocks.0.instructor.full_name', 'Alan Turing')
+        ->assertJsonPath('data.course_blocks.0.students_count', 1)
+        ->assertJsonPath('data.course_blocks.0.schedules_count', 1)
+        ->assertJsonPath('data.course_blocks.0.schedules.0.days.0', 'monday')
+        ->assertJsonCount(2, 'data.course_blocks.0.user_course_blocks');
 });

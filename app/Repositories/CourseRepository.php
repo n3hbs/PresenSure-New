@@ -73,10 +73,28 @@ class CourseRepository implements CourseRepositoryInterface
                 $blocks = CourseBlock::where('course_id', $course->course_id)
                     ->where('semester_id', $activeSemester->semester_id)
                     ->withCount([
-                        'userCourseBlocks as students_count',
+                        // Students have 'C-' prefix (e.g., C-2022-0138); exclude instructors (e.g., 2022-0138)
+                        'userCourseBlocks as students_count' => function ($q) {
+                            $q->where(function ($sub) {
+                                $sub->where('user_id', 'like', 'C-%')
+                                    ->orWhere(function ($fallback) {
+                                        $fallback->whereDoesntHave('user.instructor')
+                                            ->whereDoesntHave('user.roleAssignment.role', function ($r) {
+                                                $r->where('role_name', 'instructor');
+                                            });
+                                    });
+                            });
+                        },
                         'schedules as schedules_count',
                     ])
-                    ->with('semester')
+                    ->with([
+                        'semester.schoolYear',
+                        'schedules.scheduleDays',
+                        'schedules.room',
+                        'userCourseBlocks.user.instructor',
+                        'userCourseBlocks.user.roleAssignment.role',
+                        'instructor',
+                    ])
                     ->orderBy('block_code')
                     ->get();
 
