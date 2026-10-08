@@ -58,17 +58,32 @@ class ScheduleResource extends JsonResource
                     }
                     if ($this->courseBlock->relationLoaded('userCourseBlocks') && $this->courseBlock->userCourseBlocks) {
                         $instructorUcb = $this->courseBlock->userCourseBlocks->first(function ($ucb) {
-                            $uid = $ucb->user?->user_id ?? $ucb->user_id;
-                            return str_starts_with((string) $uid, 'C-') || ($ucb->user && $ucb->user->instructor !== null);
+                            if ($ucb->relationLoaded('user') && $ucb->user) {
+                                if ($ucb->user->instructor !== null || strcasecmp((string) $ucb->user->role_name, 'instructor') === 0) {
+                                    return true;
+                                }
+                                if (strcasecmp((string) $ucb->user->role_name, 'student') === 0) {
+                                    return false;
+                                }
+                            }
+
+                            $uid = (string) ($ucb->user?->user_id ?? $ucb->user_id);
+
+                            if (str_starts_with(strtoupper($uid), 'C-') || str_starts_with(strtoupper($uid), 'STUDENT')) {
+                                return false;
+                            }
+
+                            return true;
                         });
                         if ($instructorUcb && $instructorUcb->user) {
                             return [
                                 'user_id' => $instructorUcb->user->user_id,
-                                'name' => trim(($instructorUcb->user->first_name ?? '') . ' ' . ($instructorUcb->user->last_name ?? '')),
+                                'name' => trim(($instructorUcb->user->first_name ?? '').' '.($instructorUcb->user->last_name ?? '')),
                                 'image' => $instructorUcb->user->image,
                             ];
                         }
                     }
+
                     return null;
                 }
             ),
