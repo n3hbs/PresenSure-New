@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CourseBlockController;
 use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\AttendanceSessionController;
 use App\Http\Controllers\BleDetectionController;
@@ -129,6 +130,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('course-blocks', [CourseController::class, 'createBlock']);
         Route::post('course-blocks/assign-users', [CourseController::class, 'assign']);
+
+        // Course Block Archives
+        Route::get('courses/{course}/block-archives', [CourseBlockController::class, 'archives']);
+        Route::get('course-blocks/archives', [CourseBlockController::class, 'archives']);
+
+        // Course Block Edit & Archive
+        Route::put('course-block/{id}', [CourseBlockController::class, 'update']);
+        Route::put('course-blocks/{id}', [CourseBlockController::class, 'update']);
+        Route::delete('course-block/{id}', [CourseBlockController::class, 'destroy']);
+        Route::delete('course-blocks/{id}', [CourseBlockController::class, 'destroy']);
+
+        // Course Block Restore
+        Route::post('course-block/{id}/restore', [CourseBlockController::class, 'restore']);
+        Route::post('course-blocks/{id}/restore', [CourseBlockController::class, 'restore']);
 
         // Legacy compatibility routes
         Route::post('course', [CourseController::class, 'create']);

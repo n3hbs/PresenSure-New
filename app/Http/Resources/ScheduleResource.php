@@ -46,6 +46,32 @@ class ScheduleResource extends JsonResource
                     ];
                 }
             ),
+            'instructor' => $this->when(
+                $this->relationLoaded('courseBlock') && $this->courseBlock,
+                function () {
+                    if ($this->courseBlock->relationLoaded('instructor') && $this->courseBlock->instructor) {
+                        return [
+                            'user_id' => $this->courseBlock->instructor->user_id,
+                            'name' => $this->courseBlock->instructor->name,
+                            'image' => $this->courseBlock->instructor->image,
+                        ];
+                    }
+                    if ($this->courseBlock->relationLoaded('userCourseBlocks') && $this->courseBlock->userCourseBlocks) {
+                        $instructorUcb = $this->courseBlock->userCourseBlocks->first(function ($ucb) {
+                            $uid = $ucb->user?->user_id ?? $ucb->user_id;
+                            return str_starts_with((string) $uid, 'C-') || ($ucb->user && $ucb->user->instructor !== null);
+                        });
+                        if ($instructorUcb && $instructorUcb->user) {
+                            return [
+                                'user_id' => $instructorUcb->user->user_id,
+                                'name' => trim(($instructorUcb->user->first_name ?? '') . ' ' . ($instructorUcb->user->last_name ?? '')),
+                                'image' => $instructorUcb->user->image,
+                            ];
+                        }
+                    }
+                    return null;
+                }
+            ),
             'semester' => $this->when(
                 $this->relationLoaded('semester') && $this->semester,
                 function () {

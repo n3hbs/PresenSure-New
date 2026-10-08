@@ -68,6 +68,8 @@ class BuildingRepository implements BuildingRepositoryInterface
                     $query->with([
                         'scheduleDays',
                         'courseBlock.course',
+                        'courseBlock.instructor',
+                        'courseBlock.userCourseBlocks.user',
                         'semester.schoolYear',
                     ])->orderBy('start_time');
                 }])
