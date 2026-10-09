@@ -19,9 +19,15 @@ interface RoomRepositoryInterface
     /**
      * Get all archived rooms.
      *
+     * @param  array<string, mixed>  $filters
      * @return Collection<int, Room>
      */
-    public function getArchived(): Collection;
+    public function getArchived(array $filters = []): Collection;
+
+    /**
+     * Find an archived room by ID.
+     */
+    public function findTrashedById(int $id): ?Room;
 
     /**
      * Find a room by ID, optionally eager-loading assigned schedules.
