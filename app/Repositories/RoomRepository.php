@@ -40,15 +40,32 @@ class RoomRepository implements RoomRepositoryInterface
     /**
      * Get all archived (soft-deleted) rooms.
      *
+     * @param  array<string, mixed>  $filters
      * @return Collection<int, Room>
      */
-    public function getArchived(): Collection
+    public function getArchived(array $filters = []): Collection
     {
-        return Room::onlyTrashed()
+        $query = Room::onlyTrashed()
             ->with('building')
             ->withCount('schedules')
-            ->orderByDesc('deleted_at')
-            ->get();
+            ->orderByDesc('deleted_at');
+
+        if (! empty($filters['building_id'])) {
+            $query->where('building_id', $filters['building_id']);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * Find an archived room by ID.
+     */
+    public function findTrashedById(int $id): ?Room
+    {
+        return Room::onlyTrashed()
+            ->with(['building' => fn ($q) => $q->withTrashed()])
+            ->where('room_id', $id)
+            ->first();
     }
 
     /**

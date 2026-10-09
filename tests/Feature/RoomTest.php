@@ -328,6 +328,37 @@ test('admin can fetch archived rooms (200 OK)', function () {
         ->assertJsonFragment(['name' => 'Archived Room']);
 });
 
+test('admin can fetch archived rooms filtered by building (200 OK)', function () {
+    Sanctum::actingAs($this->admin);
+
+    $otherBuilding = Building::create([
+        'code' => 'OTHER-BLDG',
+        'name' => 'Other Facility Building',
+    ]);
+
+    $room1 = Room::create([
+        'building_id' => $this->building->building_id,
+        'name' => 'Archived Room 1',
+        'floor_no' => 1,
+    ]);
+    $room1->delete();
+
+    $room2 = Room::create([
+        'building_id' => $otherBuilding->building_id,
+        'name' => 'Other Archived Room',
+        'floor_no' => 1,
+    ]);
+    $room2->delete();
+
+    $response = $this->getJson("/api/rooms/archives?building_id={$this->building->building_id}");
+
+    $response->assertStatus(200)
+        ->assertJsonPath('success', true)
+        ->assertJsonCount(1, 'data')
+        ->assertJsonFragment(['name' => 'Archived Room 1'])
+        ->assertJsonMissing(['name' => 'Other Archived Room']);
+});
+
 test('admin can restore archived room (200 OK)', function () {
     Sanctum::actingAs($this->admin);
 
@@ -345,6 +376,33 @@ test('admin can restore archived room (200 OK)', function () {
         ->assertJsonPath('data.name', 'Restorable Room');
 
     $this->assertNotSoftDeleted('rooms', ['room_id' => $room->room_id]);
+});
+
+test('admin cannot restore room when parent building is archived (422 Unprocessable)', function () {
+    Sanctum::actingAs($this->admin);
+
+    $archivedBuilding = Building::create([
+        'code' => 'ARCH-BLDG-99',
+        'name' => 'Archived Hall',
+    ]);
+
+    $room = Room::create([
+        'building_id' => $archivedBuilding->building_id,
+        'name' => 'Orphaned Room',
+        'floor_no' => 1,
+    ]);
+
+    // Archive both
+    $room->delete();
+    $archivedBuilding->delete();
+
+    $response = $this->postJson("/api/rooms/{$room->room_id}/restore");
+
+    $response->assertStatus(422)
+        ->assertJsonPath('success', false)
+        ->assertJsonPath('data.errors.room.0', "Cannot restore room: Parent building ({$archivedBuilding->name}) is currently archived. Please restore the building first.");
+
+    $this->assertSoftDeleted('rooms', ['room_id' => $room->room_id]);
 });
 
 test('legacy room creation endpoint works (201 Created)', function () {

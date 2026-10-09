@@ -29,11 +29,12 @@ class RoomService
     /**
      * Get all archived (soft-deleted) rooms.
      *
+     * @param  array<string, mixed>  $filters
      * @return Collection<int, Room>
      */
-    public function getArchivedRooms(): Collection
+    public function getArchivedRooms(array $filters = []): Collection
     {
-        return $this->roomRepository->getArchived();
+        return $this->roomRepository->getArchived($filters);
     }
 
     /**
@@ -89,6 +90,16 @@ class RoomService
      */
     public function restoreRoom(int $id): Room
     {
+        $room = $this->roomRepository->findTrashedById($id);
+
+        if ($room && $room->building && $room->building->trashed()) {
+            throw ValidationException::withMessages([
+                'room' => [
+                    "Cannot restore room: Parent building ({$room->building->name}) is currently archived. Please restore the building first.",
+                ],
+            ]);
+        }
+
         return DB::transaction(function () use ($id) {
             return $this->roomRepository->restore($id);
         });

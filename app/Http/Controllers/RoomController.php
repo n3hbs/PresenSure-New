@@ -97,9 +97,10 @@ class RoomController extends Controller
     /**
      * Display a listing of archived rooms.
      */
-    public function archives(): JsonResponse
+    public function archives(Request $request): JsonResponse
     {
-        $archived = $this->roomService->getArchivedRooms();
+        $filters = $request->only(['building_id']);
+        $archived = $this->roomService->getArchivedRooms($filters);
 
         return $this->successResponse(
             RoomResource::collection($archived),
