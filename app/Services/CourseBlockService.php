@@ -124,4 +124,22 @@ class CourseBlockService
 
         return $block;
     }
+
+    /**
+     * Get all active course blocks.
+     *
+     * @return Collection<int, CourseBlock>
+     */
+    public function getActiveBlocks(?int $courseId = null, ?int $semesterId = null, ?string $search = null): Collection
+    {
+        return $this->courseBlockRepository->getAllActive($courseId, $semesterId, $search);
+    }
+
+    /**
+     * Get single active course block by ID.
+     */
+    public function getBlockById(int $id): ?CourseBlock
+    {
+        return $this->courseBlockRepository->findActiveById($id);
+    }
 }

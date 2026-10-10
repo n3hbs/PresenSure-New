@@ -16,7 +16,7 @@ class CourseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $activeSemester = $this->active_semester;
+        $activeSemester = isset($this->active_semester) ? $this->active_semester : null;
 
         return [
             'course_id' => $this->course_id,

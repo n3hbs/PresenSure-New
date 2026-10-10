@@ -45,6 +45,14 @@ final class ScheduleService
         });
     }
 
+    public function deleteSchedule(int $scheduleId): bool
+    {
+        return DB::transaction(function () use ($scheduleId) {
+            $schedule = $this->scheduleRepository->findSchedule($scheduleId);
+            return (bool) $schedule->delete();
+        });
+    }
+
     public function createScheduleDays(int $scheduleId, array $days): void
     {
         foreach (array_unique($days) as $day) {

@@ -17,7 +17,7 @@ class CourseBlockResource extends JsonResource
     public function toArray(Request $request): array
     {
         // 1. Resolve instructor from direct relation or from userCourseBlocks
-        $instructor = $this->whenLoaded('instructor');
+        $instructor = $this->relationLoaded('instructor') ? $this->instructor : null;
         if (! $instructor && $this->relationLoaded('userCourseBlocks') && $this->userCourseBlocks) {
             $instructorUcb = $this->userCourseBlocks->first(function ($ucb) {
                 // If relation is loaded, prioritize checking instructor role or model
@@ -85,15 +85,49 @@ class CourseBlockResource extends JsonResource
             ] : null,
             'students_count' => $studentsCount,
             'schedules_count' => (int) ($this->schedules_count ?? ($this->relationLoaded('schedules') ? $this->schedules->count() : 0)),
-            'course' => new CourseResource(
-                $this->whenLoaded('course')
-            ),
-            'semester' => new SemesterResource(
-                $this->whenLoaded('semester')
-            ),
-            'schedules' => ScheduleResource::collection(
-                $this->whenLoaded('schedules')
-            ),
+            'course' => $this->whenLoaded('course', function () {
+                return new CourseResource($this->course);
+            }),
+            'semester' => $this->whenLoaded('semester', function () {
+                return new SemesterResource($this->semester);
+            }),
+            'schedules' => $this->whenLoaded('schedules', function () {
+                return ScheduleResource::collection($this->schedules);
+            }),
+            'students' => $this->relationLoaded('userCourseBlocks')
+                ? $this->userCourseBlocks->filter(function ($u) use ($instructor) {
+                    if ($instructor && (string) $u->user_id === (string) $instructor->user_id) {
+                        return false;
+                    }
+                    if ($u->relationLoaded('user') && $u->user) {
+                        if ($u->user->instructor !== null || strcasecmp((string) $u->user->role_name, 'instructor') === 0) {
+                            return false;
+                        }
+                    }
+                    $rawId = (string) $u->user_id;
+                    if (str_starts_with(strtoupper($rawId), 'C-')) {
+                        return true;
+                    }
+                    return strcasecmp((string) ($u->user?->role_name ?? ''), 'instructor') !== 0;
+                })->map(function ($u) {
+                    $user = $u->user;
+                    $studentModel = $user?->student instanceof \Illuminate\Support\Collection
+                        ? $user->student->first()
+                        : $user?->student;
+
+                    return [
+                        'user_id' => $u->user_id,
+                        'first_name' => $user?->first_name,
+                        'last_name' => $user?->last_name,
+                        'name' => $user ? trim("{$user->first_name} {$user->last_name}") : null,
+                        'sex' => $user?->sex,
+                        'email' => $user?->email,
+                        'program' => $studentModel?->program?->program_name ?? $studentModel?->program?->name ?? null,
+                        'image' => $user?->userProfile?->imagelink ?? $user?->image,
+                        'assigned_at' => $u->assigned_at,
+                    ];
+                })->values()
+                : [],
             'user_course_blocks' => $this->whenLoaded('userCourseBlocks'),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),

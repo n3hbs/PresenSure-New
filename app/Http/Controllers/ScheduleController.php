@@ -20,6 +20,13 @@ class ScheduleController extends Controller
         return response()->json(['message' => 'Schedule successfully created.'], 201);
     }
 
+    public function destroy(int $schedule_id)
+    {
+        $this->scheduleService->deleteSchedule($schedule_id);
+
+        return response()->json(['message' => 'Schedule successfully deleted.'], 200);
+    }
+
     public function getUserCourseSchedule(string $userId)
     {
         $schedules = $this->scheduleService->getUserScheduleByActiveSemester($userId);

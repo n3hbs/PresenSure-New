@@ -50,4 +50,16 @@ interface CourseBlockRepositoryInterface
      * Synchronize instructor assignment in user_course_blocks table.
      */
     public function syncInstructorUserCourseBlock(CourseBlock $block, ?string $instructorId): void;
+
+    /**
+     * Get all active course blocks with filters and eager loaded relations.
+     *
+     * @return Collection<int, CourseBlock>
+     */
+    public function getAllActive(?int $courseId = null, ?int $semesterId = null, ?string $search = null): Collection;
+
+    /**
+     * Find active course block by ID with relations.
+     */
+    public function findActiveById(int $id): ?CourseBlock;
 }

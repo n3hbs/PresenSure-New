@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateCourseBlockRequest;
 use App\Services\CourseBlockService;
+use App\Http\Resources\CourseBlockResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,6 +16,42 @@ class CourseBlockController extends Controller
     public function __construct(
         protected CourseBlockService $courseBlockService
     ) {}
+
+    /**
+     * Display a listing of active course blocks with relations.
+     * GET /api/course-blocks
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $courseId = $request->query('course_id') ? (int) $request->query('course_id') : null;
+        $semesterId = $request->query('semester_id') ? (int) $request->query('semester_id') : null;
+        $search = $request->query('search') ? (string) $request->query('search') : null;
+
+        $blocks = $this->courseBlockService->getActiveBlocks($courseId, $semesterId, $search);
+
+        return response()->json([
+            'data' => CourseBlockResource::collection($blocks),
+            'message' => 'Course blocks retrieved successfully.',
+        ], 200);
+    }
+
+    /**
+     * Display the specified course block.
+     * GET /api/course-blocks/{id}
+     */
+    public function show(int|string $id): JsonResponse
+    {
+        $block = $this->courseBlockService->getBlockById((int) $id);
+
+        if (! $block) {
+            return response()->json(['message' => 'Course block not found.'], 404);
+        }
+
+        return response()->json([
+            'data' => new CourseBlockResource($block),
+            'message' => 'Course block retrieved successfully.',
+        ], 200);
+    }
 
     /**
      * Update an existing Course Block

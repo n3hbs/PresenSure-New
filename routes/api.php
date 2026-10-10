@@ -153,6 +153,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('permission:schedules.manage')->group(function () {
         Route::post('schedule', [ScheduleController::class, 'create']);
+        Route::delete('schedule/{schedule_id}', [ScheduleController::class, 'destroy']);
     });
 
     // --- ATTENDANCE SESSIONS & CONTROL ---
@@ -220,6 +221,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('departments', [DepartmentController::class, 'index']);
     Route::get('programs', [ProgramController::class, 'index']);
     Route::get('courses', [CourseController::class, 'index']);
+    Route::get('course-blocks', [CourseBlockController::class, 'index']);
+    Route::get('course-blocks/{id}', [CourseBlockController::class, 'show']);
     Route::get('buildings', [BuildingController::class, 'index']);
     Route::get('rooms', [RoomController::class, 'index']);
     Route::get('semester/active', [SemesterController::class, 'getActiveSemester']);
